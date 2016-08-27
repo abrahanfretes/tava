@@ -19,6 +19,7 @@
 import wx
 from wx.lib.agw import aui
 from wx.lib.agw import customtreectrl as CT
+from imgs.prin import shortcut
 
 
 class MainFrame(wx.Frame):
@@ -38,6 +39,7 @@ class MainFrame(wx.Frame):
         self.SetSize(wx.Size(800, 700))
         self.SetBackgroundColour("#F5D0A9")
         self.SetMinSize((660, 480))
+        self.SetIcon(shortcut.GetIcon())
 
     def v_content(self):
 
