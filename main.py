@@ -17,6 +17,7 @@
 '''
 
 import wx
+from wx.lib.agw import aui
 
 
 class MainFrame(wx.Frame):
@@ -35,10 +36,21 @@ class MainFrame(wx.Frame):
         self.SetTitle("FPUNA: Tavai")
         self.SetSize(wx.Size(800, 700))
         self.SetBackgroundColour("#F5D0A9")
+        self.SetMinSize((640, 480))
 
     def v_content(self):
-        self.panel = MainPanel(self)
-        self.sizer.Add(self.panel, 1, wx.EXPAND | wx.ALL, 3)
+
+        # aui que manejará los paneles principales
+        self._mgr = aui.AuiManager(self)
+        self.build_panels()
+        pass
+
+    def build_panels(self):
+
+        # Panel central
+        self._mgr.AddPane(MainPanel(self), aui.AuiPaneInfo().
+                          Name("space_work_pane").CenterPane())
+        self._mgr.Update()
 
 
 class MainPanel(wx.Panel):
