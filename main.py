@@ -18,8 +18,11 @@
 
 import wx
 from wx.lib.agw import aui
-from wx.lib.agw import customtreectrl as CT
+
+from imgs.itree import explorer
 from imgs.prin import shortcut, splash
+from wrapper.tbody import TreePanel, CentralPanel
+from wrapper.tmenubar import TMenuBar
 
 
 class MainFrame(wx.Frame):
@@ -46,6 +49,10 @@ class MainFrame(wx.Frame):
 
         # aui que manejará los paneles principales
         self._mgr = aui.AuiManager(self, aui.AUI_MGR_ANIMATE_FRAMES)
+
+        # add Menu Bar
+        self.SetMenuBar(TMenuBar(self))
+
         self.build_panels()
         pass
 
@@ -54,6 +61,8 @@ class MainFrame(wx.Frame):
         # tree panel
         self._mgr.AddPane(TreePanel(self),
                           aui.AuiPaneInfo().Name("tree_pane").
+                          Icon(explorer.GetBitmap()).
+                          Caption('Explorador de Proyectos').
                           Left().Layer(1).Position(1).CloseButton(False).
                           MaximizeButton(True).MinimizeButton(True).
                           Floatable(False))
@@ -63,43 +72,8 @@ class MainFrame(wx.Frame):
                           Name("space_work_pane").CenterPane())
         self._mgr.Update()
 
-
-class CentralPanel(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-
-        self.v_setting()
-
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(self.sizer)
-
-        self.v_content()
-
-    def v_setting(self):
-        self.SetBackgroundColour("#3B598D")
-
-    def v_content(self):
-        wel = wx.StaticText(self, -1, "Your Welcome to Tavai :)")
-        wel.SetForegroundColour((255, 255, 255))
-        self.sizer.Add(wel, 0, wx.ALIGN_CENTRE)
-
-
-class TreePanel(CT.CustomTreeCtrl):
-    def __init__(self, parent):
-        CT.CustomTreeCtrl.__init__(self, parent)
-
-        self.v_setting()
-
-        self.v_content()
-
-    def v_setting(self):
-        self.SetBackgroundColour("red")
-        self.SetSize(wx.Size(220, -1))
-        self.SetAGWWindowStyleFlag(CT.TR_HAS_BUTTONS | CT.TR_HIDE_ROOT)
-
-    def v_content(self):
-        self.root = self.AddRoot("TAVA TREE PROJECT", 0)
-        pass
+    def on_exit(self, event):
+        self.Close()
 
 
 class SplashFrame(wx.SplashScreen):
