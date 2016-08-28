@@ -19,7 +19,7 @@
 import wx
 from wx.lib.agw import aui
 from wx.lib.agw import customtreectrl as CT
-from imgs.prin import shortcut
+from imgs.prin import shortcut, splash
 
 
 class MainFrame(wx.Frame):
@@ -40,6 +40,7 @@ class MainFrame(wx.Frame):
         self.SetBackgroundColour("#F5D0A9")
         self.SetMinSize((660, 480))
         self.SetIcon(shortcut.GetIcon())
+        self.Center(wx.BOTH)
 
     def v_content(self):
 
@@ -99,3 +100,29 @@ class TreePanel(CT.CustomTreeCtrl):
     def v_content(self):
         self.root = self.AddRoot("TAVA TREE PROJECT", 0)
         pass
+
+
+class SplashFrame(wx.SplashScreen):
+
+    def __init__(self):
+        wx.SplashScreen.__init__(self, splash.GetBitmap(),
+                                 wx.SPLASH_CENTRE_ON_SCREEN |
+                                 wx.SPLASH_TIMEOUT, 5000, None, -1)
+
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.fc = wx.FutureCall(2000, self.ShowMain)
+
+    def OnClose(self, evt):
+        evt.Skip()
+        self.Hide()
+        if self.fc.IsRunning():
+            self.fc.Stop()
+            self.ShowMain()
+
+    def ShowMain(self):
+        frame = MainFrame(None)
+        frame.Center(wx.BOTH)
+        frame.Show()
+
+        if self.fc.IsRunning():
+            self.Raise()

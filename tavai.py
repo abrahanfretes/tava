@@ -18,18 +18,16 @@
 
 import wx
 
-from main import MainFrame
+from main import SplashFrame
 
 
 class TavaiApp(wx.App):
 
     def OnInit(self):
-        frame = MainFrame(None)
-        self.SetTopWindow(frame)
-        print "Print statements go to this stdout window by default."
-        frame.Center(wx.BOTH)
-        # frame.Maximize()
-        frame.Show(True)
+
+        splash = SplashFrame()
+        splash.Center(wx.BOTH)
+        splash.Show()
         return True
 
 app = TavaiApp(redirect=False)
