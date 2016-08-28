@@ -23,6 +23,7 @@ from imgs.itree import explorer
 from imgs.prin import shortcut, splash
 from wrapper.tbody import TreePanel, CentralPanel
 from wrapper.tmenubar import TMenuBar
+from wrapper.ttoolbar import TToolBar
 
 
 class MainFrame(wx.Frame):
@@ -57,6 +58,10 @@ class MainFrame(wx.Frame):
         pass
 
     def build_panels(self):
+
+        # Agrega los Toolbar
+        self._mgr.AddPane(TToolBar(self), aui.AuiPaneInfo().Name("tb1").
+                          Caption("Big Toolbar").ToolbarPane().Top())
 
         # tree panel
         self._mgr.AddPane(TreePanel(self),
