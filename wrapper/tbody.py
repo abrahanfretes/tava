@@ -19,8 +19,12 @@
 import wx
 from wx.lib.agw import customtreectrl as CT
 
+from imgs.itree import iopen, iopened, iclose, ipackage_open, ipackage_opened,\
+    imoduleg, iview_package_open, iview_package_close
+
 
 class CentralPanel(wx.Panel):
+
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -40,7 +44,8 @@ class CentralPanel(wx.Panel):
         self.sizer.Add(wel, 0, wx.ALIGN_CENTRE)
 
 
-class TreePanel(CT.CustomTreeCtrl):
+class TTree(CT.CustomTreeCtrl):
+
     def __init__(self, parent):
         CT.CustomTreeCtrl.__init__(self, parent)
 
@@ -54,5 +59,18 @@ class TreePanel(CT.CustomTreeCtrl):
         self.SetAGWWindowStyleFlag(CT.TR_HAS_BUTTONS | CT.TR_HIDE_ROOT)
 
     def v_content(self):
+
+        img_list = wx.ImageList(16, 16)
+        img_list.Add(iopen.GetBitmap())
+        img_list.Add(iopened.GetBitmap())
+        img_list.Add(iclose.GetBitmap())
+        img_list.Add(ipackage_open.GetBitmap())
+        img_list.Add(ipackage_opened.GetBitmap())
+        img_list.Add(imoduleg.GetBitmap())
+        img_list.Add(iview_package_open.GetBitmap())
+        img_list.Add(iview_package_close.GetBitmap())
+
+        self.AssignImageList(img_list)
+
         self.root = self.AddRoot("TAVA TREE PROJECT", 0)
         pass

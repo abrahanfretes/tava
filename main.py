@@ -21,7 +21,7 @@ from wx.lib.agw import aui
 
 from imgs.itree import explorer
 from imgs.prin import shortcut, splash
-from wrapper.tbody import TreePanel, CentralPanel
+from wrapper.tbody import TTree, CentralPanel
 from wrapper.tmenubar import TMenuBar
 from wrapper.ttoolbar import TToolBar
 
@@ -64,7 +64,7 @@ class MainFrame(wx.Frame):
                           Caption("Big Toolbar").ToolbarPane().Top())
 
         # tree panel
-        self._mgr.AddPane(TreePanel(self),
+        self._mgr.AddPane(TTree(self),
                           aui.AuiPaneInfo().Name("tree_pane").
                           Icon(explorer.GetBitmap()).
                           Caption('Explorador de Proyectos').

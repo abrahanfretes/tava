@@ -32,3 +32,110 @@ explorer = PyEmbeddedImage(
     "mNYUBQ99pVKz/+iB21PmhxI7eEOMmMDFa0DzxGME0wLeQBQziPq/7cLD/zCaZAPoEgt4c1pv"
     "ueX/n//+///57///3nJLrAmJ4lgAACWjf/lf+gFyAAAAAElFTkSuQmCC"
     )
+
+# ---------------------------------------------------------------------
+
+iopened = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAO1J"
+    "REFUOI2lk71KA0EUhb9zsbC0FUUfQaxsrMTXEGKXd0jjI6SJdcA6vUUgjfgGio0QSJnCSOrc"
+    "Y5FdXYJJdtkDF4YZ7vm5MyPbtEG06gYE3EbEdXUzM/u2F/UYpKUkVysiHmxTpyTpvyF8S+pv"
+    "E83MF9tjgIONMwOvkiaZuWu6F8C4SPDnwHYPeAS6EXG4L35mflLJ/gEcS5ptzmRHTX+v0fYQ"
+    "uANO9ymXkDQqHayAE0nvDdQNXJYEz8BVk2ZJb7YJYGl7GBGdutaLyE/l+gY4kvTVQD2BM9uo"
+    "eE3nEXFfVz0z57YHwJqgDVr/xh/IxqHzCxAXfgAAAABJRU5ErkJggg=="
+    )
+
+# ---------------------------------------------------------------------
+ipackage_open = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAzRJ"
+    "REFUOI1FzLtvHEUAwOHfzO7eY+/OvjiW5YtlICQyryIUEYgikSgoqFKAlCIUSUMFXUC4ogCB"
+    "KBANIqKKLEUIRINowqOhQBehJCIEYoEjK4599sV3Pt9jHzc7uzNDhfj+gE9s/fI+vjcltwbh"
+    "JMaA8Fl0wjyHceeklHsqSb7ebN/afers6bwcBPQHEY16k+3OAD+QJfAUwsrjUrgzRnCpMMEZ"
+    "cJ7IfUaHBziVfdw6fiIutLxeDevXlhZr7akRB+VyFXFw45PV6mz40TQrsFYS93eJh7s4awln"
+    "j1BtzlFplPCCKkVuMTonilKqJZ/e/vBVb3A4fOO1V06dHh2MGfc7SL/KwslnWX7yJPNLLaq1"
+    "MoN+xtb9HXY2Owz6Q+LJhMVmwNkLV677QohpTkGsUmbmZrE2Z//BA0aewAV1/rxzF88vCGs1"
+    "KqUAGfjgCmQQEFaDVBoQuYrQqaK18gxBfR4VJ+jCgNXIiqMUBgSlgCjTjOKEX+9sk+cK3w/w"
+    "AZfrgkgl3GrfwJMBhWdRdorNfZRWlEWAFzru/rNLtzfm6RPzSGnIncX3jJEqVjhjSIcTrLWU"
+    "K2VMYSBIybWBsMyP7Q2yLKN/mLG0oEnGCl9q4WsKmaiETBeAAwRKZQghKJyksIbuYMRsKAga"
+    "Ic2wQrc/Jk5TpPClD4Y0m5LkKZ4T/MfzJFYX5FmKw6fTS1laKDNNFI+1Zsm0Qkgj/aLIgzTN"
+    "0EoB8v9AgBAeaqppzJSplx33Hw5ZWT5CoyYZT2KsNr6vk/HR0cEjTC5xpoT1HDjwMAgZoHPL"
+    "KIp5vFVnuVUH48jSETs7j5im2VH/zXfXLrd/+sKaaONc1Y7K83NNqjNNMkI8r8Aag1A542TE"
+    "ZNhlv5fhwrlxOHfq2nc/f7smdR49LLL4/OqVvysvXfjqhajx8trte4fRxr2b9DrrdLfX+f32"
+    "On9tTge1lUufXvzwt+Nffr/fTOPDt5JJP5JYi7UFJtfodHAzU4cXP/tmY+b199rP22PnPz/2"
+    "4jsfrF7dXL76Q2c+nexdTiZ7W8aCtRm2MPjGWCQOrMVhQWusg3TS+6NQo7elVMSjLvAENiuw"
+    "1mAAKQOMtfwLTzTWNIxqU84AAAAASUVORK5CYII="
+    )
+
+# ---------------------------------------------------------------------
+ipackage_opened = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXJJ"
+    "REFUOI1jYCAAygtzY6qK85/jkmfEp7m2ojjl37+/k3T19Dlv37z168unz16dE6fsRVbDjM+A"
+    "Q0eO37IwNWF68eK5iY6uLseXL18ibK1MzQ8eObGegYHhD9wFgX5e8eqqKguwGXL6xJkmDW2N"
+    "b9w8XHWs7Fz/ZGRkeJ48evjh6rVrhRs2b1/AwsDAwKCuqrLA3c2ZQVxcjIGBgYHh////CAOO"
+    "n2a6cfUG198/fyb/Z2D8r6Akb5eQEG3198/v+QwM25ewwBSKi4sx1KfEMDx6/wXdETXInG9/"
+    "3zCIixfCuKwsyJKP3n9hsFGRwBcsDEfuvEDmsjDBWMjOfvT2C14aWS3cAGQgJ8yDl0YGWA0g"
+    "5AKsBjAyItIUIRcgq6XYBSixICfIAw9lWHSi03KCqOEAN+Dly1cMjXOWMDAwoIYyMoA5/c7t"
+    "u6gGnD57voiBgaEPqy4c4MSpM+UMDAx/YaHByMDAIAc1EG8GQwJPGBgY/gAA10agoMKStEUA"
+    "AAAASUVORK5CYII="
+    )
+
+# ---------------------------------------------------------------------
+imoduleg = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAj9J"
+    "REFUOI2Nkk1IVFEUx39PH6PjDDM2JmMbE3QhTlYkCRI1RZGhYqFCuG1RG5FW5kIS+xDblO2M"
+    "RFCIMrBQCuxzoIIWYuAUIpgoIpaJU4tx5nrffTMt5gP1DdEfDlz+957fOffcq2ns0p2PjUD/"
+    "bhu4yrXjEwCDPl/NqdnZjp9wX7ccM1T70YPlhcX7vM6UtfxjLTwVnGsHJppbWsqCKyunL3V3"
+    "X/ja0+OxAqQscdh05+LiYtpyuVxOpCx5NaL5+59EKvsCgZu1paX3WuPxSStAiLhSCtM005ZS"
+    "isP6VG5kk46xwUN1Pp/v+h8hxt9AMCsDIGZIiVIqHUWbH2hyjObXnu+sGxroC/hKVj/9DoWC"
+    "ANYOoiImDQPDMAAo075QLUdoa21wDA30BcLheO+L9yKQOq6/g3PArZQxOPXcPXfmGDabjT1b"
+    "S/jNYdrqa+jqH43YHfHe23d5u72e9hqeHahv8BdVVHgAHm1kMxFK3MxuHxfDD8dyO2+cUN9s"
+    "rg175fzKttyusYtM6hKKnb+kZ/3lUwDOJgPAy1Ju4X4/5c3V+pGyIi+c9AIsrX4PfZ4JXIYE"
+    "ACkEEmUZR1cj03lNFVXSrbOwsJD23e58jxQUA+gCEEIgMC2ALQW2ba+RklIKKZJDFICMRjN2"
+    "IBTkmSaGNHb8C0MaiGgSEAViWVlkF+RbAcZ6opohd3QgDYmIJAFrMD20PGNJBghJ2BuLoWka"
+    "OTk5aV/TNKLh1DpjakIFrTxQiqpMe7rO9MZjrvwT8D/6C3vWAPP2x38aAAAAAElFTkSuQmCC"
+    )
+
+# ---------------------------------------------------------------------
+iclose = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAZVJ"
+    "REFUOI2lkjtPG1EQhb+5a9YPGYxMLMtQBEQCBQVF0qFUVChdKnqapOQfpPJfoI+iNCko8wfS"
+    "RGkQEgEjBWMhxSsSjF+Avd57bwrjXVtKZB5HmmI0Z86c0Qw8EgIwU5gvTE4/KU64iTfDxXaz"
+    "9rpa/vF1rMDz1bWPIrLZqP12BgWte2Sy+R6C+Vej0cFO+eD7tgDk5hY9Y3T+PtYn3PixVykt"
+    "xwCeLi7fq/kWS16lRAyg8rOE47pj+DKSad8HQAGIoxAZCgTbbbLx0md9VRN0WmANWIM1Gms0"
+    "4iiAvgNBIdKfYK3lunWJCpoU3+Wot2J8/vKH5JQhmc6EPBP0IgEksiciGL+BG0+xsytctq5I"
+    "JFKYmxpqKhvyjATRCgBKOWG8XY9z8kmzf1TH89pUPgRsvYqPcESGVxBBqfAF2DtLEbTrHJ4k"
+    "mE4bHAK+nWVHOAMBAZhdWLHJdCayp3tkdJXT8zpiLS+e5Sh38iCRwE27wa/yQbi8HXPD/0Fi"
+    "gMwU5t8/pPuiehp+R5LBRe4OH+g+ZPAI/gLQd4jgpznLYQAAAABJRU5ErkJggg=="
+    )
+
+# ---------------------------------------------------------------------
+iopen = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAYtJ"
+    "REFUOI2lkb9LW1EUxz/n5eWZDMGiLfnRIU9sE+ySwa0FheAgdBA6iIX+Bd2yZRQKpXspDjr2"
+    "P6mD4lCoWEhakaBoUiGkMRWam/eOQ/KaRKNB+oXL5Zzz/X753nPhPyEA00k3GXvw8H3Yibwa"
+    "HLaa9ZdnR9+3xxo8zb34LCJrv+vnoWDgeYbJqbhB8EcJfa+zcXSwVxCAR49nq77vxe8TPexM"
+    "lKuVUtYGSM9m7yXuIVOtlLABKoclQo4zhi9DldduA3QNJGQhYo3WqaIoqN8rlUDTN8BCRPoE"
+    "Vbo0HQggvat7+x3TNwiG/wgi1wLfhC+dAQPAskK3kgG8jiGzvD7U+7WxmhKAhDunzkT0ToOZ"
+    "fJGWN8nOpzwAi8UDwpflbgJLLMJO5E6Dyo8mqVzmRi+Ajjvu0pYaY9QYo6qqp42/6i5tqQ3I"
+    "dNIdftwI2O2z9Tcfdnm78oznczEKH/e4qB1+C5YdZWChtyD3ZOHdl2xunoj/h+2d/Ubt6+br"
+    "cb91HSnsRBqxI5iTn8DxFZX/iaWGn74XAAAAAElFTkSuQmCC"
+    )
+
+# ---------------------------------------------------------------------
+iview_package_close = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAOJJ"
+    "REFUOI2tkTuOhDAQRB+yEblFAFcgIOM6nA0RcBiQCDkCEHAAEAJvsIIdf9BqZrcj66lcXd0d"
+    "VFWl+UNJgLIs0fo9nyAIqOv620BrzTRNzPPMtm0ARFFEkiQAXp6m6U8CgHEcybLM6DIMA4CX"
+    "Owbrujoxfczm9wjneTpCH7v4tbM7gZTSEfqYze+XUoq+79n3HYAwDInjGOCRGyMcx2GMcjF7"
+    "xFetkWBZFoqiMKJ2XQfwyA2D686v5WM2/78rCCEcoY/Z3LhC27b34oQQKKUAHrlhkOe5t9tv"
+    "JQGapvnoM8AXr2+Whh5hxpAAAAAASUVORK5CYII="
+    )
+
+# ---------------------------------------------------------------------
+iview_package_open = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAANVJ"
+    "REFUOI3t0j1qAlEYheH3Xr9vEKu0ps8iXIHVMIW4CHfgNBYGXEFwB6YTtBYbV2ExrSAGptDh"
+    "zp0BM6n86W6RMjntA6c4HGOAwWQSA688sl1OpxkBA8AASZqOznXdHC6XZr3bNUmajpLx+C1k"
+    "BrAAtfet7+uVynuKomA1m83rquqHjFuB976lInSiiDzP+VgsyPb7l5ABCIB3TtRa2qoM4xhR"
+    "5XOzKbOA3QtK50SspRNFqAjGWkrngnYv+DoeT91e7/1paUT1FDIAY/hdBP5/AH/+Bz9mZw8S"
+    "5wDYvAAAAABJRU5ErkJggg=="
+    )
