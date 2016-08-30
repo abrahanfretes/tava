@@ -22,7 +22,7 @@ from wx.lib.agw import customtreectrl as CT, aui
 
 from imgs.itree import iopen, iopened, iclose, \
     iview_package_open, iview_package_close, iview_pack
-from wrapper.view import TView, TViewWelCome
+from views.wrapper.view import TViewWelCome, TView
 
 
 KURI_AUI_NB_STYLE = aui.AUI_NB_TOP | aui.AUI_NB_TAB_SPLIT | \

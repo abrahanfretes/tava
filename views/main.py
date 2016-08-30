@@ -26,9 +26,11 @@ from imgs.itree import explorer
 from imgs.prin import shortcut, splash
 from languages import topic as T
 from languages.i18n import I18nLocale
-from wrapper.tbody import TTree, CentralPanel
-from wrapper.tmenubar import TMenuBar
-from wrapper.ttoolbar import TToolBar
+from views.wrapper.tbody import TTree, CentralPanel
+from views.wrapper.tmenubar import TMenuBar
+from views.wrapper.ttoolbar import TToolBar
+from views.wrapper.vproject.new import NewProject
+from presenters.pmain import MainFrameP
 
 
 class MainFrame(wx.Frame):
@@ -42,6 +44,8 @@ class MainFrame(wx.Frame):
         self.SetSizer(self.sizer)
 
         self.v_content()
+
+        self.ppr = MainFrameP(self)
 
     def v_setting(self):
         self.SetTitle("FPUNA: Tavai")
@@ -106,6 +110,22 @@ class MainFrame(wx.Frame):
         self._mgr.RefreshCaptions()
         self.menu_bar.SetLabelsLanguges()
         self.ttoolbar.SetLabelsLanguges()
+
+    # ------------- funciones logicas ---------------------
+
+    def new_project(self):
+        self.p_name = ''
+        self.p_path_files = []
+        self.p_formate = 10
+        self.p_create = False
+
+        NewProject(self)
+        project = self.ppr.add_project(self.p_name, self.p_path_files,
+                                       self.p_formate)
+
+        print 'Se agregó un nuevo proyecto'
+        print project.id
+        print project.name
 
 
 class SplashFrame(wx.SplashScreen):

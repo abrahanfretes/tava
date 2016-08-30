@@ -29,7 +29,7 @@ class TToolBar(aui.AuiToolBar):
                                 wx.DefaultSize,
                                 agwStyle=aui.AUI_TB_DEFAULT_STYLE |
                                 aui.AUI_TB_OVERFLOW)
-
+        self.parent = parent
         self.SetToolBitmapSize(wx.Size(48, 48))
         self.SetIdReferences()
 
@@ -42,7 +42,7 @@ class TToolBar(aui.AuiToolBar):
         self.AddSimpleTool(self.ID_HIDE_PRO, '', iunhide.GetBitmap())
         self.AddSimpleTool(self.ID_UNHIDE_PRO, '', ihide.GetBitmap())
 
-        # self.Bind(wx.EVT_TOOL, parent.new_project, id=self.ID_NEW_PRO)
+        self.Bind(wx.EVT_TOOL, self.on_new_project, id=self.ID_NEW_PRO)
 
         # Establecemos los labels
         self.SetLabelsLanguges()
@@ -62,3 +62,6 @@ class TToolBar(aui.AuiToolBar):
         self.SetToolShortHelp(self.ID_DEL_PRO, L('DELETE_PROJECT'))
         self.SetToolShortHelp(self.ID_HIDE_PRO, L('HIDE_PROJECT'))
         self.SetToolShortHelp(self.ID_UNHIDE_PRO, L('UNHIDE_PROJECT'))
+
+    def on_new_project(self, event):
+        self.parent.new_project()

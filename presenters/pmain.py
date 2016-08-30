@@ -8,28 +8,28 @@
 # Ingenieria en Informática - Proyecto Final de Grado        ###
 #                                                            ###
 # Autores:                                                   ###
-#           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
+#           - Arsenio Ferreira (arse.ferreira@gmail.com)      ###
 #           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
 #                                                            ###
-# Creado:  26/8/2016                                         ###
+# Creado:  30/8/2016                                          ###
 #                                                            ###
 # ##############################################################
 '''
+from bd.entity import Project
+from models.mproject import ProjectM
 
 
-import wx
+class MainFrameP(object):
 
-from views.main import SplashFrame
+    '''
+    classdocs
+    '''
 
+    def __init__(self, iview):
+        '''
+        Constructor
+        '''
 
-class TavaiApp(wx.App):
-
-    def OnInit(self):
-
-        splash = SplashFrame()
-        splash.Center(wx.BOTH)
-        splash.Show()
-        return True
-
-app = TavaiApp(redirect=False)
-app.MainLoop()
+    def add_project(self, name, path_files, t_format):
+        project = ProjectM().add(Project(name))
+        return project

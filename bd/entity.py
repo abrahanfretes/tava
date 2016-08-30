@@ -46,8 +46,9 @@ class Project(Base):
                          order_by='View.id', backref='project')
 
     results_metrics = relationship('ResultMetric', lazy=True,
-                           cascade="save-update, merge, delete",
-                           order_by='ResultMetric.id', backref='project')
+                                   cascade="save-update, merge, delete",
+                                   order_by='ResultMetric.id',
+                                   backref='project')
 
     def __init__(self, name, blog=None, state=None, date=None,
                  proj_open=True, pack_file=False, pack_view=False):
@@ -337,9 +338,9 @@ class MandatoryProperties(Base):
     metric_value = Column(String(100), nullable=False)
 
     properties_values = relationship('PropertyValue', lazy=True,
-                           cascade="save-update, merge, delete",
-                           order_by='PropertyValue.id',
-                           back_populates='mandatory_properties')
+                                     cascade="save-update, merge, delete",
+                                     order_by='PropertyValue.id',
+                                     back_populates='mandatory_properties')
 
 
 class PropertyValue(Base):

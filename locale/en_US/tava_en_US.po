@@ -90,3 +90,64 @@ msgstr "Unhide Project"
 
 msgid "EXIT"
 msgstr "Salir"
+
+
+# ------------------------------- vproject -> NewProject ----------------------------------
+msgid "NEW_PROJECT_TITLE"
+msgstr "Tava Project"
+
+msgid "NEW_PROJECT_NAME"
+msgstr "Project Name"
+
+msgid "NEW_PROJECT_CANCEL"
+msgstr "Cancel"
+
+msgid "NEW_PROJECT_OK"
+msgstr "Create"
+
+msgid "NEW_PROJECT_ENTER_NAME"
+msgstr "Enter a name Project."
+
+msgid "NEW_PRO_BLANK_SPACE"
+msgstr "Name Error, only 'blanks' is not allowed as name."
+
+msgid "NEW_PRO_CONTAINS_POINT"
+msgstr "Name Error, '.' It is not permitted as a start character name"
+
+msgid "NEW_PRO_CONTAINS_SLASH"
+msgstr "Name Error, '/' Character is not allowed for names."
+
+msgid "NEW_PRO_MAXIMUM_LENGTH"
+msgstr "Name length error. 100 characters maximum length allowed."
+
+msgid "NEW_PRO_EXISTING_NAME"
+msgstr "Name error repeated, there is another project with the same name."
+
+msgid "NEW_PRO_HIDDEN_EXISTING_NAME"
+msgstr "Name error repeated, there is another hidden project with the same name."
+
+# ------------------------------- AddFileDialog -------------------------------
+msgid "FILE_STATIC_LABEL"
+msgstr "Add files to the Project"
+
+msgid "FILE_BUTTON_BROWSER"
+msgstr "Browser"
+
+msgid "FILE_LABEL_COL_NAME"
+msgstr "Name"
+
+msgid "FILE__COL_DIRECTORY"
+msgstr "Directory"
+
+msgid "FILE_RADIO_BOX_TITLE"
+msgstr "File Format"
+
+msgid "ADD_FILE_DIALOG_TITLE"
+msgstr "Select files"
+
+msgid "ADD_FILE_RESULT"
+msgstr "Add"
+
+msgid "ADD_FILE_RESULT_HEADER"
+msgstr "Add Files Results"
+

@@ -87,3 +87,63 @@ msgstr "Desocultar Proyecto"
 
 msgid "EXIT"
 msgstr "Salir"
+
+# ------------------------------- vproject -> NewProject ----------------------
+msgid "NEW_PROJECT_TITLE"
+msgstr "Proyecto Tava"
+
+msgid "NEW_PROJECT_NAME"
+msgstr "Nombre de Proyecto"
+
+msgid "NEW_PROJECT_CANCEL"
+msgstr "Cancelar"
+
+msgid "NEW_PROJECT_OK"
+msgstr "Crear"
+
+msgid "NEW_PROJECT_ENTER_NAME"
+msgstr "Introduzca un nombre de Proyecto."
+
+msgid "NEW_PRO_BLANK_SPACE"
+msgstr "Error de Nombre, no se permite solo 'espacios en blancos' como nombre."
+
+msgid "NEW_PRO_CONTAINS_POINT"
+msgstr "Error de Nombre. no se permite '.' como carácter de inicio de nombre."
+
+msgid "NEW_PRO_CONTAINS_SLASH"
+msgstr "Error de Nombre, '/' carácter no permitido para nombres."
+
+msgid "NEW_PRO_MAXIMUM_LENGTH"
+msgstr "Error de longitud de Nombre. Máxima longitud permitida 100 carácteres"
+
+msgid "NEW_PRO_EXISTING_NAME"
+msgstr "Error de Nombre repetido, existe otro proyecto con el mismo nombre."
+
+msgid "NEW_PRO_HIDDEN_EXISTING_NAME"
+msgstr "Error de Nombre repetido, existe otro proyecto oculto con el mismo nombre."
+
+# ------------------------------- AddFileDialog -------------------------------
+msgid "FILE_STATIC_LABEL"
+msgstr "Agregar archivos al proyecto"
+
+msgid "FILE_BUTTON_BROWSER"
+msgstr "Buscar"
+
+msgid "FILE_LABEL_COL_NAME"
+msgstr "Nombre"
+
+msgid "FILE__COL_DIRECTORY"
+msgstr "Directorio"
+
+msgid "FILE_RADIO_BOX_TITLE"
+msgstr "Formato de archivo"
+
+msgid "ADD_FILE_DIALOG_TITLE"
+msgstr "Seleccione archivos"
+
+msgid "ADD_FILE_RESULT"
+msgstr "Agregar"
+
+msgid "ADD_FILE_RESULT_HEADER"
+msgstr "Agregue Archivos Resultados"
+
