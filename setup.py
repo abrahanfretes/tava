@@ -25,7 +25,7 @@ executables = [
 ]
 
 setup(name='hello',
-      version='0.1',
+      version='0.001',
       description='Sample cx_Freeze wxPython script',
       options={'build_exe': opts},
       executables=executables
