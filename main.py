@@ -16,11 +16,12 @@
 # ##############################################################
 '''
 
+from wx import GetTranslation as L
 import wx
 from wx.lib.agw import aui
 from wx.lib.pubsub import Publisher as pub
-from wx import GetTranslation as L
 
+from bd import entity
 from imgs.itree import explorer
 from imgs.prin import shortcut, splash
 from languages import topic as T
@@ -123,6 +124,7 @@ class SplashFrame(wx.SplashScreen):
             self.ShowMain()
 
     def ShowMain(self):
+        entity.createDB()
         frame = MainFrame(None)
         frame.Center(wx.BOTH)
         frame.Show()
