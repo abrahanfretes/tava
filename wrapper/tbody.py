@@ -19,8 +19,8 @@
 import wx
 from wx.lib.agw import customtreectrl as CT
 
-from imgs.itree import iopen, iopened, iclose, ipackage_open, ipackage_opened,\
-    imoduleg, iview_package_open, iview_package_close
+from imgs.itree import iopen, iopened, iclose, \
+    iview_package_open, iview_package_close, iview_pack
 
 
 class CentralPanel(wx.Panel):
@@ -54,7 +54,7 @@ class TTree(CT.CustomTreeCtrl):
         self.v_content()
 
     def v_setting(self):
-        self.SetBackgroundColour("red")
+        # self.SetBackgroundColour("red")
         self.SetSize(wx.Size(220, -1))
         self.SetAGWWindowStyleFlag(CT.TR_HAS_BUTTONS | CT.TR_HIDE_ROOT)
 
@@ -64,13 +64,44 @@ class TTree(CT.CustomTreeCtrl):
         img_list.Add(iopen.GetBitmap())
         img_list.Add(iopened.GetBitmap())
         img_list.Add(iclose.GetBitmap())
-        img_list.Add(ipackage_open.GetBitmap())
-        img_list.Add(ipackage_opened.GetBitmap())
-        img_list.Add(imoduleg.GetBitmap())
-        img_list.Add(iview_package_open.GetBitmap())
+
         img_list.Add(iview_package_close.GetBitmap())
+        img_list.Add(iview_package_open.GetBitmap())
+
+        img_list.Add(iview_pack.GetBitmap())
 
         self.AssignImageList(img_list)
 
         self.root = self.AddRoot("TAVA TREE PROJECT", 0)
+        self.add_projects()
+
         pass
+
+    def add_projects(self):
+        for _ in range(1):
+            project_item = self.AppendItem(self.root, 'Proyecto 1')
+            self.SetItemImage(project_item, 0, wx.TreeItemIcon_Normal)
+            self.SetItemImage(project_item, 1, wx.TreeItemIcon_Expanded)
+            self.SetItemTextColour(project_item, '#000000')
+            self._expanded(project_item, True)
+
+            packege_file = self.AppendItem(project_item, 'Archivos')
+            self.SetItemImage(packege_file, 3, wx.TreeItemIcon_Normal)
+            self.SetItemImage(packege_file, 4, wx.TreeItemIcon_Expanded)
+            self._expanded(packege_file, True)
+
+            self.AppendItem(packege_file, 'name File o')
+            self.AppendItem(packege_file, 'name File 1')
+
+            packege_view = self.AppendItem(project_item, 'Vistas')
+            self.SetItemImage(packege_view, 5, wx.TreeItemIcon_Normal)
+            self._expanded(packege_view, True)
+
+            self.AppendItem(packege_view, 'vista 1')
+            self.AppendItem(packege_view, 'vista 2')
+
+    def _expanded(self, item, expand=True):
+        if expand:
+            item.Expand()
+        else:
+            item.Collapse()

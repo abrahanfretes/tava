@@ -45,56 +45,6 @@ iopened = PyEmbeddedImage(
     )
 
 # ---------------------------------------------------------------------
-ipackage_open = PyEmbeddedImage(
-    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAzRJ"
-    "REFUOI1FzLtvHEUAwOHfzO7eY+/OvjiW5YtlICQyryIUEYgikSgoqFKAlCIUSUMFXUC4ogCB"
-    "KBANIqKKLEUIRINowqOhQBehJCIEYoEjK4599sV3Pt9jHzc7uzNDhfj+gE9s/fI+vjcltwbh"
-    "JMaA8Fl0wjyHceeklHsqSb7ebN/afers6bwcBPQHEY16k+3OAD+QJfAUwsrjUrgzRnCpMMEZ"
-    "cJ7IfUaHBziVfdw6fiIutLxeDevXlhZr7akRB+VyFXFw45PV6mz40TQrsFYS93eJh7s4awln"
-    "j1BtzlFplPCCKkVuMTonilKqJZ/e/vBVb3A4fOO1V06dHh2MGfc7SL/KwslnWX7yJPNLLaq1"
-    "MoN+xtb9HXY2Owz6Q+LJhMVmwNkLV677QohpTkGsUmbmZrE2Z//BA0aewAV1/rxzF88vCGs1"
-    "KqUAGfjgCmQQEFaDVBoQuYrQqaK18gxBfR4VJ+jCgNXIiqMUBgSlgCjTjOKEX+9sk+cK3w/w"
-    "AZfrgkgl3GrfwJMBhWdRdorNfZRWlEWAFzru/rNLtzfm6RPzSGnIncX3jJEqVjhjSIcTrLWU"
-    "K2VMYSBIybWBsMyP7Q2yLKN/mLG0oEnGCl9q4WsKmaiETBeAAwRKZQghKJyksIbuYMRsKAga"
-    "Ic2wQrc/Jk5TpPClD4Y0m5LkKZ4T/MfzJFYX5FmKw6fTS1laKDNNFI+1Zsm0Qkgj/aLIgzTN"
-    "0EoB8v9AgBAeaqppzJSplx33Hw5ZWT5CoyYZT2KsNr6vk/HR0cEjTC5xpoT1HDjwMAgZoHPL"
-    "KIp5vFVnuVUH48jSETs7j5im2VH/zXfXLrd/+sKaaONc1Y7K83NNqjNNMkI8r8Aag1A542TE"
-    "ZNhlv5fhwrlxOHfq2nc/f7smdR49LLL4/OqVvysvXfjqhajx8trte4fRxr2b9DrrdLfX+f32"
-    "On9tTge1lUufXvzwt+Nffr/fTOPDt5JJP5JYi7UFJtfodHAzU4cXP/tmY+b199rP22PnPz/2"
-    "4jsfrF7dXL76Q2c+nexdTiZ7W8aCtRm2MPjGWCQOrMVhQWusg3TS+6NQo7elVMSjLvAENiuw"
-    "1mAAKQOMtfwLTzTWNIxqU84AAAAASUVORK5CYII="
-    )
-
-# ---------------------------------------------------------------------
-ipackage_opened = PyEmbeddedImage(
-    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXJJ"
-    "REFUOI1jYCAAygtzY6qK85/jkmfEp7m2ojjl37+/k3T19Dlv37z168unz16dE6fsRVbDjM+A"
-    "Q0eO37IwNWF68eK5iY6uLseXL18ibK1MzQ8eObGegYHhD9wFgX5e8eqqKguwGXL6xJkmDW2N"
-    "b9w8XHWs7Fz/ZGRkeJ48evjh6rVrhRs2b1/AwsDAwKCuqrLA3c2ZQVxcjIGBgYHh////CAOO"
-    "n2a6cfUG198/fyb/Z2D8r6Akb5eQEG3198/v+QwM25ewwBSKi4sx1KfEMDx6/wXdETXInG9/"
-    "3zCIixfCuKwsyJKP3n9hsFGRwBcsDEfuvEDmsjDBWMjOfvT2C14aWS3cAGQgJ8yDl0YGWA0g"
-    "5AKsBjAyItIUIRcgq6XYBSixICfIAw9lWHSi03KCqOEAN+Dly1cMjXOWMDAwoIYyMoA5/c7t"
-    "u6gGnD57voiBgaEPqy4c4MSpM+UMDAx/YaHByMDAIAc1EG8GQwJPGBgY/gAA10agoMKStEUA"
-    "AAAASUVORK5CYII="
-    )
-
-# ---------------------------------------------------------------------
-imoduleg = PyEmbeddedImage(
-    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAj9J"
-    "REFUOI2Nkk1IVFEUx39PH6PjDDM2JmMbE3QhTlYkCRI1RZGhYqFCuG1RG5FW5kIS+xDblO2M"
-    "RFCIMrBQCuxzoIIWYuAUIpgoIpaJU4tx5nrffTMt5gP1DdEfDlz+957fOffcq2ns0p2PjUD/"
-    "bhu4yrXjEwCDPl/NqdnZjp9wX7ccM1T70YPlhcX7vM6UtfxjLTwVnGsHJppbWsqCKyunL3V3"
-    "X/ja0+OxAqQscdh05+LiYtpyuVxOpCx5NaL5+59EKvsCgZu1paX3WuPxSStAiLhSCtM005ZS"
-    "isP6VG5kk46xwUN1Pp/v+h8hxt9AMCsDIGZIiVIqHUWbH2hyjObXnu+sGxroC/hKVj/9DoWC"
-    "ANYOoiImDQPDMAAo075QLUdoa21wDA30BcLheO+L9yKQOq6/g3PArZQxOPXcPXfmGDabjT1b"
-    "S/jNYdrqa+jqH43YHfHe23d5u72e9hqeHahv8BdVVHgAHm1kMxFK3MxuHxfDD8dyO2+cUN9s"
-    "rg175fzKttyusYtM6hKKnb+kZ/3lUwDOJgPAy1Ju4X4/5c3V+pGyIi+c9AIsrX4PfZ4JXIYE"
-    "ACkEEmUZR1cj03lNFVXSrbOwsJD23e58jxQUA+gCEEIgMC2ALQW2ba+RklIKKZJDFICMRjN2"
-    "IBTkmSaGNHb8C0MaiGgSEAViWVlkF+RbAcZ6opohd3QgDYmIJAFrMD20PGNJBghJ2BuLoWka"
-    "OTk5aV/TNKLh1DpjakIFrTxQiqpMe7rO9MZjrvwT8D/6C3vWAPP2x38aAAAAAElFTkSuQmCC"
-    )
-
-# ---------------------------------------------------------------------
 iclose = PyEmbeddedImage(
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAZVJ"
     "REFUOI2lkjtPG1EQhb+5a9YPGYxMLMtQBEQCBQVF0qFUVChdKnqapOQfpPJfoI+iNCko8wfS"
@@ -138,4 +88,13 @@ iview_package_open = PyEmbeddedImage(
     "BrAAtfet7+uVynuKomA1m83rquqHjFuB976lInSiiDzP+VgsyPb7l5ABCIB3TtRa2qoM4xhR"
     "5XOzKbOA3QtK50SspRNFqAjGWkrngnYv+DoeT91e7/1paUT1FDIAY/hdBP5/AH/+Bz9mZw8S"
     "5wDYvAAAAABJRU5ErkJggg=="
+    )
+
+# ---------------------------------------------------------------------
+iview_pack = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAJpJ"
+    "REFUOI1jKD364T8lgImBQsCCS+K2mhxBzaq3HjEwwLzAMMke7qxbqrJEe4EBOQwYJtmTpBkj"
+    "DG5NvseglqtEWiDAXIBsM7J3SPICigSSIQw1h3HK4zQApgimGdkQFMPxGlBzGMMl6N7D7QUs"
+    "NiK7CK8B+PyMYTi6Adg043MhakIiUjMyQElI/5ttSEtEDNDMVHbsI8kaYQAAGyOJrJPnBOgA"
+    "AAAASUVORK5CYII="
     )

@@ -18,6 +18,8 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
+opts = {'include_files': ['./locale/']}
+
 executables = [
     Executable('tavai.py', base=base)
 ]
@@ -25,5 +27,6 @@ executables = [
 setup(name='hello',
       version='0.1',
       description='Sample cx_Freeze wxPython script',
+      options={'build_exe': opts},
       executables=executables
       )

@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Tava 1.0\n"
+"POT-Creation-Date: 2014-07-18 16:01+PYT\n"
+"Last-Translator: Arsenio Ferreira <arse.ferreira@gmail.com>\n"
+"Language: es_PY\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+# ------------------------------- TavaFrame -----------------------------------
+msgid "TAVA_FRAME_TREE_PANE"
+msgstr "Project Explorer"
+
+msgid "TAVA_FRAME_LOG_PANE"
+msgstr "Log"
+
+msgid "EXIT_APPLICATION"
+msgstr "Want to exit the application?"
+
+msgid "EXIT_APPLICATION_MS"
+msgstr "Confirm exit"
+
+msgid "PROJECT_EXPLORER"
+msgstr "Project Explorer"
+
+msgid "RESULT_NOT_DELETE"
+msgstr "The file can not be removed, is being used in any view!"
+
+msgid "RESULT_NOT_DELETE_HEADER"
+msgstr "Delete Files Result!"
+
+# ------------------------------- TavaMenuBar ---------------------------------
+msgid "MENU_BAR_FILE"
+msgstr "File"
+
+msgid "MENU_BAR_NEW_PROJECT"
+msgstr "New Project"
+
+msgid "MENU_BAR_OPEN_PROJECT"
+msgstr "Open Project"
+
+msgid "MENU_BAR_PROPERTIES"
+msgstr "Properties"
+
+msgid "MENU_BAR_EXIT"
+msgstr "Exit"
+
+
+
+msgid "MENU_BAR_LANGUAGE"
+msgstr "Language"
+
+msgid "MENU_BAR_EN_US_LANGUAGE"
+msgstr "English"
+
+msgid "MENU_BAR_ES_PY_LANGUAGE"
+msgstr "Spanish"
+
+
+msgid "MENU_BAR_HELP"
+msgstr "Help"
+
+msgid "MENU_BAR_ABOUT"
+msgstr "About TAVA"
+
+# ------------------------------- TavaToolBar ---------------------------------
+msgid "TOOLBAR_NEW_PROJECT"
+msgstr "New Project"
+
+msgid "TOOLBAR_OPEN_PROJECT"
+msgstr "Open Project"
+
+msgid "TOOLBAR_CLOSE_PROJECT"
+msgstr "Close Project"
+
+msgid "TOOLBAR_DELETE_PROJECT"
+msgstr "Delete Project"
+
+msgid "TOOLBAR_HIDE_PROJECT"
+msgstr "Hide Project"
+
+msgid "TOOLBAR_UNHIDE_PROJECT"
+msgstr "Unhide Project"
+
+msgid "TOOLBAR_EXIT"
+msgstr "Salir"

@@ -18,9 +18,13 @@
 
 import wx
 from wx.lib.agw import aui
+from wx.lib.pubsub import Publisher as pub
+from wx import GetTranslation as L
 
 from imgs.itree import explorer
 from imgs.prin import shortcut, splash
+from languages import topic as T
+from languages.i18n import I18nLocale
 from wrapper.tbody import TTree, CentralPanel
 from wrapper.tmenubar import TMenuBar
 from wrapper.ttoolbar import TToolBar
@@ -48,11 +52,15 @@ class MainFrame(wx.Frame):
 
     def v_content(self):
 
+        # configuración de lenguajes
+        self.i18n = I18nLocale()
+
         # aui que manejará los paneles principales
         self._mgr = aui.AuiManager(self, aui.AUI_MGR_ANIMATE_FRAMES)
 
         # add Menu Bar
-        self.SetMenuBar(TMenuBar(self))
+        self.menu_bar = TMenuBar(self)
+        self.SetMenuBar(self.menu_bar)
 
         self.build_panels()
         pass
@@ -67,7 +75,7 @@ class MainFrame(wx.Frame):
         self._mgr.AddPane(TTree(self),
                           aui.AuiPaneInfo().Name("tree_pane").
                           Icon(explorer.GetBitmap()).
-                          Caption('Explorador de Proyectos').
+                          Caption(L('PROJECT_EXPLORER')).
                           Left().Layer(1).Position(1).CloseButton(False).
                           MaximizeButton(True).MinimizeButton(True).
                           Floatable(False))
@@ -79,6 +87,22 @@ class MainFrame(wx.Frame):
 
     def on_exit(self, event):
         self.Close()
+
+    def change_language(self, language):
+        if not self.i18n.isEnUsLanguage() and language == 'en':
+            self.i18n.OnEnUs()
+            self.update_language()
+            pub().sendMessage(T.LANGUAGE_CHANGED)
+
+        if not self.i18n.isEsPyLanguage() and language == 'es':
+            self.i18n.OnEsPy()
+            self.update_language()
+            pub().sendMessage(T.LANGUAGE_CHANGED)
+
+    def update_language(self):
+        self._mgr.GetPaneByName("tree_pane").Caption(L('PROJECT_EXPLORER'))
+        self._mgr.RefreshCaptions()
+        self.menu_bar.SetLabelsLanguges()
 
 
 class SplashFrame(wx.SplashScreen):

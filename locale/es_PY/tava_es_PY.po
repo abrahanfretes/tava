@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Tava 1.0\n"
+"POT-Creation-Date: 2014-07-18 16:01+PYT\n"
+"Last-Translator: Arsenio Ferreira <arse.ferreira@gmail.com>\n"
+"Language: es_PY\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+# ------------------------------- TavaFrame -----------------------------------
+msgid "TAVA_FRAME_TREE_PANE"
+msgstr "Explorador de Proyectos"
+
+msgid "TAVA_FRAME_LOG_PANE"
+msgstr "Log"
+
+msgid "EXIT_APPLICATION"
+msgstr "Desea salir de la aplicación?"
+
+msgid "EXIT_APPLICATION_MS"
+msgstr "Confirmar salida"
+
+msgid "PROJECT_EXPLORER"
+msgstr "Explorador de Proyectos"
+
+msgid "RESULT_NOT_DELETE"
+msgstr "El archivo no puede ser eliminado, esta siendo usado en alguna vista!"
+
+msgid "RESULT_NOT_DELETE_HEADER"
+msgstr "Eliminar Archivos Resultado!"
+
+# ------------------------------- TavaMenuBar ---------------------------------
+msgid "MENU_BAR_FILE"
+msgstr "Archivo"
+
+msgid "MENU_BAR_NEW_PROJECT"
+msgstr "Nuevo Proyecto"
+
+msgid "MENU_BAR_OPEN_PROJECT"
+msgstr "Abrir Proyecto"
+
+msgid "MENU_BAR_PROPERTIES"
+msgstr "Propiedades"
+
+msgid "MENU_BAR_EXIT"
+msgstr "Salir"
+
+msgid "MENU_BAR_LANGUAGE"
+msgstr "Idioma"
+
+msgid "MENU_BAR_EN_US_LANGUAGE"
+msgstr "Inglés"
+
+msgid "MENU_BAR_ES_PY_LANGUAGE"
+msgstr "Español"
+
+msgid "MENU_BAR_HELP"
+msgstr "Ayuda"
+
+msgid "MENU_BAR_ABOUT"
+msgstr "Acerca de TAVA"
+
+# ------------------------------- TavaToolBar ---------------------------------
+msgid "TOOLBAR_NEW_PROJECT"
+msgstr "Nuevo Proyecto"
+
+msgid "TOOLBAR_OPEN_PROJECT"
+msgstr "Abrir Proyecto"
+
+msgid "TOOLBAR_CLOSE_PROJECT"
+msgstr "Cerrar Proyecto"
+
+msgid "TOOLBAR_DELETE_PROJECT"
+msgstr "Eliminar Proyecto"
+
+msgid "TOOLBAR_HIDE_PROJECT"
+msgstr "Ocultar Proyecto"
+
+msgid "TOOLBAR_UNHIDE_PROJECT"
+msgstr "Desocultar Proyecto"
+
+msgid "TOOLBAR_EXIT"
+msgstr "Salir"
