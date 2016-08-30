@@ -16,8 +16,10 @@
 # ##############################################################
 '''
 
-import wx
 from wx import GetTranslation as L
+import wx
+
+from imgs.prin import shortcut
 
 
 class TMenuBar(wx.MenuBar):
@@ -53,6 +55,7 @@ class TMenuBar(wx.MenuBar):
         help_menu = wx.Menu()
         self.about = wx.MenuItem(help_menu, wx.ID_ANY, ' ')
         help_menu.AppendItem(self.about)
+        help_menu.Bind(wx.EVT_MENU, self.OnAboutBox, self.about)
 
         # ---- menus ------------------------
         self.Append(file_menu, ' ')
@@ -80,3 +83,48 @@ class TMenuBar(wx.MenuBar):
 
     def OnEsPySelect(self, e):
         self.parent.change_language('es')
+
+    def OnAboutBox(self, e):
+        '''
+        Método que inicializa la clase que representa al panel "Acerca de".
+        :param e: evento de selección de Menú.
+        '''
+        AboutDialog()
+
+
+class AboutDialog(wx.AboutDialogInfo):
+    '''
+    Clase que representa a la ventana que despliega información acerca de
+    detalles del programa.
+    '''
+    def __init__(self):
+        '''
+        Constructor
+        '''
+        super(AboutDialog, self).__init__()
+
+        description = """ TAVA es una herramienta que provee análisis visual
+        para resultados de Probelmas de Optimización MultiObjetivos (MOPs)
+        mediante la utilización de gráficos y agrupadores."""
+
+        licence = """        TAVA es free software; usted puede redistribuirlo
+        y/o modificarlo bajo los términos de GNU General Public License según
+        lo publicado por la Free Software Foundation; ya sea la versión 2 de la
+        Licencia, o (a su elección) cualquier versión posterior.
+        """
+
+        self.SetIcon(shortcut.GetIcon())
+        self.SetName('TAVA')
+        self.SetVersion('0.001')
+        self.SetDescription(description)
+        self.SetCopyright('(C) 2015 - 2016 fp-una')
+        self.SetWebSite('http://www.pol.una.py')
+        self.SetLicence(licence)
+        self.AddDeveloper('Abrahan Fretes')
+        self.AddDeveloper('Arsenio Ferreira')
+        self.AddDocWriter('Arsenio Ferreira')
+        self.AddDocWriter('Abrahan Fretes')
+        self.AddTranslator('Arsenio Ferreira')
+        self.AddTranslator('Abrahan Fretes')
+
+        wx.AboutBox(self)
