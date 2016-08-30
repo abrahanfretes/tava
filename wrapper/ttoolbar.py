@@ -19,6 +19,7 @@
 import wx
 from wx.lib.agw import aui
 from imgs.itollbar import inew, iopen, iclose, idelete, iunhide, ihide
+from wx import GetTranslation as L
 
 
 class TToolBar(aui.AuiToolBar):
@@ -41,13 +42,23 @@ class TToolBar(aui.AuiToolBar):
         self.AddSimpleTool(self.ID_HIDE_PRO, '', iunhide.GetBitmap())
         self.AddSimpleTool(self.ID_UNHIDE_PRO, '', ihide.GetBitmap())
 
+        # self.Bind(wx.EVT_TOOL, parent.new_project, id=self.ID_NEW_PRO)
+
+        # Establecemos los labels
+        self.SetLabelsLanguges()
+
     def SetIdReferences(self):
         self.ID_NEW_PRO = wx.NewId()
         self.ID_OPEN_PRO = wx.NewId()
         self.ID_CLOSE_PRO = wx.NewId()
         self.ID_DEL_PRO = wx.NewId()
-        self.ID_BLOG_PRO = wx.NewId()
-        self.ID_EXIT_PRO = wx.NewId()
         self.ID_HIDE_PRO = wx.NewId()
         self.ID_UNHIDE_PRO = wx.NewId()
-        self.ID_EXIT_PRO = wx.NewId()
+
+    def SetLabelsLanguges(self):
+        self.SetToolShortHelp(self.ID_NEW_PRO, L('NEW_PROJECT'))
+        self.SetToolShortHelp(self.ID_OPEN_PRO, L('OPEN_PROJECT'))
+        self.SetToolShortHelp(self.ID_CLOSE_PRO, L('CLOSE_PROJECT'))
+        self.SetToolShortHelp(self.ID_DEL_PRO, L('DELETE_PROJECT'))
+        self.SetToolShortHelp(self.ID_HIDE_PRO, L('HIDE_PROJECT'))
+        self.SetToolShortHelp(self.ID_UNHIDE_PRO, L('UNHIDE_PROJECT'))

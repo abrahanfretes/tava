@@ -69,7 +69,8 @@ class MainFrame(wx.Frame):
     def build_panels(self):
 
         # Agrega los Toolbar
-        self._mgr.AddPane(TToolBar(self), aui.AuiPaneInfo().Name("tb1").
+        self.ttoolbar = TToolBar(self)
+        self._mgr.AddPane(self.ttoolbar, aui.AuiPaneInfo().Name("tb1").
                           Caption("Big Toolbar").ToolbarPane().Top())
 
         # tree panel
@@ -104,6 +105,7 @@ class MainFrame(wx.Frame):
         self._mgr.GetPaneByName("tree_pane").Caption(L('PROJECT_EXPLORER'))
         self._mgr.RefreshCaptions()
         self.menu_bar.SetLabelsLanguges()
+        self.ttoolbar.SetLabelsLanguges()
 
 
 class SplashFrame(wx.SplashScreen):

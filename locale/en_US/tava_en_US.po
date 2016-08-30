@@ -70,23 +70,23 @@ msgid "MENU_BAR_ABOUT"
 msgstr "About TAVA"
 
 # ------------------------------- TavaToolBar ---------------------------------
-msgid "TOOLBAR_NEW_PROJECT"
+msgid "NEW_PROJECT"
 msgstr "New Project"
 
-msgid "TOOLBAR_OPEN_PROJECT"
+msgid "OPEN_PROJECT"
 msgstr "Open Project"
 
-msgid "TOOLBAR_CLOSE_PROJECT"
+msgid "CLOSE_PROJECT"
 msgstr "Close Project"
 
-msgid "TOOLBAR_DELETE_PROJECT"
+msgid "DELETE_PROJECT"
 msgstr "Delete Project"
 
-msgid "TOOLBAR_HIDE_PROJECT"
+msgid "HIDE_PROJECT"
 msgstr "Hide Project"
 
-msgid "TOOLBAR_UNHIDE_PROJECT"
+msgid "UNHIDE_PROJECT"
 msgstr "Unhide Project"
 
-msgid "TOOLBAR_EXIT"
+msgid "EXIT"
 msgstr "Salir"
