@@ -20,6 +20,7 @@ import wx
 import os
 from imgs.iproject import execute_bit, help32x32_bit, error_bit
 from wx import GetTranslation as L
+from resources.properties_helper import PropertiesHelper
 
 
 wildcard = "Files results |*"
@@ -33,6 +34,8 @@ class NewProject(wx.Dialog):
         self.error_name = True
         self.add_result = add_result
         self.parent = parent
+
+        self.properties = PropertiesHelper()
 
         self.existing_names = []
         self.hidden_names = []
@@ -120,7 +123,9 @@ class NewProject(wx.Dialog):
         self.rb = wx.RadioBox(panel, -1, L('FILE_RADIO_BOX_TITLE'),
                               wx.DefaultPosition, (580, 50), FILES_FORMATS,
                               len(FILES_FORMATS), wx.RA_SPECIFY_COLS)
-        # self.rb.Bind(wx.EVT_RADIOBOX, self.OnSelectStyle)
+
+        self.rb.SetSelection(self.properties.get_file_format())
+        self.rb.Bind(wx.EVT_RADIOBOX, self.on_change_formate)
 
         s_sizer.Add(self.rb, 1, wx.EXPAND)
         boxsizer.Add(s_sizer, flag=wx.EXPAND | wx.TOP | wx.BOTTOM, border=10)
@@ -254,10 +259,15 @@ class NewProject(wx.Dialog):
             self.name.SetBackgroundColour('#FFFFFF')
             self.create.Enable()
 
+    def on_change_formate(self, event):
+        self.properties.set_file_format(self.rb.GetSelection())
+
     # --Funciones para agregar archivos -------------------------------------
     def OnButtonBrowse(self, event):
+
+        last_path = self.properties.get_search_result()
         dlg = wx.FileDialog(self, message=L('ADD_FILE_DIALOG_TITLE'),
-                            defaultDir=os.path.expanduser("~") + '/tesis',
+                            defaultDir=last_path,
                             wildcard=wildcard,
                             style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR)
 
@@ -273,5 +283,7 @@ class NewProject(wx.Dialog):
 
             for address in _ps:
                 path, name = os.path.split(address)
+                last_path = path
                 self.dvlc.AppendItem([name, path])
         dlg.Destroy()
+        self.properties.set_search_result(last_path)
