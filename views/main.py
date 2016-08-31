@@ -20,6 +20,7 @@ from wx import GetTranslation as L
 import wx
 from wx.lib.agw import aui
 from wx.lib.pubsub import Publisher as pub
+from wx.lib.agw import pyprogress as PP
 
 from bd import entity
 from imgs.itree import explorer
@@ -121,8 +122,23 @@ class MainFrame(wx.Frame):
 
         NewProject(self)
         if self.p_create:
-            self.ppr.add_project(self.p_name, self.p_path_files,
-                                 self.p_formate)
+            project = self.ppr.add_project(self.p_name,
+                                           self.p_path_files,
+                                           self.p_formate)
+
+            if self.p_path_files != []:
+                dlg = PP.PyProgress(None, -1, "Archivos Resultados",
+                                    "Esto tardará un rato, gegege :)",
+                                    agwStyle=0.2)
+                self.ppr.add_results_by_project(project,
+                                                self.p_path_files,
+                                                self.p_formate, dlg)
+
+                dlg.Destroy()
+                wx.SafeYield()
+                wx.GetApp().GetTopWindow().Raise()
+
+            pub().sendMessage(T.ADD_PROJECT_IN_TREE, project)
 
 
 class SplashFrame(wx.SplashScreen):

@@ -142,8 +142,8 @@ class NewProject(wx.Dialog):
 
         cancel = wx.Button(panel,
                            label=L('NEW_PROJECT_CANCEL'), size=(125, 32))
-        sizer.Add(cancel, pos=(5, 3), flag=wx.ALIGN_BOTTOM
-                  | wx.RIGHT, border=25)
+        sizer.Add(cancel, pos=(5, 3), flag=wx.ALIGN_BOTTOM | wx.RIGHT,
+                  border=25)
         cancel.Bind(wx.EVT_BUTTON, self.on_cancel)
 
         self.create = wx.Button(panel, label=L('NEW_PROJECT_OK'),
@@ -181,7 +181,10 @@ class NewProject(wx.Dialog):
             self.parent.p_formate = self.rb.GetSelection()
         else:
             if len(self.path_files) > 0:
-                self.parent.p_path_files = self.path_files
+                for p in self.path_files:
+                    _, name = os.path.split(p)
+                    self.parent.p_path_files.append([p, name])
+                # self.parent.p_path_files = self.path_files
                 self.parent.p_formate = self.rb.GetSelection()
             else:
                 self.parent.p_create = False

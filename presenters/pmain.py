@@ -45,16 +45,11 @@ class MainFrameP(object):
         self.dir_parser = tava_dir_parsed(tava_dir_temp())
         self.iview = iview
 
-    def add_project(self, name, path_files, t_format):
-
+    def add_project(self, name):
         project = ProjectM().add(Project(name))
-        self.add_results_by_project(project, path_files, t_format)
-
-        pub().sendMessage(T.ADD_PROJECT_IN_TREE, project)
-
         return project
 
-    def add_results_by_project(self, project, path_files, t_format):
+    def add_results_by_project(self, project, path_files, t_format, dlg=None):
 
         results = []
         parse_correct = []
@@ -65,29 +60,50 @@ class MainFrameP(object):
             files_von_parsed = []
 
             # parsear archivos
+            _all = len(path_files)
 
-            for p in path_files:
+            for i, p in enumerate(path_files):
+                m_initial = 'Formateando archivo:' + str(i+1)+'/'+str(_all)
+                m_initial = m_initial + '\narchivo:' + p[1] + '\n'
+                keepGoing = dlg.UpdatePulse(m_initial)
                 try:
-                    vtot = VonToTavaParser(p, self.dir_parser)
+                    keepGoing = dlg.UpdatePulse(m_initial + 'iniciando')
+                    vtot = VonToTavaParser(p[0], self.dir_parser)
+                    keepGoing = dlg.UpdatePulse(m_initial + 'formateando...')
                     file_parsed = vtot.make_preparsing()
+                    keepGoing = dlg.UpdatePulse(m_initial + 'terminado')
+
                 except PreParserError as preherror:
+                    keepGoing = dlg.UpdatePulse("Error de formato" + '\narchivo:' + p[1])
                     parse_error.append(preherror)
                 else:
                     files_von_parsed.append(file_parsed)
 
+            keepGoing = dlg.UpdatePulse('Todos los arcivos Parseados')
             # crear resultdos a partir de archivos preparseados
-            for tava_file in files_von_parsed:
+            for i, tava_file in enumerate(files_von_parsed):
                 try:
+                    m_initial = 'Parseando archivo:' + str(i+1)+'/'+str(_all)
+                    keepGoing = dlg.UpdatePulse(m_initial + '\niniciando')
                     tfr = TavaFileToResult(tava_file)
+                    keepGoing = dlg.UpdatePulse(m_initial + '\nformateando...')
                     tfr.make_parsing()
+                    keepGoing = dlg.UpdatePulse(m_initial + '\nterminado')
                 except ParserError as parseerror:
+                    keepGoing = dlg.UpdatePulse("Error de parseo" + '\narchivo:'+tava_file)
                     parse_error.append(preherror)
                 else:
                     try:
                         # agrega a la base de datos
+                        m_initial = 'Agregando a Base de Datos:' + str(i+1)+'/'+str(_all)
+                        keepGoing = dlg.UpdatePulse(m_initial + '\niniciando')
                         tfr.result.project_id = project.id
+                        keepGoing = dlg.UpdatePulse(m_initial + '\nagregando...')
                         result = ResultModel().add(tfr.result)
+                        keepGoing = dlg.UpdatePulse(m_initial + '\nterminado')
                     except Exception as e:
+                        keepGoing = dlg.UpdatePulse("Error al agregar en Base de Datos"+
+                                                    '\narchivo:'+tava_file)
                         p_e = ParserError(tava_file,
                                           "Error Exception: {0}".format(e),
                                           None)
