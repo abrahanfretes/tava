@@ -17,11 +17,13 @@
 '''
 
 
+from wx import GetTranslation as L
 import wx
 from wx.lib.agw import customtreectrl as CT, aui
 
 from imgs.itree import iopen, iopened, iclose, \
     iview_package_open, iview_package_close, iview_pack
+from presenters.ptree import TTreeP
 from views.wrapper.view import TViewWelCome, TView
 
 
@@ -70,6 +72,8 @@ class TTree(CT.CustomTreeCtrl):
 
         self.v_content()
 
+        self.ppr = TTreeP(self)
+
     def v_setting(self):
         # self.SetBackgroundColour("red")
         self.SetSize(wx.Size(220, -1))
@@ -90,35 +94,77 @@ class TTree(CT.CustomTreeCtrl):
         self.AssignImageList(img_list)
 
         self.root = self.AddRoot("TAVA TREE PROJECT", 0)
-        self.add_projects()
 
-        pass
+    # --- node open project
+    def add_open_project(self, project):
+        project_item = self.AppendItem(self.root, project.name)
+        return self.update_open_project(project_item, project)
 
-    def add_projects(self):
-        for _ in range(1):
-            project_item = self.AppendItem(self.root, 'Proyecto 1')
-            self.SetItemImage(project_item, 0, wx.TreeItemIcon_Normal)
-            self.SetItemImage(project_item, 1, wx.TreeItemIcon_Expanded)
-            self.SetItemTextColour(project_item, '#000000')
-            self._expanded(project_item, True)
+    def update_open_project(self, project_item, project):
+        self.SetItemPyData(project_item, [project, project.proj_open])
+        self.SetItemImage(project_item, 0, wx.TreeItemIcon_Normal)
+        self.SetItemImage(project_item, 1, wx.TreeItemIcon_Expanded)
+        self.SetItemTextColour(project_item, '#000000')
+        self._expanded(project_item, project.proj_open)
+        return project_item
 
-            packege_file = self.AppendItem(project_item, 'Archivos')
-            self.SetItemImage(packege_file, 3, wx.TreeItemIcon_Normal)
-            self.SetItemImage(packege_file, 4, wx.TreeItemIcon_Expanded)
-            self._expanded(packege_file, True)
+    # --- node closed project
+    def add_closed_project(self, project):
+        project_item = self.AppendItem(self.root, project.name)
+        return self.update_close_project(project_item, project)
 
-            self.AppendItem(packege_file, 'name File o')
-            self.AppendItem(packege_file, 'name File 1')
+    def update_close_project(self, project_item, project):
+        self.SetItemPyData(project_item, [project, False])
+        self.SetItemImage(project_item, 2, wx.TreeItemIcon_Normal)
+        self.SetItemImage(project_item, 2, wx.TreeItemIcon_Expanded)
+        self.SetItemTextColour(project_item, '#AABBCC')
+        return project_item
 
-            packege_view = self.AppendItem(project_item, 'Vistas')
-            self.SetItemImage(packege_view, 5, wx.TreeItemIcon_Normal)
-            self._expanded(packege_view, True)
+    # --- node files package
+    def add_package_files(self, item_p, pack_file):
+        item_file_package = self.AppendItem(item_p, self.package_files_name())
+        self.SetItemPyData(item_file_package, [pack_file, pack_file.state])
+        self.SetItemImage(item_file_package, 3, wx.TreeItemIcon_Normal)
+        self.SetItemImage(item_file_package, 4, wx.TreeItemIcon_Expanded)
+        self._expanded(item_file_package, pack_file.state)
 
-            self.AppendItem(packege_view, 'vista 1')
-            self.AppendItem(packege_view, 'vista 2')
+        self.AppendItem(item_file_package, 'name File o')
+        self.AppendItem(item_file_package, 'name File 1')
+
+        return item_file_package
+
+    # --- node views package
+    def add_package_views(self, item_p, pack_view):
+        item_views_package = self.AppendItem(item_p, self.package_views_name())
+        self.SetItemPyData(item_views_package, [pack_view, pack_view.state])
+        self.SetItemImage(item_views_package, 5, wx.TreeItemIcon_Normal)
+        self._expanded(item_views_package, pack_view.state)
+
+        self.AppendItem(item_views_package, 'vista 1')
+        self.AppendItem(item_views_package, 'vista 2')
+
+        return item_views_package
+
+    # --- node results
+    def add_results(self, item_pack, result):
+        item_result = self.AppendItem(item_pack, result.name)
+        self.SetItemPyData(item_result, [result, True])
+        return item_result
+
+    # --- node views
+    def add_views(self, item_pack, view):
+        item_view = self.AppendItem(item_pack, view.name)
+        self.SetItemPyData(item_view, [view, True])
+        return item_view
 
     def _expanded(self, item, expand=True):
         if expand:
             item.Expand()
         else:
             item.Collapse()
+
+    def package_files_name(self):
+        return L('PACKAGE_FILES_NAME')
+
+    def package_views_name(self):
+        return L('PACKAGE_VIEWS_NAME')

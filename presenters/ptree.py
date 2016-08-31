@@ -1,0 +1,74 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+'''
+# ##############################################################
+#                                                            ###
+# Universidad Nacional de Asunción - Facultad Politécnica    ###
+# Ingenieria en Informática - Proyecto Final de Grado        ###
+#                                                            ###
+# Autores:                                                   ###
+#           - Arsenio Ferreira (arse.ferreira@gmail.com)      ###
+#           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
+#                                                            ###
+# Creado:  30/8/2016                                          ###
+#                                                            ###
+# ##############################################################
+'''
+from models.mproject import ProjectM as pm
+
+
+class TTreeP(object):
+    '''
+    classdocs
+    '''
+
+    def __init__(self, iview):
+        '''
+        Constructor
+        '''
+        self.iview = iview
+        self.init_tree()
+
+    def init_tree(self):
+
+        # proyectos abiertos
+        for project in pm().state_open():
+            item_p = self.iview.add_open_project(project)
+            self.add_packages_item(item_p, project)
+
+        # proyectos cerrados
+        for project in pm().state_close():
+            self.iview.add_closed_project(project)
+
+    def add_packages_item(self, item_project, project):
+
+        # Agregar los archivos resultados del proyecto
+        pfile = PackageFile(project.pack_file, project)
+        pack_file = self.iview.add_package_files(item_project, pfile)
+
+        for r in project.results:
+            self.iview.add_results(pack_file, r)
+
+        # Agregar vistas del proyecto
+        pview = PackageView(project.pack_view, project)
+        pack_view = self.iview.add_package_views(item_project, pview)
+
+        for v in project.views:
+            self.iview.add_views(pack_view, v)
+
+        return pack_file, pack_view
+
+
+class PackageFile():
+    def __init__(self, state, project):
+        self.state = state
+        self.project = project
+    pass
+
+
+class PackageView():
+    def __init__(self, state, project):
+        self.state = state
+        self.project = project
+    pass

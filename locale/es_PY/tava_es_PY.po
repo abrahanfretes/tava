@@ -147,3 +147,29 @@ msgstr "Agregar"
 msgid "ADD_FILE_RESULT_HEADER"
 msgstr "Agregue Archivos Resultados"
 
+
+# ------------------------------- wrapper->TavaTree ------------------------------------
+msgid "PACKAGE_FILES_NAME"
+msgstr "Archivos"
+
+msgid "PACKAGE_VIEWS_NAME"
+msgstr "Vistas"
+
+msgid "DELETE_PROJECT_BOX"
+msgstr "Está seguro que desea eliminar este Proyecto?"
+
+msgid "DELETE_PROJECT_TITLE"
+msgstr "Eliminar Proyecto"
+
+msgid "HIDE_PROJECT_BOX"
+msgstr "Está seguro que desea ocultar este Proyecto?"
+
+msgid "HIDE_PROJECT_TITLE"
+msgstr "Ocultar Proyecto"
+
+msgid "MODULE_GRAPHIC_NAME"
+msgstr "Módulo Gráfico"
+
+msgid "MODULE_METRIC_NAME"
+msgstr "Módulo Métrica"
+

@@ -151,3 +151,28 @@ msgstr "Add"
 msgid "ADD_FILE_RESULT_HEADER"
 msgstr "Add Files Results"
 
+# -------------------------------- wrapper->TavaTree -----------------------------------
+msgid "PACKAGE_FILES_NAME"
+msgstr "Files"
+
+msgid "PACKAGE_VIEWS_NAME"
+msgstr "Views"
+
+msgid "DELETE_PROJECT_BOX"
+msgstr "Are you sure you want to delete this project?"
+
+msgid "DELETE_PROJECT_TITLE"
+msgstr "Delete Project"
+
+msgid "HIDE_PROJECT_BOX"
+msgstr "Are you sure you want to hide this project?"
+
+msgid "HIDE_PROJECT_TITLE"
+msgstr "Hide Project"
+
+msgid "MODULE_GRAPHIC_NAME"
+msgstr "Module Graphic"
+
+msgid "MODULE_METRIC_NAME"
+msgstr "Module Metric"
+
