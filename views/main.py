@@ -121,12 +121,8 @@ class MainFrame(wx.Frame):
 
         NewProject(self)
         if self.p_create:
-            project = self.ppr.add_project(self.p_name, self.p_path_files,
-                                           self.p_formate)
-
-            print 'Se agregó un nuevo proyecto'
-            print project.id
-            print project.name
+            self.ppr.add_project(self.p_name, self.p_path_files,
+                                 self.p_formate)
 
 
 class SplashFrame(wx.SplashScreen):

@@ -127,10 +127,6 @@ class TTree(CT.CustomTreeCtrl):
         self.SetItemImage(item_file_package, 3, wx.TreeItemIcon_Normal)
         self.SetItemImage(item_file_package, 4, wx.TreeItemIcon_Expanded)
         self._expanded(item_file_package, pack_file.state)
-
-        self.AppendItem(item_file_package, 'name File o')
-        self.AppendItem(item_file_package, 'name File 1')
-
         return item_file_package
 
     # --- node views package
@@ -139,10 +135,6 @@ class TTree(CT.CustomTreeCtrl):
         self.SetItemPyData(item_views_package, [pack_view, pack_view.state])
         self.SetItemImage(item_views_package, 5, wx.TreeItemIcon_Normal)
         self._expanded(item_views_package, pack_view.state)
-
-        self.AppendItem(item_views_package, 'vista 1')
-        self.AppendItem(item_views_package, 'vista 2')
-
         return item_views_package
 
     # --- node results

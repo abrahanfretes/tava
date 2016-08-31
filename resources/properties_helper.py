@@ -53,7 +53,7 @@ class PropertiesHelper():
         self.write_values(values)
 
     def get_search_result(self):
-        _path = self.get_by_key('search_result')
+        _path = self.get_by_key('SEARCH_RESULT')
         if os.path.exists(_path):
             return _path
         return os.path.expanduser("~")
