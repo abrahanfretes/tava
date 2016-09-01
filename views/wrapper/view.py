@@ -27,6 +27,31 @@ from matplotlib.figure import Figure
 from numpy import arange, sin, pi
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class TView(wx.Panel):
 
     def __init__(self, parent):

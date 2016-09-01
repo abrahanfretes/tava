@@ -22,14 +22,14 @@ import wx
 from wx.lib.agw import customtreectrl as CT, aui
 from wx.lib.pubsub import Publisher as pub
 
-from languages import topic as T
-
+from bd.entity import Project, Result, View
 from imgs.itree import iopen, iopened, iclose, \
     iview_package_open, iview_package_close, iview_pack
+from languages import topic as T
 from presenters.ptree import TTreeP, PackageFile, PackageView
-from views.wrapper.view import TViewWelCome, TView
-from bd.entity import Project, Result, View
+from views.wrapper.view import TView
 from views.wrapper.vmenu.vtree import MenuVista, MenuPackageView
+from views.wrapper.wraview.mainview import ViewMainPanel
 
 
 KURI_AUI_NB_STYLE = aui.AUI_NB_TOP | aui.AUI_NB_TAB_SPLIT | \
@@ -83,7 +83,7 @@ class CentralPanel(wx.Panel):
             self.nb_main.SetSelection(idx)
         else:
             idx = self.nb_main.GetPageCount()
-            self.nb_main.AddPage(TView(self.nb_main), "Prueba Matplotlib")
+            self.nb_main.AddPage(ViewMainPanel(self.nb_main, []), "Prueba Matplotlib")
             self.instancias[view.id] = idx
             self.instancias_d[idx] = view.id
             self.nb_main.SetSelection(idx)
@@ -113,6 +113,7 @@ class TTree(CT.CustomTreeCtrl):
         self.c_data = None
 
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_selected)
+        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.on_dclick)
         self.Bind(wx.EVT_RIGHT_UP, self.on_contex)
 
     def v_setting(self):
@@ -201,6 +202,22 @@ class TTree(CT.CustomTreeCtrl):
         if self.c_data is not None:
             # self.ppr.do_selected(self.c_data[0], self.c_item)
             pass
+
+    # --- selected contex menu
+    def on_dclick(self, event):
+        if self.c_data is None:
+            return None
+        data = self.c_data[0]
+        if isinstance(data, Project):
+            pass
+        elif isinstance(data, PackageFile):
+            pass
+        elif isinstance(data, PackageView):
+            pass
+        elif isinstance(data, Result):
+            pass
+        elif isinstance(data, View):
+            pub.sendMessage(T.SHOW_SELECTED_VIEW, data)
 
     # --- selected contex menu
     def on_contex(self, event):
