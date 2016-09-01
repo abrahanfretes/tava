@@ -93,3 +93,21 @@ error_bit = PyEmbeddedImage(
     "TG9tzXxdWZkDfgN6nzk7O1srZAH1wBGgG+gBckBDNIZD6/2fVUdAlE3/K+gPCjjsxxSH/qsA"
     "AAAASUVORK5CYII="
     )
+
+# ---------------------------------------------------------------------
+error_bit = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAoBJ"
+    "REFUOI11ks1LVFEYxn/nnHtn7p3xjqOL8QuRZiITxQoLE4xAiECMNu2tP6B1FNQyyD+gVYsg"
+    "jGjXonQRkouswGyhfUjQxvyoURunwdE7957Twjsyab3wcF447/O8n4ID5joO3a6butzammv1"
+    "vLQEVkulwsTGxrcvQbCVz+f/ircOClzP5YaGs9mrDY2NAwLSQmtMEBQGC4V3k8vLD+/m8y9r"
+    "40XVudjWlrySzV4739FxT8XjibBSAWP2EIZYxqB9v/x6ff3WxObmgycLCyUAWRW4kMkM92cy"
+    "NzEmEe7uIgApJUoIlBCYIEBo7fYnkzeGUqlLVZ4ESNt2qtfzbjvGtBrfR4QhUmuk1ihj9gAo"
+    "rUkY09wbi93p6+pqqAqIHtc92eE4xyvFIv72NpVymaBcJtzZIfR9TBCA1nspSyXaK5Wjpzzv"
+    "DCAsQGUd53QsCOzdeBw5NoZt2wgh9oEQGCHQgBoZIba4aLX39PQBUxYgJCSpVLASCTo6O3GV"
+    "OrgcBBAAm7aNFQRYUAdIC2BN6+WwUDB6bU3sjI/jC4GM+pMRubqu2OoqVjzORiLxo3oHesl1"
+    "P618/15sKBTqf46OYgGx6DMGewOMxGzgd0tL+W2xOA9oCeiPS0uLU2H4DKV8WUOwoteugXDd"
+    "4FUmMzmzsDAPhBIwQOmFEI/n0+m5WE3JtS1UBeez2c9Pff8RUIy4++alPe/c/ba2iQ/19eur"
+    "8Xi4qZQpKWW2HUevNDX9et7XN30sl7sIpA+dcuQnm1OpE4N1dQNnbXswJWWTpZTctaz8eyHe"
+    "TG9tzXxdWZkDfgN6nzk7O1srZAH1wBGgG+gBckBDNIZD6/2fVUdAlE3/K+gPCjjsxxSH/qsA"
+    "AAAASUVORK5CYII="
+    )

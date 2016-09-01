@@ -188,3 +188,48 @@ msgstr "Módulo Gráfico"
 msgid "MODULE_METRIC_NAME"
 msgstr "Módulo Métrica"
 
+# ------------------------------- vmenu-> MenuVista ------------------------------------
+msgid "MENU_VIEW_CREATE"
+msgstr "Crear Nueva Vista"
+
+msgid "MENU_VIEW_OPEN"
+msgstr "Abrir"
+
+msgid "MENU_VIEW_DELETE"
+msgstr "Eliminar"
+
+# -------------------------------- vview --------------------------------------
+msgid "VIEW_TITLE_WIZARD"
+msgstr "Vistas Tava"
+
+msgid "VIEW_NEW_TITLE"
+msgstr "Nueva Vista en"
+
+msgid "VIEW_ALERT_NAME"
+msgstr "Introduzca un nombre para la Vista"
+
+msgid "VIEW_NAME"
+msgstr "Nombre"
+
+msgid "VIEW_ALERT_RESULTS"
+msgstr "Seleccione los Resultados para la Vista"
+
+msgid "VIEW_OPTION_RESULTS"
+msgstr "Resultados Disponibles"
+
+msgid "VIEW_RESULTS_SELECTED"
+msgstr "Resultados Seleccionados"
+
+msgid "VIEW_ITE_CHECK_ALL"
+msgstr "Marcar todos"
+
+msgid "VIEW_ITE_UNCHECK_ALL"
+msgstr "Desmarcar todos"
+
+msgid "VIEW_ITERATION_F_R"
+msgstr "Iteraciones"
+
+msgid "VIEW_ITERATION_OPTION"
+msgstr "Seleccione"
+
+

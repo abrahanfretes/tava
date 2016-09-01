@@ -16,7 +16,7 @@
 # ##############################################################
 '''
 
-from bd.entity import Project
+from bd.entity import Project, View, ViewResult, ViewIteration
 from exception.tava_exception import PreParserError, ParserError
 from models.mproject import ProjectM
 from models.mresult import ResultModel
@@ -25,6 +25,7 @@ from parser.tavaparser import TavaFileToResult
 from resources.tava_path import tava_dir_parsed, tava_dir_temp
 
 from wx import GetTranslation as L
+from models.mview import ViewM
 
 
 FORMAT_TAVA = 0
@@ -47,6 +48,27 @@ class MainFrameP(object):
     def add_project(self, name):
         project = ProjectM().add(Project(name))
         return project
+
+    def add_views(self, view_name, vews_results, project):
+
+        view = View()
+        view.name = view_name
+        view.project_id = project.id
+
+        for r in vews_results:
+            view_result = ViewResult()
+            view_result.result_id = r.result.id
+            for i in r.iterations:
+                view_iteration = ViewIteration()
+                if i.check:
+                    view_iteration.iteration_id = i.iteration.id
+                    view_result.iterations.append(view_iteration)
+            view.results.append(view_result)
+        if vews_results:
+            _e_s = [str(i) for i in range(vews_results[0].result.objectives)]
+            view.enable_sorted = ','.join(_e_s)
+
+        return ViewM().add(view)
 
     def add_results_by_project(self, project, path_files, t_format, dlg=None):
 

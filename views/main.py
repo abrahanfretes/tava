@@ -30,8 +30,9 @@ from languages.i18n import I18nLocale
 from views.wrapper.tbody import TTree, CentralPanel
 from views.wrapper.tmenubar import TMenuBar
 from views.wrapper.ttoolbar import TToolBar
-from views.wrapper.vproject.new import NewProject
+from views.wrapper.vdialog.vproject import NewProject
 from presenters.pmain import MainFrameP
+from views.wrapper.vdialog.vview import ViewsTava
 
 
 class MainFrame(wx.Frame):
@@ -40,6 +41,8 @@ class MainFrame(wx.Frame):
         wx.Frame.__init__(self, parent)
 
         self.v_setting()
+
+        pub().subscribe(self.new_view, T.CREATE_VIEW)
 
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
@@ -140,6 +143,17 @@ class MainFrame(wx.Frame):
                 wx.GetApp().GetTopWindow().Raise()
 
             pub().sendMessage(T.ADD_PROJECT_IN_TREE, project)
+
+    def new_view(self, message):
+        project = message.data
+        self.view_name = ''
+        self.vews_results = []
+
+        ViewsTava(self, project)
+        if self.vews_results:
+            view = self.ppr.add_views(self.view_name,
+                                      self.vews_results, project)
+            pub().sendMessage(T.ADD_VIEW_IN_TREE, view)
 
 
 class SplashFrame(wx.SplashScreen):

@@ -16,8 +16,8 @@
 # ##############################################################
 '''
 from wx.lib.pubsub import Publisher as pub
-
 from languages import topic as T
+
 from models.mproject import ProjectM as pm
 
 
@@ -31,6 +31,7 @@ class TTreeP(object):
         Constructor
         '''
         pub().subscribe(self.add_project_in_tree, T.ADD_PROJECT_IN_TREE)
+        pub.subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
 
         self.iview = iview
         self.init_tree()
@@ -73,6 +74,11 @@ class TTreeP(object):
         item_p = self.iview.add_open_project(project)
         self.add_packages_item(item_p, project)
         self.iview.ExpandAllChildren(item_p)
+
+    def add_view_in_tree(self, message):
+        new_view = message.data
+        self.iview.add_views(self.iview.c_item, new_view)
+        self.iview.Expand(self.iview.c_item)
 
 
 class PackageFile():

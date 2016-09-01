@@ -192,3 +192,47 @@ msgstr "Module Graphic"
 msgid "MODULE_METRIC_NAME"
 msgstr "Module Metric"
 
+# ------------------------------- vmenu-> MenuVista ------------------------------------
+msgid "MENU_VIEW_CREATE"
+msgstr "Create New View"
+
+msgid "MENU_VIEW_OPEN"
+msgstr "Open"
+
+msgid "MENU_VIEW_DELETE"
+msgstr "Delete"
+
+# -------------------------------- vview --------------------------------------
+msgid "VIEW_TITLE_WIZARD"
+msgstr "Tava View"
+
+msgid "VIEW_NEW_TITLE"
+msgstr "New View in"
+
+msgid "VIEW_ALERT_NAME"
+msgstr "Insert name for the View"
+
+msgid "VIEW_NAME"
+msgstr "Name"
+
+msgid "VIEW_ALERT_RESULTS"
+msgstr "Select the results for Vista"
+
+msgid "VIEW_OPTION_RESULTS"
+msgstr "Results Available"
+
+msgid "VIEW_RESULTS_SELECTED"
+msgstr "Selected Results"
+
+msgid "VIEW_ITE_CHECK_ALL"
+msgstr "Check All"
+
+msgid "VIEW_ITE_UNCHECK_ALL"
+msgstr "Uncheck All"
+
+msgid "VIEW_ITERATION_F_R"
+msgstr "Iterations"
+
+msgid "VIEW_ITERATION_OPTION"
+msgstr "Select"
+
