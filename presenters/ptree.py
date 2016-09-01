@@ -31,7 +31,7 @@ class TTreeP(object):
         Constructor
         '''
         pub().subscribe(self.add_project_in_tree, T.ADD_PROJECT_IN_TREE)
-        pub.subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
+        pub().subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
 
         self.iview = iview
         self.init_tree()
