@@ -46,13 +46,14 @@ class VonToTavaParser():
         self.init_time = 0.0
         self.init_individuals = 0
 
-    def make_preparsing(self):
+    def make_preparsing(self, m_tit, dlg):
 
         try:
             # procesar valores de cabecera
             self.header_processing()
+            dlg.UpdatePulse(m_tit + '.')
             # procesar iteraciones y creación de nuevo archivo
-            tava_path = self.create_tava_file()
+            tava_path = self.create_tava_file(m_tit, dlg)
         except IOError as ioerror:
             self.value_error("Error IOError: {0}".format(ioerror))
         except IndexError as indexerror:
@@ -64,8 +65,9 @@ class VonToTavaParser():
 
         return tava_path
 
-    def create_tava_file(self):
+    def create_tava_file(self, m_tit, dlg):
         path_file_tava = new_tava_file(self.dir_parsed, self.f_von)
+        _mps = '.'
         with open(path_file_tava, 'w') as f_tava:
 
             # agrega la cabecera al nuevo archivo
@@ -111,6 +113,8 @@ class VonToTavaParser():
 
                     # estableces valor de tiempo de proceso
                     i_time = int(f_time)
+                    dlg.UpdatePulse(m_tit + '\n' + _mps)
+                    _mps = _mps + '.'
 
         return path_file_tava
 

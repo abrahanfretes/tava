@@ -16,9 +16,6 @@
 # ##############################################################
 '''
 
-from wx.lib.pubsub import Publisher as pub
-from languages import topic as T
-
 from bd.entity import Project
 from exception.tava_exception import PreParserError, ParserError
 from models.mproject import ProjectM
@@ -26,6 +23,8 @@ from models.mresult import ResultModel
 from parser.preparser import VonToTavaParser
 from parser.tavaparser import TavaFileToResult
 from resources.tava_path import tava_dir_parsed, tava_dir_temp
+
+from wx import GetTranslation as L
 
 
 FORMAT_TAVA = 0
@@ -63,47 +62,60 @@ class MainFrameP(object):
             _all = len(path_files)
 
             for i, p in enumerate(path_files):
-                m_initial = 'Formateando archivo:' + str(i+1)+'/'+str(_all)
-                m_initial = m_initial + '\narchivo:' + p[1] + '\n'
-                keepGoing = dlg.UpdatePulse(m_initial)
-                try:
-                    keepGoing = dlg.UpdatePulse(m_initial + 'iniciando')
-                    vtot = VonToTavaParser(p[0], self.dir_parser)
-                    keepGoing = dlg.UpdatePulse(m_initial + 'formateando...')
-                    file_parsed = vtot.make_preparsing()
-                    keepGoing = dlg.UpdatePulse(m_initial + 'terminado')
 
+                m_lit = '\t' + L('MSG_PRO_FORMATER')
+                m_num = ': ' + str(i + 1) + '/' + str(_all)
+                m_tit = m_lit + m_num
+                keepGoing = dlg.UpdatePulse(m_tit)
+
+                try:
+                    vtot = VonToTavaParser(p[0], self.dir_parser)
+                    file_parsed = vtot.make_preparsing(m_tit, dlg)
                 except PreParserError as preherror:
-                    keepGoing = dlg.UpdatePulse("Error de formato" + '\narchivo:' + p[1])
                     parse_error.append(preherror)
                 else:
                     files_von_parsed.append(file_parsed)
 
-            keepGoing = dlg.UpdatePulse('Todos los arcivos Parseados')
             # crear resultdos a partir de archivos preparseados
             for i, tava_file in enumerate(files_von_parsed):
+
+                m_lit = '\t' + L('MSG_PRO_PARSER')
+                m_num = ': ' + str(i + 1) + '/' + str(_all)
+                m_tit = m_lit + m_num
+                keepGoing = dlg.UpdatePulse(m_tit)
+
                 try:
-                    m_initial = 'Parseando archivo:' + str(i+1)+'/'+str(_all)
-                    keepGoing = dlg.UpdatePulse(m_initial + '\niniciando')
                     tfr = TavaFileToResult(tava_file)
-                    keepGoing = dlg.UpdatePulse(m_initial + '\nformateando...')
-                    tfr.make_parsing()
-                    keepGoing = dlg.UpdatePulse(m_initial + '\nterminado')
+                    tfr.make_parsing(m_tit, dlg)
                 except ParserError as parseerror:
-                    keepGoing = dlg.UpdatePulse("Error de parseo" + '\narchivo:'+tava_file)
-                    parse_error.append(preherror)
+                    parse_error.append(parseerror)
                 else:
                     try:
+                        m_lit = '\t' + L('MSG_PRO_SAVE')
+                        m_tit = m_lit + m_num
+                        keepGoing = dlg.UpdatePulse(m_tit)
+
                         # agrega a la base de datos
-                        m_initial = 'Agregando a Base de Datos:' + str(i+1)+'/'+str(_all)
-                        keepGoing = dlg.UpdatePulse(m_initial + '\niniciando')
                         tfr.result.project_id = project.id
-                        keepGoing = dlg.UpdatePulse(m_initial + '\nagregando...')
-                        result = ResultModel().add(tfr.result)
-                        keepGoing = dlg.UpdatePulse(m_initial + '\nterminado')
+                        _iterations = list(tfr.result.iterations)
+                        result = tfr.result
+                        result.iterations = []
+                        result = ResultModel().add(result)
+
+                        _ite_all = len(_iterations)
+                        for ii, ite in enumerate(_iterations):
+                            m_lit_b = '\n' + L('MSG_PRO_DATA_SAVE')
+                            m_num_b = ': ' + str(ii + 1) + '/' + str(_ite_all)
+                            m_tit_b = m_tit + m_lit_b + m_num_b
+                            keepGoing = dlg.UpdatePulse(m_tit_b)
+
+                            result.iterations.append(ite)
+                            result = ResultModel().update_init(result)
+                            if not keepGoing:
+                                dlg.UpdatePulse('Aborting')
+                                return results
+
                     except Exception as e:
-                        keepGoing = dlg.UpdatePulse("Error al agregar en Base de Datos"+
-                                                    '\narchivo:'+tava_file)
                         p_e = ParserError(tava_file,
                                           "Error Exception: {0}".format(e),
                                           None)

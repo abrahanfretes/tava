@@ -177,7 +177,10 @@ class NewProject(wx.Dialog):
     def on_create(self, event):
         if not self.add_result:
             self.parent.p_name = self.name.GetValue()
-            self.parent.p_path_files = self.path_files
+            for p in self.path_files:
+                _, name = os.path.split(p)
+                self.parent.p_path_files.append([p, name])
+            # self.parent.p_path_files = self.path_files
             self.parent.p_formate = self.rb.GetSelection()
         else:
             if len(self.path_files) > 0:

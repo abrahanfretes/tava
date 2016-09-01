@@ -50,12 +50,14 @@ class TavaFileToResult():
         self.size_header = 0
         pass
 
-    def make_parsing(self):
+    def make_parsing(self, m_tit, dlg):
 
         try:
             self.header_processing()
+            dlg.UpdatePulse(m_tit + '.')
             self.add_atributes()
-            self.add_iterations()
+            dlg.UpdatePulse(m_tit + '..')
+            self.add_iterations(m_tit, dlg)
         except IOError as ioerror:
             self.value_error("Error IOError: {0}".format(ioerror))
         except IndexError as indexerror:
@@ -65,10 +67,11 @@ class TavaFileToResult():
         except Exception as e:
             self.value_error("Error Exception: {0}".format(e))
 
-    def add_iterations(self):
+    def add_iterations(self, m_tit, dlg):
 
         with open(self.f_tava, 'r') as f_tava:
 
+            _mps = '.'
             # lectura de cabeceras no necesarias
             self.c_line = self.size_header-3
             [f_tava.readline() for _ in range(self.size_header-3)]
@@ -102,12 +105,15 @@ class TavaFileToResult():
                     _in = Individual()
                     _in.number = i_num + 1
                     _in.objectives = o
-                    _in.variables = v
-                    _in.var_dtlz = d
+                    # _in.variables = v
+                    # _in.var_dtlz = d
                     _ins.append(_in)
 
                 _it.individuals = _ins
                 _its.append(_it)
+
+                dlg.UpdatePulse(m_tit + '\n' + _mps)
+                _mps = _mps + '.'
 
             self.result.iterations = _its
 

@@ -16,37 +16,24 @@
 # ##############################################################
 '''
 
-from datetime import date
-
-from bd.entity import Result
+from bd.entity import Iteration
 from models.dao import Dao
 
 
-class ResultModel(Dao):
+class IterationModel(Dao):
     '''
     classdocs
     '''
 
     def __init__(self):
-        super(ResultModel, self).__init__(Result)
+        super(IterationModel, self).__init__(Iteration)
 
-    def add(self, result):
+    def add(self, iteration):
 
-        result.creation = date.today()
-        result.update = date.today()
-        return super(ResultModel, self).add(result)
+        return super(Iteration, self).add(iteration)
 
-    def add_all(self, results):
-        _results = []
-        for r in results:
-            r.creation = date.today()
-            r.update = date.today()
-            _results.append(r)
-        return super(ResultModel, self).add_all(_results)
+    def add_all(self, iterations):
+        return super(Iteration, self).add_all(iterations)
 
-    def update(self, result):
-        result.update = date.today()
-        return super(ResultModel, self).update(result)
-
-    def update_init(self, result):
-        return super(ResultModel, self).update(result)
+    def update(self, iteration):
+        return super(Iteration, self).update(iteration)

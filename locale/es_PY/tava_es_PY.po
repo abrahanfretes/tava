@@ -147,6 +147,21 @@ msgstr "Agregar"
 msgid "ADD_FILE_RESULT_HEADER"
 msgstr "Agregue Archivos Resultados"
 
+# ------------------------------- ProgressBar - Result -------------------------------
+msgid "MSG_PRO_HEADER_TITLE"
+msgstr "Persistiendo Datos"
+
+msgid "MSG_PRO_FORMATER"
+msgstr "Formateando Archivo"
+
+msgid "MSG_PRO_PARSER"
+msgstr "Parseando Archivo"
+
+msgid "MSG_PRO_SAVE"
+msgstr "Guardando Archivo"
+
+msgid "MSG_PRO_DATA_SAVE"
+msgstr "datos persistidos"
 
 # ------------------------------- wrapper->TavaTree ------------------------------------
 msgid "PACKAGE_FILES_NAME"

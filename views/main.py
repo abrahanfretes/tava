@@ -122,14 +122,15 @@ class MainFrame(wx.Frame):
 
         NewProject(self)
         if self.p_create:
-            project = self.ppr.add_project(self.p_name,
-                                           self.p_path_files,
-                                           self.p_formate)
+            project = self.ppr.add_project(self.p_name)
 
             if self.p_path_files != []:
-                dlg = PP.PyProgress(None, -1, "Archivos Resultados",
-                                    "Esto tardará un rato, gegege :)",
-                                    agwStyle=0.2)
+                style = wx.PD_APP_MODAL
+                style |= wx.PD_CAN_ABORT
+
+                dlg = PP.PyProgress(self, -1, L('MSG_PRO_HEADER_TITLE'),
+                                    "                              :)",
+                                    agwStyle=style)
                 self.ppr.add_results_by_project(project,
                                                 self.p_path_files,
                                                 self.p_formate, dlg)
@@ -166,3 +167,5 @@ class SplashFrame(wx.SplashScreen):
 
         if self.fc.IsRunning():
             self.Raise()
+        wx.SafeYield()
+        wx.GetApp().GetTopWindow().Raise()
