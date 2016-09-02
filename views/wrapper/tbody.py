@@ -192,6 +192,11 @@ class TTree(CT.CustomTreeCtrl):
         self.SetItemPyData(item_view, [view, True])
         return item_view
 
+    # --- node views - result
+    def add_result_view(self, item_view, name):
+        item_view = self.AppendItem(item_view, name)
+        return item_view
+
     # ------------------------------------------------------------------
     # --------------- metodos privados ---------------------------------
     # ------------------------------------------------------------------
