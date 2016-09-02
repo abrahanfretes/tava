@@ -32,11 +32,12 @@ K_SUB_BLOCK_NAMES = 'K_SUB_BLOCK_NAMES'
 
 class ViewMainPanel(wx.Panel):
 
-    def __init__(self, parent, datas):
+    def __init__(self, parent, view):
         wx.Panel.__init__(self, parent)
         self.parent = parent
+        self.view = view
 
-        self._init(datas)
+        self._init()
 
         sizer = wx.BoxSizer()
         sizer.Add(self.splitter, 1, wx.EXPAND)
@@ -44,9 +45,9 @@ class ViewMainPanel(wx.Panel):
         self.SetSizer(sizer)
         self.Fit()
 
-    def _init(self, datas):
+    def _init(self):
 
-        ksub_blocks = self.transform_data(datas)
+        ksub_blocks = self.transform_data()
 
         self.splitter = wx.SplitterWindow(self, style=wx.SP_3D)
 
@@ -71,25 +72,26 @@ class ViewMainPanel(wx.Panel):
         self.splitter.SetMinimumPaneSize(165)
         self.splitter.SetSashGravity(0.6)
 
-    def transform_data(self, datas):
+    def transform_data(self):
         ksub_blocks = []
 
-        # for i in range(len(datas[K_BLOCK_NAMES])):
-
-        for i in range(len(datas)):
-
-            block_data = datas[K_BLOCK_DATAS][i]
-            block_name = datas[K_BLOCK_NAMES][i]
-            column_level = datas[K_COLUMN_NAMES][i]
-            sub_block_name = datas[K_SUB_BLOCK_NAMES][i]
+        #  obtener arcivos de la vista
+        for vres in self.view.results:
+            res = vres.result
 
             sub_blocks = []
-            for ii in range(len(block_data)):
-                _name = sub_block_name[ii]
-                value = block_data[ii]
-                df = DataFrame(value, columns=column_level)
-                sub_blocks.append(KSubBlock(_name, df))
+            for vite in vres.iterations:
+                ite = vite.iteration
+                _block = []
+                for indi in ite.individuals:
+                    objective = [float(i) for i in indi.objectives.split(',')]
+                    objective.append(str(ite.number))
+                    _block.append(objective)
+                column_level = [name for name in res.name_objectives.split(',')]
+                column_level.append('Name')
+                df = DataFrame(_block, columns=column_level)
+                sub_blocks.append(KSubBlock(str(ite.number), df))
 
-            ksub_blocks.append(KBlock(block_name, column_level, sub_blocks))
+            ksub_blocks.append(KBlock(res.name, column_level, sub_blocks))
 
         return ksub_blocks

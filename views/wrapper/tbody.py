@@ -83,7 +83,8 @@ class CentralPanel(wx.Panel):
             self.nb_main.SetSelection(idx)
         else:
             idx = self.nb_main.GetPageCount()
-            self.nb_main.AddPage(ViewMainPanel(self.nb_main, []), "Prueba Matplotlib")
+            self.nb_main.AddPage(ViewMainPanel(self.nb_main, view),
+                                 "Prueba Matplotlib")
             self.instancias[view.id] = idx
             self.instancias_d[idx] = view.id
             self.nb_main.SetSelection(idx)
