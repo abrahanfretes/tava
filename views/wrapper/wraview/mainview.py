@@ -19,7 +19,7 @@
 from pandas.core.frame import DataFrame
 import wx
 
-from views.wrapper.wraview.vcontrol import ControlPanel, KSubBlock, KBlock
+from views.wrapper.wraview.vcontrol import ControlPanel, KBlock
 from views.wrapper.wraview.vdata import DataPanel
 from views.wrapper.wraview.vfigure import FigurePanel
 
@@ -73,13 +73,13 @@ class ViewMainPanel(wx.Panel):
         self.splitter.SetSashGravity(0.6)
 
     def transform_data(self):
-        ksub_blocks = []
+        kblocks = {}
+        ri_key = 0
 
         #  obtener arcivos de la vista
-        for vres in self.view.results:
+        for ir, vres in enumerate(self.view.results):
             res = vres.result
 
-            sub_blocks = []
             for vite in vres.iterations:
                 ite = vite.iteration
                 _block = []
@@ -87,11 +87,12 @@ class ViewMainPanel(wx.Panel):
                     objective = [float(i) for i in indi.objectives.split(',')]
                     objective.append(str(ite.number))
                     _block.append(objective)
-                column_level = [name for name in res.name_objectives.split(',')]
+                column_level = [nm for nm in res.name_objectives.split(',')]
                 column_level.append('Name')
                 df = DataFrame(_block, columns=column_level)
-                sub_blocks.append(KSubBlock(str(ite.number), df))
+                # sub_blocks.append(KBlock(str(ite.number), df))
+                kname = str(ir + 1) + 'r - ' + str(ite.number)
+                kblocks[ri_key] = (kname, KBlock(str(ite.number), df))
+                ri_key += 1
 
-            ksub_blocks.append(KBlock(res.name, column_level, sub_blocks))
-
-        return ksub_blocks
+        return kblocks

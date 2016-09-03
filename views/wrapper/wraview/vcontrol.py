@@ -17,8 +17,10 @@
 '''
 
 from pandas.core.frame import DataFrame
+import sys
 import wx
 from wx.lib.agw import customtreectrl as CT
+from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
 from imgs.iview import refresh_plot, run_plot
 import numpy as np
@@ -85,8 +87,10 @@ class ControlPanel(wx.Panel):
 
         self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
         self.nb_dates.SetArtProvider(aui.VC71TabArt())
+
         self.data_seccion = DataSeccion(
-            self.nb_dates, ksub_blocks, self.mainpanel)
+            self.nb_dates, ksub_blocks)
+
         self.nb_dates.AddPage(self.data_seccion, "Datas")
         self.clusters_seccion = ClusterSeccion(self.nb_dates)
         self.nb_dates.AddPage(self.clusters_seccion, "Clusters")
@@ -169,7 +173,7 @@ class ControlPanel(wx.Panel):
     def on_run(self, event):
 
         # se obtine la lista de bloques marcados
-        blocks = self.data_seccion.g_selecteds(self.normalized)
+        blocks = self.data_seccion.get_checkeds(self.normalized)
         if blocks == []:
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
             return
@@ -192,25 +196,16 @@ class ControlPanel(wx.Panel):
 
         blocks_2 = []
         if self.k_plot == K_PLOT_ALL_IN_ONE:
-            for block in blocks_1:
-                for df in block:
-                    blocks_2.append(df)
-            blocks_2 = [pd.concat(blocks_2)]
+            blocks_2 = [pd.concat(blocks_1)]
         elif self.k_plot == K_PLOT_BLOCK:
-            for block in blocks_1:
-                blocks_2.append(pd.concat(block))
-        else:
-            for block in blocks_1:
-                for df in block:
-                    blocks_2.append(df)
+            blocks_2 = blocks_1
 
         # update figure
-
         if self.nb_figure.GetSelection() == K_MANY_PAGE:
             key_figure = self.many_dimension.g_key_figure()
             self.kfigure.kdraw(blocks_2, key_figure)
         elif self.nb_figure.GetSelection() == K_1D_PAGE:
-            self.kfigure.kdraw_one(df)
+            self.kfigure.kdraw_one(blocks_2)
 
         # update data list
         self.kdata.kadd(pd.concat(blocks_2))
@@ -232,152 +227,22 @@ class ControlPanel(wx.Panel):
 
     def delete_duplicate(self, blocks):
         _blocks = []
-        for s_blocks in blocks:
-            _sub_blocks = []
-            for df in s_blocks:
-                _sub_blocks.append(df.drop_duplicates())
-            _blocks.append(_sub_blocks)
+        for df in blocks:
+            _blocks.append(df.drop_duplicates())
         return _blocks
 
     def only_duplicate(self, blocks):
         _blocks = []
-        for s_blocks in blocks:
-            _sub_blocks = []
-            for df in s_blocks:
-                col_aux = df.duplicated().tolist()
-                if True in col_aux:
-                    c_d = 'duplicate_true'
-                    df[c_d] = col_aux
-                    _sub_blocks.append(df[df[c_d] == True].drop(c_d, axis=1))
-            if _sub_blocks != []:
-                _blocks.append(_sub_blocks)
+        for df in blocks:
+            col_aux = df.duplicated().tolist()
+            if True in col_aux:
+                c_d = 'duplicate_true'
+                df[c_d] = col_aux
+                _blocks.append(df[df[c_d]==True].drop(c_d, axis=1))
         return _blocks
 
 
 # -------------------                                  ------------------------
-class DataSeccion(CT.CustomTreeCtrl):
-
-    def __init__(self, parent, ksub_blocks, mainpanel):
-        CT.CustomTreeCtrl.__init__(self, parent, -1, wx.Point(0, 0),
-                                   wx.Size(220, 250))
-
-        self.mainpanel = mainpanel
-        self.SetAGWWindowStyleFlag(KURI_TR_STYLE)
-        self.root = self.AddRoot('ROOT-DATE')
-        self.ksub_blocks = ksub_blocks
-
-        self.init_ui()
-
-        self.Bind(wx.EVT_RIGHT_UP, self.on_contex)
-
-    def init_ui(self):
-
-        b_ord = 0
-        for kb in self.ksub_blocks:
-            kb.order = b_ord
-            rr_item = self.AppendItem(self.root, kb.name, ct_type=1)
-            self.SetItemBold(rr_item)
-            self.SetItemPyData(rr_item, kb)
-
-            sb_ord = 0
-            for skb in kb.ksub_blocks:
-                skb.order = sb_ord
-                r_item = self.AppendItem(rr_item, skb.name,
-                                         ct_type=1)
-                self.SetItemPyData(r_item, skb)
-
-                for col in skb.columns:
-                    item_col = self.AppendItem(r_item, col)
-                    self.SetItemItalic(item_col)
-                sb_ord += 1
-            b_ord += 1
-
-        for item in self.root.GetChildren():
-            self.Expand(item)
-
-    # ordenador de datos
-    def OnCompareItems(self, item1, item2):
-        return cmp(item1.GetData().order, item2.GetData().order)
-
-    def g_selecteds(self, nor):
-
-        _blocks = []
-
-        if nor:
-            for i_block in self.root.GetChildren():
-                _block = []
-                for i_sub_block in i_block.GetChildren():
-                    if i_sub_block.IsChecked():
-                        _block.append(i_sub_block.GetData().dframe_nor)
-                if _block != []:
-                    _blocks.append(_block)
-            return _blocks
-
-        for i_block in self.root.GetChildren():
-            _block = []
-            for i_sub_block in i_block.GetChildren():
-                if i_sub_block.IsChecked():
-                    _block.append(i_sub_block.GetData().dframe)
-                if _block != []:
-                    _blocks.append(_block)
-
-        return _blocks
-
-    # ####################################################################
-    # menu del contexto
-    # ####################################################################
-
-    def on_contex(self, event):
-
-        c_item = self.GetSelection()
-        if c_item is None:
-            return
-
-        c_data = c_item.GetData()
-        self.menu_block = -10
-
-        if isinstance(c_data, KSubBlock):
-            print 'instancia de subbloque'
-        elif isinstance(c_data, KBlock):
-            menu_block = KMenuBlocks(self)
-            self.PopupMenu(menu_block)
-
-            if self.menu_block == K_MENU_ITEM_DATA_BLOCK:
-                BlockSorted(self, self.g_block_labels())
-
-            elif self.menu_block == K_MENU_ITEM_DATA_SUBBLOCK:
-                SubBlockSorted(self, self.g_subblock_labels(c_item), c_item)
-
-    # ####################################################################
-    # ordenaciones de datos, bloques, subbloque e item
-    # ####################################################################
-
-    def g_block_labels(self):
-        block_labels = []
-        for i_block in self.root.GetChildren():
-            block_labels.append(i_block.GetText())
-        return block_labels
-
-    def sort_blocks(self, order_list):
-        i = 0
-        for i_block in self.root.GetChildren():
-            i_block.GetData().order = order_list[i]
-            i += 1
-        self.SortChildren(self.root)
-
-    def g_subblock_labels(self, c_item):
-        subblock_labels = []
-        for sub_block in c_item.GetChildren():
-            subblock_labels.append(sub_block.GetText())
-        return subblock_labels
-
-    def sort_subblocks(self, order_list, c_item):
-        i = 0
-        for i_subblock in c_item.GetChildren():
-            i_subblock.GetData().order = order_list[i]
-            i += 1
-        self.SortChildren(c_item)
-
 # -------------------                                  ------------------------
 
 
@@ -407,17 +272,57 @@ class ClusterSeccion(CT.CustomTreeCtrl):
 
 
 # -------------------                                  ------------------------
-class KBlock():
-
-    def __init__(self, name, columns, ksub_blocks):
-        self.name = name
-        self.columns = columns
+# -------------------                                  ------------------------
+class DataSeccion(wx.Panel):
+    def __init__(self, parent, ksub_blocks):
+        wx.Panel.__init__(self, parent, -1)
         self.ksub_blocks = ksub_blocks
-        self.order = 0
+        self.row_index = []
+
+        self.list = CheckListCtrl(self)
+        sizer = wx.BoxSizer()
+        sizer.Add(self.list, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+
+        self.list.InsertColumn(0, "Bloque")
+
+        for key, data in ksub_blocks.iteritems():
+            index = self.list.InsertStringItem(sys.maxint, data[0])
+            self.list.SetItemData(index, key)
+            self.row_index.append(index)
+
+    def get_checkeds(self, nor):
+        _subblocks_checked = []
+
+        if nor:
+            for index in self.row_index:
+                if self.list.IsChecked(index):
+                    key = self.list.GetItemData(index)
+                    kblock = self.ksub_blocks[key][1]
+                    _subblocks_checked.append(kblock.dframe_nor)
+            return _subblocks_checked
+
+        for index in self.row_index:
+            if self.list.IsChecked(index):
+                key = self.list.GetItemData(index)
+                kblock = self.ksub_blocks[key][1]
+                _subblocks_checked.append(kblock.dframe)
+        return _subblocks_checked
+
+
+class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
+    def __init__(self, parent):
+        wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
+        CheckListCtrlMixin.__init__(self)
+        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
+
+    def OnItemActivated(self, evt):
+        self.ToggleItem(evt.m_itemIndex)
 
 
 # -------------------                                  ------------------------
-class KSubBlock():
+# -------------------                                  ------------------------
+class KBlock():
 
     def __init__(self, name, dframe):
         self.name = name
