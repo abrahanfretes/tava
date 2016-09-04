@@ -31,6 +31,7 @@ from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
 from views.wrapper.wraview.vcontrolp import KMenuBlocks, BlockSorted, \
     K_MENU_ITEM_DATA_BLOCK, K_MENU_ITEM_DATA_SUBBLOCK, SubBlockSorted
 import wx.lib.agw.aui as aui
+from views.wrapper.wraview.cluster.shape import TShape
 
 
 K_MANY_PAGE = 0
@@ -61,7 +62,6 @@ K_DATE_DUPLICATE_ONLY = 2
 
 K_PLOT_ALL_IN_ONE = 0
 K_PLOT_BLOCK = 1
-K_PLOT_SUB_BLOCK = 2
 
 K_COLOR_ONE = 0
 K_COLOR_BLOCK = 1
@@ -106,17 +106,21 @@ class ControlPanel(wx.Panel):
                                    bitmap=refresh_plot.GetBitmap())
         sizer_p1.Add(_refresh, flag=wx.ALIGN_CENTER_VERTICAL)
         _refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
+        _normalized = wx.CheckBox(self, -1, "nor")
+        _normalized.SetValue(self.normalized)
+        _normalized.Bind(wx.EVT_CHECKBOX, self.on_normalized)
+        sizer_p1.Add(_normalized, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer_center.Add(sizer_p1, flag=wx.ALIGN_LEFT)
 
         sline1 = wx.StaticLine(self, -1, style=wx.LI_HORIZONTAL)
         sizer_center.Add(sline1, flag=wx.EXPAND)
 
-        sizer_p2 = wx.BoxSizer(wx.HORIZONTAL)
-        _normalized = wx.CheckBox(self, -1, "nor")
-        _normalized.SetValue(self.normalized)
-        _normalized.Bind(wx.EVT_CHECKBOX, self.on_normalized)
-        sizer_p2.Add(_normalized, flag=wx.ALIGN_CENTER_VERTICAL)
-        sizer_center.Add(sizer_p2, flag=wx.ALIGN_LEFT)
+        # sizer_p2 = wx.BoxSizer(wx.HORIZONTAL) --------------------------------
+        # _normalized = wx.CheckBox(self, -1, "nor") ---------------------------
+        # _normalized.SetValue(self.normalized) --------------------------------
+        # _normalized.Bind(wx.EVT_CHECKBOX, self.on_normalized) ----------------
+        # sizer_p2.Add(_normalized, flag=wx.ALIGN_CENTER_VERTICAL) -------------
+        # sizer_center.Add(sizer_p2, flag=wx.ALIGN_LEFT) -----------------------
 
         sline2 = wx.StaticLine(self, -1, style=wx.LI_HORIZONTAL)
         sizer_center.Add(sline2, flag=wx.EXPAND)
@@ -134,19 +138,19 @@ class ControlPanel(wx.Panel):
 
         sizer_p4 = wx.BoxSizer(wx.HORIZONTAL)
         _k_plot = wx.RadioBox(self, label='Plots',
-                              choices=['One', 'Block', 'SubBlock'])
+                              choices=['One', 'Block'])
         _k_plot.SetSelection(self.k_plot)
         _k_plot.Bind(wx.EVT_RADIOBOX, self.on_k_plot)
         sizer_p4.Add(_k_plot, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer_center.Add(sizer_p4, flag=wx.ALIGN_LEFT)
 
-        sizer_p5 = wx.BoxSizer(wx.HORIZONTAL)
-        _k_color = wx.RadioBox(self, label='Colors',
-                               choices=['One', 'Block', 'SubBlock', 'value'])
-        _k_color.SetSelection(self.k_color)
-        _k_color.Bind(wx.EVT_RADIOBOX, self.on_k_color)
-        sizer_p5.Add(_k_color, flag=wx.ALIGN_CENTER_VERTICAL)
-        sizer_center.Add(sizer_p5, flag=wx.ALIGN_LEFT)
+        # sizer_p5 = wx.BoxSizer(wx.HORIZONTAL) --------------------------------
+        # _k_color = wx.RadioBox(self, label='Colors', -------------------------
+                               # choices=['One', 'Block', 'SubBlock', 'value']) 
+        # _k_color.SetSelection(self.k_color) ----------------------------------
+        # _k_color.Bind(wx.EVT_RADIOBOX, self.on_k_color) ----------------------
+        # sizer_p5.Add(_k_color, flag=wx.ALIGN_CENTER_VERTICAL) ----------------
+        # sizer_center.Add(sizer_p5, flag=wx.ALIGN_LEFT) -----------------------
 
         self.nb_figure = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE1)
         self.nb_figure.SetArtProvider(aui.VC71TabArt())
@@ -213,6 +217,16 @@ class ControlPanel(wx.Panel):
     def on_refresh(self, event):
         print 'on click refres'
 
+        self.kmeans_value = True
+        self.shape_value = True
+
+        self.c_shape = False
+        self.c_kmenas = False
+        self.c_number = 0
+        k_shape_frame = []
+
+        GenerateCluster(self)
+
     def on_normalized(self, event):
         self.normalized = event.IsChecked()
 
@@ -244,39 +258,98 @@ class ControlPanel(wx.Panel):
 
 # -------------------                                  ------------------------
 # -------------------                                  ------------------------
-
-
-class ClusterSeccion(CT.CustomTreeCtrl):
+class ClusterSeccion(wx.Panel):
 
     def __init__(self, parent):
-        CT.CustomTreeCtrl.__init__(self, parent, -1, wx.Point(0, 0),
-                                   wx.Size(220, 250))
+        wx.Panel.__init__(self, parent, -1)
 
-        self.SetAGWWindowStyleFlag(KURI_TR_STYLE1)
-        self.root = self.AddRoot('ROOT-CLUTERS')
-        self.init_ui()
+        self.parent = parent
+        self.row_index = []
+        self.kcluters = {}
+        sizer = wx.BoxSizer(wx.VERTICAL)
 
-    def init_ui(self):
+        self.list = CheckListCtrl(self)
+        self.list.InsertColumn(0, "Nombre")
+        sizer.Add(self.list, 1, wx.EXPAND)
 
-        # self.init_tree()
-        # ordenamos el arbol
-        self.SortChildren(self.root)
-        self.ExpandAllChildren(self.root)
+        sizer_t = wx.BoxSizer(wx.HORIZONTAL)
+        b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
+                                   bitmap=refresh_plot.GetBitmap())
+        sizer_t.Add(b_create, flag=wx.ALIGN_CENTER_VERTICAL)
 
-        # por resultado
-        for r in range(2):
-            r_item = self.AppendItem(self.root, str(r), ct_type=1)
-            self.SetItemPyData(r_item, 'Algo')
+        self.sc_clusters = wx.SpinCtrl(self, -1, "", (30, 50))
+        self.sc_clusters.SetRange(-1, 100)
+        self.sc_clusters.SetValue(-1)
+        sizer_t.Add(self.sc_clusters, flag=wx.ALIGN_CENTER_VERTICAL)
 
-        self.ExpandAllChildren(self.root)
+        sizer.Add(sizer_t, 0)
+        self.SetSizer(sizer)
+
+        b_create.Bind(wx.EVT_BUTTON, self.on_create)
+        # refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
+
+    def get_checkeds(self, nor):
+        blocks_checked = []
+
+        if nor:
+            for index in self.row_index:
+                if self.list.IsChecked(index):
+                    key = self.list.GetItemData(index)
+                    kblock = self.kblocks[key][1]
+                    blocks_checked.append(kblock.dframe_nor)
+            return blocks_checked
+
+        for index in self.row_index:
+            if self.list.IsChecked(index):
+                key = self.list.GetItemData(index)
+                kblock = self.kblocks[key][1]
+                blocks_checked.append(kblock.dframe)
+        return blocks_checked
+
+    def on_create(self, event):
+
+        # limpiar filas
+        self.list.DeleteAllItems()
+
+        # optengo los datos checkeados de DataSeccion
+        gp = self.parent.GetParent()
+        kblocks = gp.data_seccion.get_checkeds_for_cluster()
+        self.row_index = []
+
+        # si son seleccionados mas de una iteracion
+        # y mezclar esta activo, se concatenan los datos
+        if True and len(kblocks) > 1:
+            kblocks_merge = []
+            for _key, data in kblocks.iteritems():
+                kblocks_merge.append(data[1].dframe)
+                df = pd.concat(kblocks_merge)
+            kblocks[0] = ('', KBlock('0', df))
+
+        # generamos clusters
+        vclus = 1
+        for _key, data in kblocks.iteritems():
+            df = data[1].dframe
+            tshape = TShape(df)
+
+            for shape, freq, df in tshape.get_for_view():
+                # name = data[0] + ',' + str(vclus) + str(freq) + ',' + shape
+                name = data[0] + '- c' + str(vclus)
+                index = self.list.InsertStringItem(sys.maxint, name)
+                self.list.SetItemData(index, index)
+                self.row_index.append(index)
+                self.kcluters[index] = (shape, freq, df)
+                self.row_index.append(index)
+                vclus += 1
+
+        self.list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
 
 # -------------------                                  ------------------------
 # -------------------                                  ------------------------
 class DataSeccion(wx.Panel):
-    def __init__(self, parent, ksub_blocks):
+    def __init__(self, parent, kblocks):
         wx.Panel.__init__(self, parent, -1)
-        self.ksub_blocks = ksub_blocks
+        self.kblocks = kblocks
         self.row_index = []
 
         self.list = CheckListCtrl(self)
@@ -286,10 +359,12 @@ class DataSeccion(wx.Panel):
 
         self.list.InsertColumn(0, "Bloque")
 
-        for key, data in ksub_blocks.iteritems():
+        for key, data in kblocks.iteritems():
             index = self.list.InsertStringItem(sys.maxint, data[0])
             self.list.SetItemData(index, key)
             self.row_index.append(index)
+
+        self.list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
     def get_checkeds(self, nor):
         _subblocks_checked = []
@@ -298,15 +373,25 @@ class DataSeccion(wx.Panel):
             for index in self.row_index:
                 if self.list.IsChecked(index):
                     key = self.list.GetItemData(index)
-                    kblock = self.ksub_blocks[key][1]
+                    kblock = self.kblocks[key][1]
                     _subblocks_checked.append(kblock.dframe_nor)
             return _subblocks_checked
 
         for index in self.row_index:
             if self.list.IsChecked(index):
                 key = self.list.GetItemData(index)
-                kblock = self.ksub_blocks[key][1]
+                kblock = self.kblocks[key][1]
                 _subblocks_checked.append(kblock.dframe)
+        return _subblocks_checked
+
+    def get_checkeds_for_cluster(self):
+        _subblocks_checked = {}
+
+        for index in self.row_index:
+            if self.list.IsChecked(index):
+                key = self.list.GetItemData(index)
+                # _subblocks_checked.append(kblock.dframe)
+                _subblocks_checked[key] = self.kblocks[key]
         return _subblocks_checked
 
 
@@ -344,3 +429,123 @@ class KBlock():
     def g_columns(self, df):
         cols = df.columns.tolist()
         return cols[:-1]
+
+
+# -------------------                                  ------------------------
+# -------------------                                  ------------------------
+class KCluster():
+
+    def __init__(self, name, dframe):
+        self.name = name
+        self.dframe = dframe
+        self.dframe_nor = self.normalized()
+        self.columns = self.g_columns(dframe)
+        self.order = 0
+
+    def normalized(self):
+        class_column = 'Name'
+
+        df = self.dframe.drop(class_column, axis=1)
+        nor = (lambda x: x / np.linalg.norm(x))
+        dframe_nor = DataFrame(nor(df.values), columns=df.columns.tolist())
+        dframe_nor[class_column] = self.dframe[class_column].tolist()
+
+        return dframe_nor
+
+    def g_columns(self, df):
+        cols = df.columns.tolist()
+        return cols[:-1]
+
+# -------------------                                  ------------------------
+# -------------------                                  ------------------------
+class GenerateCluster(wx.Dialog):
+
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, size=(400, 300),
+                           title='Generar Clusters')
+        self.parent = parent
+        self.init_ui()
+
+        # ------ Definiciones iniciales -----
+
+        self.Centre(wx.BOTH)
+        self.CenterOnScreen()
+        self.ShowModal()
+
+    def init_ui(self):
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.cb_shape = wx.CheckBox(self, -1, "Shape")
+        self.cb_shape.SetValue(self.parent.shape_value)
+
+        self.cb_kmeans = wx.CheckBox(self, -1, "K-means")
+        self.cb_kmeans.SetValue(self.parent.kmeans_value)
+
+        self.sc_clusters = wx.SpinCtrl(self, -1, "", (30, 50))
+        self.sc_clusters.SetRange(2, 100)
+        self.sc_clusters.SetValue(2)
+
+        self.cb_shape.Bind(wx.EVT_CHECKBOX, self.on_cluster_ckeck)
+        self.cb_kmeans.Bind(wx.EVT_CHECKBOX, self.on_cluster_ckeck)
+
+        # buttons confirmar, cancelar
+        sizer_button = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_cancel = wx.BoxSizer()
+        self.cancel = wx.Button(self, -1, 'Cancelar')
+        self.cancel.SetDefault()
+        sizer_cancel.Add(self.cancel)
+        sizer_apply = wx.BoxSizer()
+        self.apply = wx.Button(self, -1, 'Aplicar')
+        sizer_apply.Add(self.apply, 0, wx.ALIGN_RIGHT)
+
+        sizer_button.Add(sizer_cancel, 0, wx.ALL, 5)
+        sizer_button.Add(sizer_apply, 0, wx.ALL, 5)
+
+        sizer.Add(self.cb_shape, 0, wx.ALL, 5)
+        sizer.Add(self.cb_kmeans, 0, wx.ALL, 5)
+        sizer.Add(self.sc_clusters, 0, wx.ALL, 5)
+        sizer.Add(sizer_button, 0, wx.EXPAND | wx.LEFT, 100)
+
+        self.SetSizer(sizer)
+
+        self.Bind(wx.EVT_BUTTON, self.on_button_apply, self.apply)
+        self.Bind(wx.EVT_BUTTON, self.on_button_cancel, self.cancel)
+
+    def on_button_cancel(self, event):
+        self.parent.c_shape = False
+        self.parent.c_kmenas = False
+        self.Close()
+
+    def on_button_apply(self, event):
+        self.parent.c_shape = self.cb_shape.IsChecked()
+        self.parent.c_kmenas = self.cb_kmeans.IsChecked()
+        self.parent.c_number = self.sc_clusters.GetValue()
+
+        self.Close()
+
+    def on_key_escape(self, event):
+        if event.GetKeyCode() == wx.WXK_ESCAPE:
+            self.parent.c_shape = False
+            self.parent.c_kmenas = False
+            self.Close()
+
+    def on_cluster_ckeck(self, event):
+        self.apply.Disable()
+        self.cancel.SetDefault()
+
+        if self.cb_shape.IsChecked():
+            self.parent.shape_value = True
+            self.apply.Enable()
+            self.apply.SetDefault()
+
+        if self.cb_kmeans.IsChecked():
+            self.parent.kmeans_value = True
+            self.apply.Enable()
+            self.apply.SetDefault()
+
+        if not self.cb_shape.IsChecked():
+            self.parent.shape_value = False
+
+        if not self.cb_kmeans.IsChecked():
+            self.parent.kmeans_value = False

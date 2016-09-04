@@ -63,7 +63,7 @@ class TTreeP(object):
         for v in project.views:
             item = self.iview.add_views(pack_view, v)
             for i, vr in enumerate(v.results):
-                name = str(i+1) + 'r - ' + vr.result.name
+                name = 'r' + str(i+1) + ' - ' + vr.result.name
                 self.iview.add_result_view(item, name)
 
         return pack_file, pack_view

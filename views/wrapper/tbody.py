@@ -195,6 +195,7 @@ class TTree(CT.CustomTreeCtrl):
     # --- node views - result
     def add_result_view(self, item_view, name):
         item_view = self.AppendItem(item_view, name)
+        self.EnableItem(item_view, False)
         return item_view
 
     # ------------------------------------------------------------------

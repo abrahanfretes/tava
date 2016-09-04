@@ -107,7 +107,7 @@ class TShape():
 
         return df_result, df_resumes
 
-    def generate_group(self):
+    def generate_group_old(self):
 
         # agrupaciones por shape
         df_group = self.df_shapes.groupby(self.class_column)
@@ -128,6 +128,25 @@ class TShape():
             _aux.append(df_aux)
 
         self.df_shapes = pd.concat(_aux)
+
+    def get_by_group(self):
+
+        # agrupaciones por shape
+        ret_to = []
+        df_group = self.df_shapes.groupby(self.class_column)
+        for _, df in df_group:
+            ret_to.append(df)
+        return ret_to
+
+    def get_for_view(self):
+
+        to_ret = []
+        list_frequency_order = self.shapes_sort_freq(self.df_shapes)
+        df_group = self.df_shapes.groupby(self.class_column)
+        for shape, freq in list_frequency_order:
+            df = df_group.get_group(shape)
+            to_ret.append((shape, freq, df))
+        return to_ret
 
     def shape(self, n_cluster=None, u_color_res=False):
 

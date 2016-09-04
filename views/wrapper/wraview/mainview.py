@@ -91,7 +91,7 @@ class ViewMainPanel(wx.Panel):
                 column_level.append('Name')
                 df = DataFrame(_block, columns=column_level)
                 # sub_blocks.append(KBlock(str(ite.number), df))
-                kname = str(ir + 1) + 'r - ' + str(ite.number)
+                kname = 'r' + str(ir + 1) + ' - b' + str(ite.number)
                 kblocks[ri_key] = (kname, KBlock(str(ite.number), df))
                 ri_key += 1
 
