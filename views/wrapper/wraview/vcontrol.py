@@ -414,7 +414,8 @@ class DataSeccion(wx.Panel):
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
     def __init__(self, parent):
-        wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
+        wx.ListCtrl.__init__(self, parent, -1,
+                             style=wx.LC_REPORT | wx.LC_NO_HEADER)
         CheckListCtrlMixin.__init__(self)
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
 
