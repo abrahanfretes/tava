@@ -67,6 +67,7 @@ class ViewMainPanel(wx.Panel):
         # ----------------------------------------------------------
         self.control = ControlPanel(self.splitter, self.kfigure,
                                     self.kdata, ksub_blocks, self)
+        self.kfigure.control_panel = self.control
 
         self.splitter.SplitVertically(self.split1, self.control, 1000)
         self.splitter.SetMinimumPaneSize(165)

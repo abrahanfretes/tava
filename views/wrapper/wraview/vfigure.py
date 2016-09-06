@@ -46,6 +46,7 @@ class FigurePanel(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.SetBackgroundColour('#DCE5EE')
 
+        self.control_panel = None
         self.dframes = []
         self.key_figure = 1
 
@@ -159,6 +160,7 @@ class FigurePanel(wx.Panel):
 
     def on_play(self, event):
 
+        self.control_panel.run_fig()
         # obtener datos
         # leer configuracion
         # ver si dibujar cluster o data

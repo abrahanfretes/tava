@@ -97,6 +97,14 @@ class ControlPanel(wx.Panel):
 
         sizer_center = wx.BoxSizer(wx.VERTICAL)
 
+        sampleList = ['Datos', 'Clusters']
+        sizer_p0 = wx.BoxSizer(wx.HORIZONTAL)
+        self.rb_option = wx.RadioBox(self, -1, "", wx.DefaultPosition,
+                                     wx.DefaultSize, sampleList, 3,
+                                     wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+        sizer_p0.Add(self.rb_option, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer_center.Add(sizer_p0, flag=wx.ALIGN_LEFT)
+
         sizer_p1 = wx.BoxSizer(wx.HORIZONTAL)
         _run = wx.BitmapButton(self, style=wx.NO_BORDER,
                                bitmap=run_plot.GetBitmap())
@@ -175,9 +183,17 @@ class ControlPanel(wx.Panel):
         self.Fit()
 
     def on_run(self, event):
+        self.run_fig()
 
+    def run_fig(self):
+
+        blocks = []
         # se obtine la lista de bloques marcados
-        blocks = self.data_seccion.get_checkeds(self.normalized)
+        if self.rb_option.GetSelection() == 0:
+            blocks = self.data_seccion.get_checkeds(self.normalized)
+        else:
+            blocks = self.clusters_seccion.get_checkeds()
+
         if blocks == []:
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
             return
@@ -282,32 +298,31 @@ class ClusterSeccion(wx.Panel):
         self.sc_clusters.SetValue(-1)
         sizer_t.Add(self.sc_clusters, flag=wx.ALIGN_CENTER_VERTICAL)
 
+        sizer_m = wx.BoxSizer(wx.HORIZONTAL)
+        self.merge_block = wx.CheckBox(self, -1, "Merge Bloks")
+        self.merge_block.SetValue(False)
+        sizer_m.Add(self.merge_block, flag=wx.ALIGN_CENTER_VERTICAL)
+
         sizer.Add(sizer_t, 0)
+        sizer.Add(sizer_m, 0)
         self.SetSizer(sizer)
 
         b_create.Bind(wx.EVT_BUTTON, self.on_create)
         # refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
 
-    def get_checkeds(self, nor):
+    def get_checkeds(self):
         blocks_checked = []
-
-        if nor:
-            for index in self.row_index:
-                if self.list.IsChecked(index):
-                    key = self.list.GetItemData(index)
-                    kblock = self.kblocks[key][1]
-                    blocks_checked.append(kblock.dframe_nor)
-            return blocks_checked
 
         for index in self.row_index:
             if self.list.IsChecked(index):
+                print  index
                 key = self.list.GetItemData(index)
-                kblock = self.kblocks[key][1]
-                blocks_checked.append(kblock.dframe)
+                df = self.kcluters[key][2]
+                blocks_checked.append(df)
         return blocks_checked
 
     def on_create(self, event):
-
+        _tit = '- '
         # limpiar filas
         self.list.DeleteAllItems()
 
@@ -318,25 +333,27 @@ class ClusterSeccion(wx.Panel):
 
         # si son seleccionados mas de una iteracion
         # y mezclar esta activo, se concatenan los datos
-        if True and len(kblocks) > 1:
+        kblocks_two = {}
+        if self.merge_block.IsChecked() and len(kblocks) > 1:
             kblocks_merge = []
             for _key, data in kblocks.iteritems():
-                kblocks_merge.append(data[1].dframe)
-                df = pd.concat(kblocks_merge)
-            kblocks[0] = ('', KBlock('0', df))
+                kblocks_merge.append(data[1].dframe_nor)
+            df = pd.concat(kblocks_merge)
+            kblocks_two[0] = ('', KBlock('0', df))
+            _tit = ''
+        else:
+            kblocks_two = kblocks
 
         # generamos clusters
         vclus = 1
-        for _key, data in kblocks.iteritems():
-            df = data[1].dframe
+        for _key, data in kblocks_two.iteritems():
+            df = data[1].dframe_nor
             tshape = TShape(df)
 
             for shape, freq, df in tshape.get_for_view():
-                # name = data[0] + ',' + str(vclus) + str(freq) + ',' + shape
-                name = data[0] + '- c' + str(vclus)
+                name = data[0] + _tit + 'c' + str(vclus)
                 index = self.list.InsertStringItem(sys.maxint, name)
                 self.list.SetItemData(index, index)
-                self.row_index.append(index)
                 self.kcluters[index] = (shape, freq, df)
                 self.row_index.append(index)
                 vclus += 1
@@ -385,14 +402,14 @@ class DataSeccion(wx.Panel):
         return _subblocks_checked
 
     def get_checkeds_for_cluster(self):
-        _subblocks_checked = {}
+        block_checked = {}
 
         for index in self.row_index:
             if self.list.IsChecked(index):
                 key = self.list.GetItemData(index)
                 # _subblocks_checked.append(kblock.dframe)
-                _subblocks_checked[key] = self.kblocks[key]
-        return _subblocks_checked
+                block_checked[key] = self.kblocks[key]
+        return block_checked
 
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
