@@ -18,7 +18,7 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
-opts = {'packages': ['wx.lib.pubsub'],
+opts = {'packages': ['wx.lib.pubsub', 'scipy'],
         'include_files': ['./locale/', './properties/']
        }
 
