@@ -95,7 +95,8 @@ class FigurePanel(wx.Panel):
         self.fig.clear()
 
         if key_figure == K_PARALLEL_COORDENATE:
-            self.fig = k_parallel_coordinates(dframes, 'Name', self.fig, legend=True)
+            self.fig = k_parallel_coordinates(dframes, 'Name', self.fig,
+                                              legend=True)
         elif key_figure == K_ANDREWS_CURVES:
             self.fig = k_andrews_curves(dframes, 'Name', self.fig)
         elif key_figure == K_RADVIZ:
