@@ -25,6 +25,66 @@ import scipy.stats as st
 from scipy.cluster.vq import kmeans, vq
 
 
+class Shape():
+
+    population = 0
+    clusters = []
+    columns_shape = 'Shape'
+
+    def __init__(self, df_population, clus=0):
+        population = len(df_population.values)
+        clusters = self.generate_clusters(df_population, clus)
+        pass
+
+    def generate_clusters(self, df_population,  clus):
+
+        current_clusters = []
+
+        # se obtienen los shapes de los elementos
+        columns_shape = df_population.columns
+        columns_shape.append(columns_shape)
+        df_shapes = pd.DataFrame(columns=columns_shape)
+
+        for i, value in enumerate(df_population.values.tolist()):
+            name = '_'.join([str(v) for v in np.argsort(value[:-1])])
+            value.append(name)
+            df_shapes.loc[i] = value
+
+        # analisis shape
+        if clus == 0:
+            # optener diferentes shape
+            distins_shape = df_shapes[columns_shape].tolist()
+
+            # ordenarlos de mayor a menor
+            s_unique, s_counts = np.unique(distins_shape, return_counts=True)
+            s_dict = dict(zip(s_unique, s_counts))
+            shape_frequency = sorted(s_dict.items(), key=operator.itemgetter(1))
+            shape_frequency.reverse()
+
+            # agregar a lista de clusters
+            df_group = df_shapes.groupby(columns_shape)
+            for shape, freq in shape_frequency:
+                df = df_group.get_group(shape)
+                current_clusters.append(Cluster('', shape, freq, df))
+
+            return current_clusters
+
+
+
+
+class Cluster():
+    name = ''
+    shape = []
+    individuals = 0
+    df_value = None
+
+    def __init__(self, name, shape, individuals, df_value):
+        name = name
+        shape = shape
+        individuals = individuals
+        df_value = df_value
+
+
 class TShape():
 
     def __init__(self, dataframe, class_column='Name'):
@@ -171,8 +231,8 @@ class TShape():
 
                 for s_shape in s_selected:
                     rho, _pva = st.spearmanr(s_shape, r_shape)
-                    if rho < l_rho:
-                        l_rho = rho
+                    if abs(rho) < l_rho:
+                        l_rho = abs(rho)
                         a_shape = s_shape
 
                 s_name_shape = '_'.join([str(i) for i in a_shape])
