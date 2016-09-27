@@ -29,45 +29,84 @@ class Shape():
 
     population = 0
     clusters = []
+    tendencies = []
     columns_shape = 'Shape'
 
     def __init__(self, df_population, clus=0):
-        population = len(df_population.values)
-        clusters = self.generate_clusters(df_population, clus)
+        self.population = len(df_population.values)
+        self.clusters = self.generate_clusters(df_population, clus)
         pass
 
     def generate_clusters(self, df_population,  clus):
 
-        current_clusters = []
+        # normalizar los datos
 
         # se obtienen los shapes de los elementos
-        columns_shape = df_population.columns
-        columns_shape.append(columns_shape)
-        df_shapes = pd.DataFrame(columns=columns_shape)
+        new_columns = df_population.columns
+        new_columns.append(self.columns_shape)
+        df_shapes = pd.DataFrame(columns=new_columns)
 
         for i, value in enumerate(df_population.values.tolist()):
             name = '_'.join([str(v) for v in np.argsort(value[:-1])])
             value.append(name)
             df_shapes.loc[i] = value
 
+        self.tendencies = df_shapes[self.columns_shape].drop_duplicates()
+
         # analisis shape
-        if clus == 0:
-            # optener diferentes shape
-            distins_shape = df_shapes[columns_shape].tolist()
+        if clus < 1 or clus == len(self.tendencies):
+            return self.generalized_shape(df_shapes)
 
-            # ordenarlos de mayor a menor
-            s_unique, s_counts = np.unique(distins_shape, return_counts=True)
-            s_dict = dict(zip(s_unique, s_counts))
-            shape_frequency = sorted(s_dict.items(), key=operator.itemgetter(1))
-            shape_frequency.reverse()
+        if clus < len(self.tendencies):
 
-            # agregar a lista de clusters
-            df_group = df_shapes.groupby(columns_shape)
-            for shape, freq in shape_frequency:
-                df = df_group.get_group(shape)
-                current_clusters.append(Cluster('', shape, freq, df))
+            # selección aleatoria de shape
+            i_distinct = range(len(self.tendencies))
+            rm.shuffle(i_distinct)
+            s_selected = [self.tendencies[s] for s in i_distinct[:clus]]
+            r_selected = [self.tendencies[s] for s in i_distinct[clus:]]
 
-            return current_clusters
+            # unificamos los clusters mas cercanos
+            for i, r_shape in enumerate(r_selected):
+                l_rho = 2
+                a_shape = []
+
+                for s_shape in s_selected:
+                    rho, _pva = st.spearmanr(s_shape, r_shape)
+                    if abs(rho) < l_rho:
+                        l_rho = abs(rho)
+                        a_shape = s_shape
+
+                s_name_shape = '_'.join([str(i) for i in a_shape])
+                u_name_shape = '_'.join([str(i) for i in r_shape])
+                df_shapes[self.columns_shape].replace(u_name_shape,
+                                                      s_name_shape,
+                                                      inplace=True)
+            return self.generalized_shape(df_shapes)
+
+        # unificar valores --- falta implementar
+        return self.generalized_shape(df_shapes)
+
+    def generalized_shape(self, df_shapes):
+
+        current_clusters = []
+        # optener las tendencias
+        all_shapes = df_shapes[self.columns_shape].tolist()
+        # ordenarlos de mayor a menor
+        tendency, shape_counts = np.unique(all_shapes, return_counts=True)
+        s_dict = dict(zip(tendency, shape_counts))
+        tendency_frequency = sorted(s_dict.items(), key=operator.itemgetter(1))
+        tendency_frequency.reverse()
+        # tendencias ordenadas
+        self.tendencies = tendency_frequency[0]
+        # agregar a lista de clusters
+        df_group = df_shapes.groupby(self.columns_shape)
+        i_name = 1
+        for shape, freq in tendency_frequency:
+            df = df_group.get_group(shape)
+            current_clusters.append(Cluster(str(i_name), shape, freq, df))
+            i_name += 1
+
+        return current_clusters
 
 
 
