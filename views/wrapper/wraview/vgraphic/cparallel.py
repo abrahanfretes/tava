@@ -168,6 +168,18 @@ def g_colors(classes, colormap, color, one_color):
     return color_values
 
 
+def axe_con(ax, label=None):
+    ax.spines['bottom'].set_color('w')
+    ax.spines['top'].set_color('w')
+    ax.spines['right'].set_color('#DDDDDD')
+    ax.spines['left'].set_color('#DDDDDD')
+    if label is not None:
+        ax.set_xlabel(label, labelpad=-1)
+        ax.xaxis.label.set_color('#606060')
+        ax.tick_params(axis='x', colors='w')
+    return ax
+
+
 def k_parallel_coordinates(dframes, class_column='Name', fig=None,
                            subplot=False, grayscale=False, fill=False,
                            alpha=0.15, legend=True, one_d=False, u_grid=True,
@@ -177,11 +189,19 @@ def k_parallel_coordinates(dframes, class_column='Name', fig=None,
     if fig is None:
         fig = Figure()
 
-    s_row, s_col = square_plot(len(dframes))
+    s_row, s_col = square_plot(len(dframes), False)
 
     for i in range(len(dframes)):
         ax = fig.add_subplot(s_row, s_col, i + 1)
-        k_cp(dframes[i], class_column, ax=ax, axvlines=False,
-             u_legend=legend, u_grid=u_grid, _xaxis=_xaxis, _yaxis=_yaxis)
+#         k_cp(dframes[i], class_column, ax=ax, axvlines=False,
+#              u_legend=legend, u_grid=u_grid, _xaxis=_xaxis, _yaxis=_yaxis)
+
+        k_cp(dframes[i], class_column, ax=ax, u_legend=True, u_grid=False,
+             _xaxis=False, one_color=False, _loc='upper left',
+             _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
+
+        ax = axe_con(ax)
+        ax.legend(prop={'size': 9},
+                  loc='upper left').get_frame().set_edgecolor('#DDDDDD')
 
     return fig

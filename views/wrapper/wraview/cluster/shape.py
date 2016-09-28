@@ -36,8 +36,10 @@ class Shape():
     tendencies = []
     tendency_count = 0
 
-    column_shape = 'Shape'
     column_name = 'Name'
+
+    cluster_checkeds = []
+    cluster_uncheckeds = []
 
     def __init__(self, df_population, clus=0, nor=0):
         self.population = len(df_population.values.tolist())
@@ -54,15 +56,15 @@ class Shape():
 
         # ---- calculo de shape para cada elemento
         new_columns = df_population.columns.tolist()
-        new_columns.append(self.column_shape)
         df_shapes = pd.DataFrame(columns=new_columns)
         for i, value in enumerate(df_population.values.tolist()):
-            name = '_'.join([str(v) for v in np.argsort(value[:-1])])
-            value.append(name)
+            _shape = '_'.join([str(v) for v in np.argsort(value[:-1])])
+            value[-1] = _shape
             df_shapes.loc[i] = value
 
         # ---- se obtienen las tendencias del conjunto de datos
-        self.tendencies = df_shapes[self.column_shape].drop_duplicates().tolist()
+        _t = df_shapes[self.column_name].drop_duplicates().tolist()
+        self.tendencies = _t
         self.tendency_count = len(self.tendencies)
 
         # ---- misma cantidad de tendencias que clusters(análisis shapes)
@@ -81,7 +83,7 @@ class Shape():
             # caso especial
             if clus == 1:
                 reemplaze = s_selected * self.population
-                df_shapes[self.column_shape] = reemplaze
+                df_shapes[self.column_name] = reemplaze
                 return self.generalized_shape(df_shapes)
 
             # unificamos los clusters mas cercanos
@@ -96,8 +98,8 @@ class Shape():
                     if abs(rho) < l_rho:
                         l_rho = abs(rho)
                         a_shape = s_shape
-                df_shapes[self.column_shape].replace(r_shape, a_shape,
-                                                     inplace=True)
+                df_shapes[self.column_name].replace(r_shape, a_shape,
+                                                    inplace=True)
 
             return self.generalized_shape(df_shapes)
 
@@ -107,7 +109,7 @@ class Shape():
         c_shape = list(self.tendencies)
         c_repeat = np.random.randint(0, missing, missing)
         c_shape = [c_shape.append(c_shape[cs]) for cs in c_repeat]
-        df_group = df_shapes.groupby(self.column_shape)
+        df_group = df_shapes.groupby(self.column_name)
 
         for tend in self.tendencies:
             df = df_group.get_group(tend)
@@ -118,7 +120,7 @@ class Shape():
 
         current_clusters = []
         # optener las tendencias
-        all_shapes = df_shapes[self.column_shape].tolist()
+        all_shapes = df_shapes[self.column_name].tolist()
         # ordenarlos de mayor a menor
         _clusters, _clusters_counts = np.unique(all_shapes, return_counts=True)
         s_dt = dict(zip(_clusters, _clusters_counts))
@@ -126,12 +128,12 @@ class Shape():
         _clusters_frequency.reverse()
 
         # agregar a lista de clusters
-        df_group = df_shapes.groupby(self.column_shape)
+        df_group = df_shapes.groupby(self.column_name)
         i_name = 1
         for shape, freq in _clusters_frequency:
             _df = df_group.get_group(shape)
-            current_clusters.append(Cluster(str(i_name), shape, freq, _df,
-                                            self.population))
+            _c = Cluster(str(i_name), shape, freq, _df, self.population)
+            current_clusters.append(_c)
             i_name += 1
         return current_clusters
 
@@ -152,26 +154,14 @@ class Shape():
             df[cols] = _vnor
         return df
 
+    def g_checkeds(self):
+        return [self.clusters[cl] for cl in self.cluster_checkeds]
+
+    def g_uncheckeds(self):
+        return [self.clusters[cl] for cl in self.cluster_uncheckeds]
+
     # ------------------ METODOS PARA ANALISIS SHAPES -----------
     # -----------------------------------------------------------
-
-    def g_all_clusters(self):
-        _clusters = []
-        for c in self.clusters:
-            _df = c.df_value.drop(self.column_name, axis=1)
-            _clusters.append(_df)
-        return pd.concat(_clusters)
-
-    def g_all_resumes(self):
-        df_resumes = pd.DataFrame()
-        for c in self.clusters:
-            _df = c.df_value.drop(self.column_name, axis=1)
-            serie_mean = _df[_df.columns[:-1]].mean()
-            df_mean = serie_mean.to_frame()
-            df_mean = df_mean.transpose()
-            df_mean[self.column_shape] = c.shape
-            df_resumes = df_resumes.append(df_mean)
-        return df_resumes
 
     def g_percent_up(self, percent):
         _per = 0.0
@@ -187,11 +177,10 @@ class Shape():
         _per = 0.0
         df_resumes = pd.DataFrame()
         for c in self.clusters:
-            _df = c.df_value.drop(self.column_name, axis=1)
-            serie_mean = _df[_df.columns[:-1]].mean()
+            serie_mean = c.df_value[c.df_value.columns[:-1]].mean()
             df_mean = serie_mean.to_frame()
             df_mean = df_mean.transpose()
-            df_mean[self.column_shape] = c.shape
+            df_mean[self.column_name] = c.shape
             df_resumes = df_resumes.append(df_mean)
             _per = _per + c.g_percent(self.population)
             if percent <= _per:
@@ -205,10 +194,10 @@ class Shape():
         _legends = []
 
         for c in s_clusters:
-            _df = c.df_value.drop(self.column_name, axis=1)
+            _df = c.df_value.copy()
             _leg = c.g_legend(_legends)
             _legends.append(_leg)
-            _df[self.column_shape] = [_leg] * c.count
+            _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
         return pd.concat(_clusters)
 
@@ -219,10 +208,10 @@ class Shape():
         _clusters = []
         _legends = []
         for c in s_clusters:
-            _df = c.df_resume.drop(self.column_name, axis=1)
+            _df = c.df_resume.copy()
             _leg = c.g_legend(_legends, por=1, sh=0)
             _legends.append(_leg)
-            _df[self.column_shape] = [_leg]
+            _df[self.column_name] = [_leg]
             _clusters.append(_df)
         return pd.concat(_clusters)
 
@@ -234,18 +223,30 @@ class Shape():
 
         for c in s_clusters:
             # data
-            _df = c.df_value.drop(self.column_name, axis=1)
+            _df = c.df_value.copy()
             _leg = c.g_legend(_legends)
             _legends.append(_leg)
-            _df[self.column_shape] = [_leg] * c.count
+            _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
             # resume
-            _df = c.df_resume.drop(self.column_name, axis=1)
+            _df = c.df_resume.copy()
             _leg = c.g_legend(_legends, por=1, sh=0)
             _legends.append(_leg)
-            _df[self.column_shape] = [_leg]
+            _df[self.column_name] = [_leg]
             _clusters.append(_df)
         return pd.concat(_clusters)
+
+    def g_data_checkeds_for_fig(self):
+        return self.g_data_for_fig(self.g_checkeds())
+
+    def g_data_uncheckeds_for_fig(self):
+        return self.g_data_for_fig(self.g_uncheckeds())
+
+    def g_resume_checkeds_for_fig(self):
+        return self.g_resume_for_fig(self.g_checkeds())
+
+    def g_resume_uncheckeds_for_fig(self):
+        return self.g_resume_for_fig(self.g_uncheckeds())
 
 
 class Cluster():
@@ -253,7 +254,6 @@ class Cluster():
     shape = []
     individuals = 0
     df_value = None
-    column_shape = 'Shape'
     column_name = 'Name'
 
     def __init__(self, name, shape, count, df_value, all_count):
@@ -262,20 +262,23 @@ class Cluster():
         self.count = count
         self.df_value = df_value
         self.all_count = all_count
-        self.df_resume = self.g_resume(df_value, shape, name)
+        self.df_resume = self.g_resume(df_value, shape)
 
     def g_percent(self, total=None):
         if total is None:
             total = self.all_count
         return (self.count*100.0)/total
 
-    def g_resume(self, df, shape, name):
+    def g_percent_format(self, total=None):
+        _por = self.g_percent(total)
+        return str(round(_por, 3)) + '%'
 
-        serie_mean = df[df.columns[:-2]].mean()
+    def g_resume(self, df, shape):
+
+        serie_mean = df[df.columns[:-1]].mean()
         df_mean = serie_mean.to_frame()
         df_mean = df_mean.transpose()
-        df_mean[self.column_name] = name
-        df_mean[self.column_shape] = shape
+        df_mean[self.column_name] = shape
         return df_mean
 
     def g_legend(self, legends, repeat=False, sh=1, por=0, ind=0, name=0):
@@ -339,7 +342,7 @@ def grafic_r1(f_path=None, _sep=' '):
     dv = shape.g_data_and_resume_for_fig(s_clusters)
 
     ax = fig.add_subplot(2, 1, 1)
-    k_cp(dv, 'Shape', ax=ax, u_legend=True, u_grid=False,
+    k_cp(dv, 'Name', ax=ax, u_legend=True, u_grid=False,
          _xaxis=False, one_color=False, _loc='upper left',
          _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
     ax = axe_con(ax)
@@ -350,7 +353,7 @@ def grafic_r1(f_path=None, _sep=' '):
     dv = shape.g_resume_for_fig(s_clusters)
     # print len(dv.values)
     ax = fig.add_subplot(2, 1, 2)
-    k_cp(dv, 'Shape', ax=ax, u_legend=True, u_grid=False,
+    k_cp(dv, 'Name', ax=ax, u_legend=True, u_grid=False,
          _xaxis=False, one_color=False, _loc='upper left',
          _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
     ax = axe_con(ax)
@@ -361,5 +364,5 @@ def grafic_r1(f_path=None, _sep=' '):
 
 if __name__ == '__main__':
 
-    f_path = '/home/abrahan/tesis/proyectos/kuri/datas/objetivos_8.csv'
+    f_path = '/home/afretes/tesis/proyectos/kuri/datas/objetivos_8.csv'
     grafic_r1(f_path, ',')

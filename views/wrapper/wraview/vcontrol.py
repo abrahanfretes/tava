@@ -26,7 +26,7 @@ from imgs.iview import refresh_plot
 import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig
-from views.wrapper.wraview.cluster.shape import TShape
+from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolf import FigureManyD, FigureD, Figure1D
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_DUPLICATE_DATA
@@ -137,44 +137,66 @@ class ControlPanel(wx.Panel):
         # se obtine la lista de bloques marcados
         if self.rb_option.GetSelection() == 0:
             blocks = self.data_seccion.get_checkeds(self.normalized)
-        else:
-            blocks = self.clusters_seccion.get_checkeds()
 
-        if blocks == []:
-            KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
-            return
-
-        # se verifica datos duplicados
-        blocks_1 = []
-        if self.duplicate_true == K_DATE_DUPLICATE_TRUE:
-            blocks_1 = blocks
-        elif self.duplicate_true == K_DATE_DUPLICATE_FALSE:
-            blocks_1 = self.delete_duplicate(blocks)
-        else:
-            # self.duplicate_true == K_DATE_DUPLICATE_ONLY
-            blocks_1 = self.only_duplicate(blocks)
-            if blocks_1 == []:
-                KMessage(self.mainpanel, KMSG_EMPTY_DUPLICATE_DATA).kshow()
+            if blocks == []:
+                KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
                 return
 
-        # se debería verificar la cantidad de plot y de acuerdo a eso
-        # crear los dataframe
+            # se verifica datos duplicados
+            blocks_1 = []
+            if self.duplicate_true == K_DATE_DUPLICATE_TRUE:
+                blocks_1 = blocks
+            elif self.duplicate_true == K_DATE_DUPLICATE_FALSE:
+                blocks_1 = self.delete_duplicate(blocks)
+            else:
+                # self.duplicate_true == K_DATE_DUPLICATE_ONLY
+                blocks_1 = self.only_duplicate(blocks)
+                if blocks_1 == []:
+                    KMessage(self.mainpanel, KMSG_EMPTY_DUPLICATE_DATA).kshow()
+                    return
 
-        blocks_2 = []
-        if self.k_plot == K_PLOT_ALL_IN_ONE:
-            blocks_2 = [pd.concat(blocks_1)]
-        elif self.k_plot == K_PLOT_BLOCK:
-            blocks_2 = blocks_1
+            # se debería verificar la cantidad de plot y de acuerdo a eso
+            # crear los dataframe
 
-        # update figure
-        if self.nb_figure.GetSelection() == K_MANY_PAGE:
-            key_figure = self.many_dimension.g_key_figure()
-            self.kfigure.kdraw(blocks_2, key_figure)
-        elif self.nb_figure.GetSelection() == K_1D_PAGE:
-            self.kfigure.kdraw_one(blocks_2)
+            blocks_2 = []
+            if self.k_plot == K_PLOT_ALL_IN_ONE:
+                blocks_2 = [pd.concat(blocks_1)]
+            elif self.k_plot == K_PLOT_BLOCK:
+                blocks_2 = blocks_1
 
-        # update data list
-        self.kdata.kadd(pd.concat(blocks_2))
+            # update figure
+            if self.nb_figure.GetSelection() == K_MANY_PAGE:
+                key_figure = self.many_dimension.g_key_figure()
+                self.kfigure.kdraw(blocks_2, key_figure)
+            elif self.nb_figure.GetSelection() == K_1D_PAGE:
+                self.kfigure.kdraw_one(blocks_2)
+
+            # update data list
+            self.kdata.kadd(pd.concat(blocks_2))
+
+        else:
+            shape = self.clusters_seccion.g_for_view()
+
+            # porcentajes requeridos
+            s_clusters = shape.g_percent_up(3.0)
+
+            dd = shape.g_data_for_fig(s_clusters)
+            dr = shape.g_resume_for_fig(s_clusters)
+            _v = [dd, dr]
+
+            # datos seleccionados
+            # dd = shape.g_data_checkeds_for_fig()
+            # dr = shape.g_resume_checkeds_for_fig()
+
+            # update figure
+            if self.nb_figure.GetSelection() == K_MANY_PAGE:
+                key_figure = self.many_dimension.g_key_figure()
+                self.kfigure.kdraw(_v, key_figure)
+            elif self.nb_figure.GetSelection() == K_1D_PAGE:
+                self.kfigure.kdraw_one(_v)
+
+            # update data list
+            # self.kdata.kadd(pd.concat([dd, dr]))
 
     def on_refresh(self, event):
         DataConfig(self)
@@ -206,96 +228,127 @@ class ClusterSeccion(wx.Panel):
         self.SetBackgroundColour('#FFFFFF')
 
         self.parent = parent
+        self.shape = None
         self.row_index = []
         self.kcluters = {}
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.list = CheckListCtrl(self)
-        self.list.InsertColumn(0, "Nombre")
+        self.list_control = CheckListCtrl(self)
+        self.list_control.InsertColumn(0, "Nombre")
 
         sizer_t = wx.BoxSizer(wx.HORIZONTAL)
         b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
                                    bitmap=refresh_plot.GetBitmap())
         sizer_t.Add(b_create, flag=wx.ALIGN_CENTER_VERTICAL)
 
-        self.sc_clusters = wx.SpinCtrl(self, -1, "", (30, 50))
-        self.sc_clusters.SetRange(-1, 100)
-        self.sc_clusters.SetValue(-1)
-        sizer_t.Add(self.sc_clusters, flag=wx.ALIGN_CENTER_VERTICAL)
-
-        sizer_m = wx.BoxSizer(wx.HORIZONTAL)
-        self.merge_block = wx.CheckBox(self, -1, "Merge Bloks")
-        self.merge_block.SetValue(False)
-        sizer_m.Add(self.merge_block, flag=wx.ALIGN_CENTER_VERTICAL)
+        self.sc_count_clusters = wx.SpinCtrl(self, 0, "", (30, 50))
+        self.sc_count_clusters.SetRange(0, 1000)
+        self.sc_count_clusters.SetValue(0)
+        sizer_t.Add(self.sc_count_clusters, flag=wx.ALIGN_CENTER_VERTICAL)
 
         _checked_all = wx.CheckBox(self, -1, "Seleccionar Todo")
         _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
         sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
-        sizer.Add(self.list, 1, wx.EXPAND)
+        sizer.Add(self.list_control, 1, wx.EXPAND)
         sizer.Add(sizer_t, 0)
-        sizer.Add(sizer_m, 0)
+
         self.SetSizer(sizer)
 
-        b_create.Bind(wx.EVT_BUTTON, self.on_create)
+        b_create.Bind(wx.EVT_BUTTON, self.on_generate)
         # refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
 
-    def get_checkeds(self):
-        blocks_checked = []
+    def g_for_view(self):
+        position_checked = []
+        position_unchecked = []
+        for i, r_i in enumerate(self.row_index):
+            if self.list_control.IsChecked(r_i):
+                position_checked.append(i)
+            else:
+                position_unchecked.append(i)
+        self.shape.cluster_checkeds = position_checked
+        self.shape.cluster_uncheckeds = position_unchecked
+        return self.shape
 
-        for index in self.row_index:
-            if self.list.IsChecked(index):
-                key = self.list.GetItemData(index)
-                df = self.kcluters[key][2]
-                blocks_checked.append(df)
-        return blocks_checked
-
-    def on_create(self, event):
+    def on_generate(self, event):
         _tit = '- '
-        # limpiar filas
-        self.list.DeleteAllItems()
 
-        # optengo los datos checkeados de DataSeccion
+        # ----- limpiar clusters anteriores
+        self.list_control.DeleteAllItems()
+
+        # ----- bloques marcados para generar clusters
         gp = self.parent.GetParent()
-        kblocks = gp.data_seccion.get_checkeds_for_cluster()
+        blocks_checkeds = gp.data_seccion.get_checkeds_for_cluster()
         self.row_index = []
 
-        # si son seleccionados mas de una iteracion
-        # y mezclar esta activo, se concatenan los datos
-        kblocks_two = {}
-        if self.merge_block.IsChecked() and len(kblocks) > 1:
-            kblocks_merge = []
-            for _key, data in kblocks.iteritems():
-                kblocks_merge.append(data[1].dframe_nor)
-            df = pd.concat(kblocks_merge)
-            kblocks_two[0] = ('', KBlock('0', df))
-            _tit = ''
-        else:
-            kblocks_two = kblocks
+        # ----- mezclar bloques marcados para crear un solo bloques
+        blocks_checkeds_merge = []
+        for _key, data in blocks_checkeds.iteritems():
+            blocks_checkeds_merge.append(data[1].dframe)
+        df_population = pd.concat(blocks_checkeds_merge)
+        # kblocks_two[0] = ('', KBlock('0', df_merge))
+        _tit = ''
+
+        # ---- generar clusters
+        _clus = self.sc_count_clusters.GetValue()
+        self.shape = Shape(df_population, clus=_clus, nor=2)
+
+        # ---- agregar clusters a la vista
+        for i, c in enumerate(self.shape.clusters):
+            # name = data[0] + _tit + 'c' + str(vclus)
+            name = 'cluster_' + str(i+1) + ': ' + c.g_percent_format()
+            index = self.list_control.InsertStringItem(sys.maxint, name)
+            self.list_control.SetItemData(index, index)
+            self.row_index.append(index)
+
+        self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+
+#         kblocks_two = {}
+#         if len(blocks_checkeds) > 1:
+#             kblocks_merge = []
+#             for _key, data in blocks_checkeds.iteritems():
+#                 kblocks_merge.append(data[1].dframe)
+#             df = pd.concat(kblocks_merge)
+#             kblocks_two[0] = ('', KBlock('0', df))
+#             _tit = ''
+#         else:
+#             kblocks_two = kblocks
+
+
+#         kblocks_two = {}
+#         if self.merge_block.IsChecked() and len(kblocks) > 1:
+#             kblocks_merge = []
+#             for _key, data in kblocks.iteritems():
+#                 kblocks_merge.append(data[1].dframe_nor)
+#             df = pd.concat(kblocks_merge)
+#             kblocks_two[0] = ('', KBlock('0', df))
+#             _tit = ''
+#         else:
+#             kblocks_two = kblocks
 
         # generamos clusters
-        vclus = 1
-        for _key, data in kblocks_two.iteritems():
-            df = data[1].dframe_nor
-            tshape = TShape(df)
-
-            for shape, freq, df in tshape.get_for_view():
-                name = data[0] + _tit + 'c' + str(vclus)
-                index = self.list.InsertStringItem(sys.maxint, name)
-                self.list.SetItemData(index, index)
-                self.kcluters[index] = (shape, freq, df)
-                self.row_index.append(index)
-                vclus += 1
-
-        self.list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+#         vclus = 1
+#         for _key, data in kblocks_two.iteritems():
+#             df = data[1].dframe_nor
+#             tshape = TShape(df)
+#
+#             for shape, freq, df in tshape.get_for_view():
+#                 name = data[0] + _tit + 'c' + str(vclus)
+#                 index = self.list_control.InsertStringItem(sys.maxint, name)
+#                 self.list_control.SetItemData(index, index)
+#                 self.kcluters[index] = (shape, freq, df)
+#                 self.row_index.append(index)
+#                 vclus += 1
+#
+#         self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
     def on_checked_all(self, event):
         if event.IsChecked():
             for index in self.row_index:
-                self.list.CheckItem(index)
+                self.list_control.CheckItem(index)
         else:
             for index in self.row_index:
-                self.list.CheckItem(index, False)
+                self.list_control.CheckItem(index, False)
 
 
 # -------------------                                  ------------------------
@@ -307,42 +360,42 @@ class DataSeccion(wx.Panel):
         self.kblocks = kblocks
         self.row_index = []
 
-        self.list = CheckListCtrl(self)
+        self.list_control = CheckListCtrl(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         _checked_all = wx.CheckBox(self, -1, "Seleccionar Todo")
         _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
         sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
-        sizer.Add(self.list, 1, wx.EXPAND)
+        sizer.Add(self.list_control, 1, wx.EXPAND)
 
         self.SetSizer(sizer)
         self.init()
 
     def init(self):
-        self.list.InsertColumn(0, "Bloque")
+        self.list_control.InsertColumn(0, "Bloque")
 
         for key, data in self.kblocks.iteritems():
-            index = self.list.InsertStringItem(sys.maxint, data[0])
-            self.list.SetItemData(index, key)
+            index = self.list_control.InsertStringItem(sys.maxint, data[0])
+            self.list_control.SetItemData(index, key)
             self.row_index.append(index)
 
-        self.list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
     def get_checkeds(self, nor):
         _subblocks_checked = []
 
         if nor:
             for index in self.row_index:
-                if self.list.IsChecked(index):
-                    key = self.list.GetItemData(index)
+                if self.list_control.IsChecked(index):
+                    key = self.list_control.GetItemData(index)
                     kblock = self.kblocks[key][1]
                     _subblocks_checked.append(kblock.dframe_nor)
             return _subblocks_checked
 
         for index in self.row_index:
-            if self.list.IsChecked(index):
-                key = self.list.GetItemData(index)
+            if self.list_control.IsChecked(index):
+                key = self.list_control.GetItemData(index)
                 kblock = self.kblocks[key][1]
                 _subblocks_checked.append(kblock.dframe)
         return _subblocks_checked
@@ -351,8 +404,8 @@ class DataSeccion(wx.Panel):
         block_checked = {}
 
         for index in self.row_index:
-            if self.list.IsChecked(index):
-                key = self.list.GetItemData(index)
+            if self.list_control.IsChecked(index):
+                key = self.list_control.GetItemData(index)
                 # _subblocks_checked.append(kblock.dframe)
                 block_checked[key] = self.kblocks[key]
         return block_checked
@@ -360,10 +413,10 @@ class DataSeccion(wx.Panel):
     def on_checked_all(self, event):
         if event.IsChecked():
             for index in self.row_index:
-                self.list.CheckItem(index)
+                self.list_control.CheckItem(index)
         else:
             for index in self.row_index:
-                self.list.CheckItem(index, False)
+                self.list_control.CheckItem(index, False)
 
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
@@ -410,7 +463,7 @@ class KCluster():
     def __init__(self, name, dframe):
         self.name = name
         self.dframe = dframe
-        self.dframe_nor = self.normalized()
+        # self.dframe_nor = self.normalized()
         self.columns = self.g_columns(dframe)
         self.order = 0
 
@@ -455,9 +508,9 @@ class GenerateCluster(wx.Dialog):
         self.cb_kmeans = wx.CheckBox(self, -1, "K-means")
         self.cb_kmeans.SetValue(self.parent.kmeans_value)
 
-        self.sc_clusters = wx.SpinCtrl(self, -1, "", (30, 50))
-        self.sc_clusters.SetRange(2, 100)
-        self.sc_clusters.SetValue(2)
+        self.sc_count_clusters = wx.SpinCtrl(self, -1, "", (30, 50))
+        self.sc_count_clusters.SetRange(2, 100)
+        self.sc_count_clusters.SetValue(2)
 
         self.cb_shape.Bind(wx.EVT_CHECKBOX, self.on_cluster_ckeck)
         self.cb_kmeans.Bind(wx.EVT_CHECKBOX, self.on_cluster_ckeck)
@@ -477,7 +530,7 @@ class GenerateCluster(wx.Dialog):
 
         sizer.Add(self.cb_shape, 0, wx.ALL, 5)
         sizer.Add(self.cb_kmeans, 0, wx.ALL, 5)
-        sizer.Add(self.sc_clusters, 0, wx.ALL, 5)
+        sizer.Add(self.sc_count_clusters, 0, wx.ALL, 5)
         sizer.Add(sizer_button, 0, wx.EXPAND | wx.LEFT, 100)
 
         self.SetSizer(sizer)
@@ -493,7 +546,7 @@ class GenerateCluster(wx.Dialog):
     def on_button_apply(self, event):
         self.parent.c_shape = self.cb_shape.IsChecked()
         self.parent.c_kmenas = self.cb_kmeans.IsChecked()
-        self.parent.c_number = self.sc_clusters.GetValue()
+        self.parent.c_number = self.sc_count_clusters.GetValue()
 
         self.Close()
 
