@@ -30,7 +30,7 @@ from views.wrapper.wraview.vgraphic.fuse import square_plot
 # #######################################################################
 def k_cp(frame, class_column, cols=None, ax=None, color=None,
          use_columns=False, xticks=None, colormap=None, axvlines=True,
-         u_legend=True, u_grid=True, _xaxis=True, _yaxis=True,
+         u_legend=True, u_grid=True, _xaxis=True, _yaxis=True, one_color=False,
          klinewidth=1, klinecolor='black', _loc='upper right', **kwds):
     """Parallel coordinates plotting.
 
@@ -105,10 +105,8 @@ def k_cp(frame, class_column, cols=None, ax=None, color=None,
     if ax is None:
         ax = plt.gca()
 
-    color_values = _get_standard_colors(num_colors=len(classes),
-                                        colormap=colormap,
-                                        color_type='random',
-                                        color=color)
+    color_values = g_colors(classes, colormap, color, one_color)
+
     # color_values = color_values[1:]
 
     colors = dict(zip(classes, color_values))
@@ -154,6 +152,20 @@ def k_cp(frame, class_column, cols=None, ax=None, color=None,
         ax.grid()
 
     return ax
+
+
+def g_colors(classes, colormap, color, one_color):
+
+    if one_color:
+        color_values = _get_standard_colors(num_colors=1,
+                                            colormap=colormap,
+                                            color_type='random', color=color)
+        color_values = color_values * len(classes)
+    else:
+        color_values = _get_standard_colors(num_colors=len(classes),
+                                            colormap=colormap,
+                                            color_type='random', color=color)
+    return color_values
 
 
 def k_parallel_coordinates(dframes, class_column='Name', fig=None,
