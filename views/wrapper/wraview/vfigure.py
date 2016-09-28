@@ -33,9 +33,9 @@ from views.wrapper.vdialog.vfigured import DialogConfig
 
 
 K_PARALLEL_COORDENATE = 0
-K_ANDREWS_CURVES = 1
+K_RADAR_CHART_POLYGON = 1
 K_RADVIZ = 2
-K_RADAR_CHART_POLYGON = 3
+K_ANDREWS_CURVES = 3
 K_RADAR_CHART_CIRCLE = 4
 K_SCATTER_MATRIX = 5
 K_SOM = 6
@@ -80,9 +80,12 @@ class FigurePanel(wx.Panel):
         self.toolbar.SetBackgroundColour('#DCE5EE')
         sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
 
+        self.graphics = Graphics_Tava(self)
+
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(sizer_tool, 0, wx.EXPAND)
         self.sizer.Add(self.canvas, 1, wx.EXPAND)
+        self.sizer.Add(self.graphics, 0, wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
         self._welcome()
@@ -173,3 +176,23 @@ class FigurePanel(wx.Panel):
 
     def on_config(self, event):
         DialogConfig(self)
+
+
+class Graphics_Tava(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        self.rb = wx.RadioBox(
+                self, -1, "", wx.DefaultPosition, wx.DefaultSize,
+                self.g_names(), 3, wx.RA_SPECIFY_COLS | wx.NO_BORDER
+                )
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.rb, 0)
+        self.SetSizer(self.sizer)
+        self.Fit()
+
+    def g_names(self):
+        return ['Coodenadas Paralelas', 'Radar Chart Circle', 'Radviz']
+
+    def g_selected(self):
+        return self.rb.GetSelection()

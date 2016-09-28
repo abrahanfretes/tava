@@ -70,12 +70,11 @@ K_COLOR_VALUE = 3
 
 class ControlPanel(wx.Panel):
 
-    def __init__(self, parent, kfigure, kdata, ksub_blocks, mainpanel):
+    def __init__(self, parent, kfigure, ksub_blocks, mainpanel):
         wx.Panel.__init__(self, parent)
         self.parent = parent
         self.mainpanel = mainpanel
         self.kfigure = kfigure
-        self.kdata = kdata
         self.SetBackgroundColour("#3B598D")
 
         self.normalized = True
@@ -83,15 +82,19 @@ class ControlPanel(wx.Panel):
         self.k_plot = K_PLOT_BLOCK
         self.k_color = K_COLOR_SUB_BLOCK
 
-        self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
-        self.nb_dates.SetArtProvider(aui.VC71TabArt())
+#         self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
+#         self.nb_dates.SetArtProvider(aui.VC71TabArt())
+# 
+#         self.data_seccion = DataSeccion(
+#             self.nb_dates, ksub_blocks)
+# 
+#         self.nb_dates.AddPage(self.data_seccion, "Datas")
+#         self.clusters_seccion = ClusterSeccion(self.nb_dates)
+#         self.nb_dates.AddPage(self.clusters_seccion, "Clusters")
 
-        self.data_seccion = DataSeccion(
-            self.nb_dates, ksub_blocks)
-
-        self.nb_dates.AddPage(self.data_seccion, "Datas")
-        self.clusters_seccion = ClusterSeccion(self.nb_dates)
-        self.nb_dates.AddPage(self.clusters_seccion, "Clusters")
+        # ---- Lista de Datos
+        self.data_seccion = DataSeccion(self, ksub_blocks)
+        self.clusters_seccion = ClusterSeccion(self)
 
         # ---------------- controles medios -------------
         cpanel = wx.Panel(self)
@@ -109,25 +112,25 @@ class ControlPanel(wx.Panel):
         cpanel.SetSizer(psizer)
         # /---------------- controles medios -------------
 
-        self.nb_figure = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE1)
-        self.nb_figure.SetArtProvider(aui.VC71TabArt())
-        self.many_dimension = FigureManyD(self.nb_figure)
-        self.nb_figure.InsertPage(K_MANY_PAGE, self.many_dimension,
-                                  "> 3D", True)
-        page = FigureD(self.nb_figure, [])
-        self.nb_figure.InsertPage(K_3D_PAGE, page, " 3D")
-        self.nb_figure.EnableTab(K_3D_PAGE, False)
-        page = FigureD(self.nb_figure, [])
-        self.nb_figure.InsertPage(K_2D_PAGE, page, " 2D")
-        self.nb_figure.EnableTab(K_2D_PAGE, False)
-        self.one_dimension = Figure1D(self.nb_figure)
-        self.nb_figure.InsertPage(K_1D_PAGE, self.one_dimension, " 1D")
+        # ---- selección de Figuras
+#         self.nb_figure = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE1)
+#         self.nb_figure.SetArtProvider(aui.VC71TabArt())
+#         self.many_dimension = FigureManyD(self.nb_figure)
+#         self.nb_figure.InsertPage(K_MANY_PAGE, self.many_dimension,
+#                                   "> 3D", True)
+#         page = FigureD(self.nb_figure, [])
+#         self.nb_figure.InsertPage(K_3D_PAGE, page, " 3D")
+#         self.nb_figure.EnableTab(K_3D_PAGE, False)
+#         page = FigureD(self.nb_figure, [])
+#         self.nb_figure.InsertPage(K_2D_PAGE, page, " 2D")
+#         self.nb_figure.EnableTab(K_2D_PAGE, False)
+#         self.one_dimension = Figure1D(self.nb_figure)
+#         self.nb_figure.InsertPage(K_1D_PAGE, self.one_dimension, " 1D")
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.nb_dates, 1, wx.EXPAND | wx.ALL, 1)
         self.sizer.Add(cpanel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 1)
-        self.sizer.Add(self.nb_figure, 1, wx.EXPAND | wx.ALL, 1)
-
+        self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL, 1)
+        self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
         self.Fit()
 
@@ -165,14 +168,7 @@ class ControlPanel(wx.Panel):
                 blocks_2 = blocks_1
 
             # update figure
-            if self.nb_figure.GetSelection() == K_MANY_PAGE:
-                key_figure = self.many_dimension.g_key_figure()
-                self.kfigure.kdraw(blocks_2, key_figure)
-            elif self.nb_figure.GetSelection() == K_1D_PAGE:
-                self.kfigure.kdraw_one(blocks_2)
-
-            # update data list
-            self.kdata.kadd(pd.concat(blocks_2))
+            self.kfigure.kdraw(blocks_2, self.kfigure.graphics.g_selected())
 
         else:
             shape = self.clusters_seccion.g_for_view()
@@ -189,14 +185,7 @@ class ControlPanel(wx.Panel):
             # dr = shape.g_resume_checkeds_for_fig()
 
             # update figure
-            if self.nb_figure.GetSelection() == K_MANY_PAGE:
-                key_figure = self.many_dimension.g_key_figure()
-                self.kfigure.kdraw(_v, key_figure)
-            elif self.nb_figure.GetSelection() == K_1D_PAGE:
-                self.kfigure.kdraw_one(_v)
-
-            # update data list
-            # self.kdata.kadd(pd.concat([dd, dr]))
+            self.kfigure.kdraw(_v, self.kfigure.graphics.g_selected())
 
     def on_refresh(self, event):
         DataConfig(self)
@@ -226,11 +215,9 @@ class ClusterSeccion(wx.Panel):
         wx.Panel.__init__(self, parent, -1)
 
         self.SetBackgroundColour('#FFFFFF')
-
         self.parent = parent
         self.shape = None
         self.row_index = []
-        self.kcluters = {}
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.list_control = CheckListCtrl(self)
@@ -249,9 +236,9 @@ class ClusterSeccion(wx.Panel):
         _checked_all = wx.CheckBox(self, -1, "Seleccionar Todo")
         _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
+        sizer.Add(sizer_t, 0)
         sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(self.list_control, 1, wx.EXPAND)
-        sizer.Add(sizer_t, 0)
 
         self.SetSizer(sizer)
 
@@ -277,8 +264,7 @@ class ClusterSeccion(wx.Panel):
         self.list_control.DeleteAllItems()
 
         # ----- bloques marcados para generar clusters
-        gp = self.parent.GetParent()
-        blocks_checkeds = gp.data_seccion.get_checkeds_for_cluster()
+        blocks_checkeds = self.parent.data_seccion.get_checkeds_for_cluster()
         self.row_index = []
 
         # ----- mezclar bloques marcados para crear un solo bloques
@@ -302,45 +288,6 @@ class ClusterSeccion(wx.Panel):
             self.row_index.append(index)
 
         self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
-
-#         kblocks_two = {}
-#         if len(blocks_checkeds) > 1:
-#             kblocks_merge = []
-#             for _key, data in blocks_checkeds.iteritems():
-#                 kblocks_merge.append(data[1].dframe)
-#             df = pd.concat(kblocks_merge)
-#             kblocks_two[0] = ('', KBlock('0', df))
-#             _tit = ''
-#         else:
-#             kblocks_two = kblocks
-
-
-#         kblocks_two = {}
-#         if self.merge_block.IsChecked() and len(kblocks) > 1:
-#             kblocks_merge = []
-#             for _key, data in kblocks.iteritems():
-#                 kblocks_merge.append(data[1].dframe_nor)
-#             df = pd.concat(kblocks_merge)
-#             kblocks_two[0] = ('', KBlock('0', df))
-#             _tit = ''
-#         else:
-#             kblocks_two = kblocks
-
-        # generamos clusters
-#         vclus = 1
-#         for _key, data in kblocks_two.iteritems():
-#             df = data[1].dframe_nor
-#             tshape = TShape(df)
-#
-#             for shape, freq, df in tshape.get_for_view():
-#                 name = data[0] + _tit + 'c' + str(vclus)
-#                 index = self.list_control.InsertStringItem(sys.maxint, name)
-#                 self.list_control.SetItemData(index, index)
-#                 self.kcluters[index] = (shape, freq, df)
-#                 self.row_index.append(index)
-#                 vclus += 1
-#
-#         self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
     def on_checked_all(self, event):
         if event.IsChecked():

@@ -54,22 +54,24 @@ class ViewMainPanel(wx.Panel):
         # -------------- GRAFICOS IZQUIERDO - LEFT GRAFICOS----------
         # -------     gŕaficos estableccidos para aplicación   -----
         # ----------------------------------------------------------
-        self.split1 = wx.SplitterWindow(self.splitter, style=wx.SP_3D)
-        self.kfigure = FigurePanel(self.split1)
-        self.kdata = DataPanel(self.split1)
+        self.kfigure = FigurePanel(self.splitter)
 
-        self.split1.SplitHorizontally(self.kfigure, self.kdata, 700)
-        self.split1.SetMinimumPaneSize(110)
-        self.split1.SetSashGravity(0.7)
+#         self.split1 = wx.SplitterWindow(self.splitter, style=wx.SP_3D)
+#         self.kfigure = FigurePanel(self.split1)
+#         self.kdata = DataPanel(self.split1)
+#
+#         self.split1.SplitHorizontally(self.kfigure, self.kdata, 700)
+#         self.split1.SetMinimumPaneSize(110)
+#         self.split1.SetSashGravity(0.7)
 
         # -------------- MENU DERECHO - RIGHT MENU   --------------
         # -------     opciones de gŕaficos definidos aqui    -------
         # ----------------------------------------------------------
         self.control = ControlPanel(self.splitter, self.kfigure,
-                                    self.kdata, ksub_blocks, self)
+                                    ksub_blocks, self)
         self.kfigure.control_panel = self.control
 
-        self.splitter.SplitVertically(self.split1, self.control, 1000)
+        self.splitter.SplitVertically(self.kfigure, self.control, 1000)
         self.splitter.SetMinimumPaneSize(165)
         self.splitter.SetSashGravity(0.6)
 
