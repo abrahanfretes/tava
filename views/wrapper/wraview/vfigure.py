@@ -11,7 +11,7 @@
 #           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
 #           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
 #                                                            ###
-# Creado:  1/9/2016                                        ###
+# Creado:  1/9/2016                                          ###
 #                                                            ###
 # ##############################################################
 '''
@@ -29,6 +29,7 @@ from views.wrapper.wraview.vgraphic.fuse import g_color
 from views.wrapper.wraview.vgraphic.rchart import k_radar_chart
 from views.wrapper.wraview.vgraphic.rviz import k_radviz
 from imgs.ifigure import settings_fig, play_fig
+from views.wrapper.vdialog.vfigured import DialogConfig
 
 
 K_PARALLEL_COORDENATE = 0
@@ -68,9 +69,11 @@ class FigurePanel(wx.Panel):
         sizer_tool.Add(b_play, flag=wx.ALIGN_CENTER_VERTICAL)
         b_play.Bind(wx.EVT_BUTTON, self.on_play)
 
+#       Boton de configuracion
         b_setting = wx.BitmapButton(self, style=wx.NO_BORDER,
                                     bitmap=settings_fig.GetBitmap())
         sizer_tool.Add(b_setting, flag=wx.ALIGN_CENTER_VERTICAL)
+        b_setting.Bind(wx.EVT_BUTTON, self.on_config)
 
         self.toolbar = Toolbar(self.canvas)
         self.toolbar.Realize()
@@ -167,3 +170,6 @@ class FigurePanel(wx.Panel):
         # ver si dibujar cluster o data
         # dibujar
         pass
+
+    def on_config(self, event):
+        DialogConfig(self)

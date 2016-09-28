@@ -11,7 +11,7 @@
 #           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
 #           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
 #                                                            ###
-# Creado:  1/9/2016                                        ###
+# Creado:  1/9/2016                                          ###
 #                                                            ###
 # ##############################################################
 '''

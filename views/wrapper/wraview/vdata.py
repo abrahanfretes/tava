@@ -78,7 +78,7 @@ class DataPanel(aui.AuiNotebook):
 
     def g_selected_mss(self):
         csd = self.count_selected_datas
-        return "Count:"+str(self.count_datas)+" / selected:"+str(csd)
+        return "Count:" + str(self.count_datas) + " / selected:" + str(csd)
 
 
 class TestListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):
