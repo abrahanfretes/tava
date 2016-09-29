@@ -22,10 +22,11 @@ import wx
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
-from imgs.iview import refresh_plot
+from imgs.iview import refresh_plot, change_normalization
 import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig
+from views.wrapper.vdialog.vnormalize import NormalizeDialog
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolf import FigureManyD, FigureD, Figure1D
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
@@ -77,6 +78,8 @@ class ControlPanel(wx.Panel):
         self.kfigure = kfigure
         self.SetBackgroundColour("#3B598D")
 
+        self.current_nor = 0
+
         self.normalized = True
         self.duplicate_true = K_DATE_DUPLICATE_TRUE
         self.k_plot = K_PLOT_BLOCK
@@ -84,33 +87,46 @@ class ControlPanel(wx.Panel):
 
 #         self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
 #         self.nb_dates.SetArtProvider(aui.VC71TabArt())
-# 
+#
 #         self.data_seccion = DataSeccion(
 #             self.nb_dates, ksub_blocks)
-# 
+#
 #         self.nb_dates.AddPage(self.data_seccion, "Datas")
 #         self.clusters_seccion = ClusterSeccion(self.nb_dates)
 #         self.nb_dates.AddPage(self.clusters_seccion, "Clusters")
 
+#         # ---------------- controles medios -------------
+#         cpanel = wx.Panel(self)
+#         cpanel.SetBackgroundColour('#DCE5EE')
+#         sampleList = ['Datos', 'Clusters']
+#         psizer = wx.BoxSizer(wx.HORIZONTAL)
+#         self.rb_option = wx.RadioBox(cpanel, -1, "", wx.DefaultPosition,
+#                                      wx.DefaultSize, sampleList, 2,
+#                                      wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+#         psizer.Add(self.rb_option, flag=wx.ALIGN_CENTER_VERTICAL)
+#         _refresh = wx.BitmapButton(cpanel, style=wx.NO_BORDER,
+#                                    bitmap=refresh_plot.GetBitmap())
+#         _refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
+#         psizer.Add(_refresh, flag=wx.ALIGN_CENTER_VERTICAL)
+#         cpanel.SetSizer(psizer)
+#         # /---------------- controles medios -------------
+
+        # ---- control de datos
+        control_panel = wx.Panel(self)
+        control_panel.SetBackgroundColour('#DCE5EE')
+        self.nor_label = wx.StaticText(control_panel, -1,
+                                       "Datos Normalizados\npor: Observación")
+        change_nor = wx.BitmapButton(control_panel, style=wx.NO_BORDER,
+                                     bitmap=change_normalization.GetBitmap())
+        change_nor.Bind(wx.EVT_BUTTON, self.change_nor)
+        p_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        p_sizer.Add(self.nor_label, 0, wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
+        p_sizer.Add(change_nor, 0, wx.ALIGN_CENTER_VERTICAL)
+        control_panel.SetSizer(p_sizer)
+
         # ---- Lista de Datos
         self.data_seccion = DataSeccion(self, ksub_blocks)
         self.clusters_seccion = ClusterSeccion(self)
-
-        # ---------------- controles medios -------------
-        cpanel = wx.Panel(self)
-        cpanel.SetBackgroundColour('#DCE5EE')
-        sampleList = ['Datos', 'Clusters']
-        psizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.rb_option = wx.RadioBox(cpanel, -1, "", wx.DefaultPosition,
-                                     wx.DefaultSize, sampleList, 1,
-                                     wx.RA_SPECIFY_COLS | wx.NO_BORDER)
-        psizer.Add(self.rb_option, flag=wx.ALIGN_CENTER_VERTICAL)
-        _refresh = wx.BitmapButton(cpanel, style=wx.NO_BORDER,
-                                   bitmap=refresh_plot.GetBitmap())
-        _refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
-        psizer.Add(_refresh, flag=wx.ALIGN_CENTER_VERTICAL)
-        cpanel.SetSizer(psizer)
-        # /---------------- controles medios -------------
 
         # ---- selección de Figuras
 #         self.nb_figure = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE1)
@@ -128,7 +144,7 @@ class ControlPanel(wx.Panel):
 #         self.nb_figure.InsertPage(K_1D_PAGE, self.one_dimension, " 1D")
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(cpanel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 1)
+        self.sizer.Add(control_panel, 0, wx.EXPAND | wx.ALL, 2)
         self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
@@ -206,6 +222,9 @@ class ControlPanel(wx.Panel):
                 _blocks.append(df[df[c_d]==True].drop(c_d, axis=1))
         return _blocks
 
+    def change_nor(self, event):
+        NormalizeDialog(self, self.current_nor)
+
 
 # -------------------                                  ------------------------
 # -------------------                                  ------------------------
@@ -224,14 +243,13 @@ class ClusterSeccion(wx.Panel):
         self.list_control.InsertColumn(0, "Nombre")
 
         sizer_t = wx.BoxSizer(wx.HORIZONTAL)
-        b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                   bitmap=refresh_plot.GetBitmap())
-        sizer_t.Add(b_create, flag=wx.ALIGN_CENTER_VERTICAL)
-
         self.sc_count_clusters = wx.SpinCtrl(self, 0, "", (30, 50))
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
         sizer_t.Add(self.sc_count_clusters, flag=wx.ALIGN_CENTER_VERTICAL)
+        b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
+                                   bitmap=change_normalization.GetBitmap())
+        sizer_t.Add(b_create, flag=wx.ALIGN_CENTER_VERTICAL)
 
         _checked_all = wx.CheckBox(self, -1, "Seleccionar Todo")
         _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)

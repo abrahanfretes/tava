@@ -182,12 +182,17 @@ class Graphics_Tava(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self.rb = wx.RadioBox(
-                self, -1, "", wx.DefaultPosition, wx.DefaultSize,
-                self.g_names(), 3, wx.RA_SPECIFY_COLS | wx.NO_BORDER
-                )
+        self.rb = wx.RadioBox(self, -1, "", wx.DefaultPosition, wx.DefaultSize,
+                              self.g_names(), 3, wx.RA_SPECIFY_COLS |
+                              wx.NO_BORDER)
+
+        self.rb_type = wx.RadioBox(self, -1, "", choices=self.g_type(),
+                                   majorDimension=2,
+                                   style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
+
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.rb, 0)
+        self.sizer.Add(self.rb_type, 0)
         self.SetSizer(self.sizer)
         self.Fit()
 
@@ -196,3 +201,6 @@ class Graphics_Tava(wx.Panel):
 
     def g_selected(self):
         return self.rb.GetSelection()
+
+    def g_type(self):
+        return ['Datos', 'Clusters']

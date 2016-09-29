@@ -162,6 +162,32 @@ class Shape():
 
     # ------------------ METODOS PARA ANALISIS SHAPES -----------
     # -----------------------------------------------------------
+    def g_clusters_max_in_var(self, index):
+        index_max = []
+        max_values = [c.g_max_in_var(index) for c in self.clusters]
+        _max = max(max_values)
+        for i, m in enumerate(max_values):
+            if m == _max:
+                index_max.append(i)
+        _clusters = [self.clusters[i] for i in index_max]
+        return _clusters
+
+    def g_clusters_min_in_var(self, index):
+        index_min = []
+        min_values = [c.g_min_in_var(index) for c in self.clusters]
+        _min = min(min_values)
+        for i, m in enumerate(min_values):
+            if m == _min:
+                index_min.append(i)
+        _clusters = [self.clusters[i] for i in index_min]
+        return _clusters
+
+    def g_with_percent(self, percent):
+        _clusters = []
+        for c in self.clusters:
+            if percent == c.g_percent():
+                _clusters.append(c)
+        return _clusters
 
     def g_percent_up(self, percent):
         _per = 0.0
@@ -255,6 +281,8 @@ class Cluster():
     individuals = 0
     df_value = None
     column_name = 'Name'
+    min_values = []
+    max_values = []
 
     def __init__(self, name, shape, count, df_value, all_count):
         self.name = name
@@ -263,6 +291,18 @@ class Cluster():
         self.df_value = df_value
         self.all_count = all_count
         self.df_resume = self.g_resume(df_value, shape)
+        self.complete_max_min()
+
+    def complete_max_min(self):
+        cols = [i for i in self.df_value.columns[:-1]]
+        self.max_values = self.df_value[cols].max().tolist()
+        self.min_values = self.df_value[cols].max().tolist()
+
+    def g_max_in_var(self, index):
+        return self.max_values[index]
+
+    def g_min_in_var(self, index):
+        return self.min_values[index]
 
     def g_percent(self, total=None):
         if total is None:
@@ -335,34 +375,47 @@ def grafic_r1(f_path=None, _sep=' '):
     # ---------------------------------------------------------
 
     df = pd.read_csv(f_path,  sep=_sep)
+    df = df.sample(100)
+
     shape = Shape(df.copy(), clus=0, nor=2)
+    s_clusters = shape.clusters
 
     # ver clusters
-    s_clusters = shape.g_percent_up(15.0)
-    dv = shape.g_data_and_resume_for_fig(s_clusters)
+    # s_clusters = shape.g_percent_up()
+    # s_clusters = shape.clusters[130:]
+    # s_clusters = shape.g_with_percent(0.25)
+    # s_clusters = shape.g_with_percent(0.25)
+#     _v = 8
+#     s_clusters = shape.g_clusters_max_in_var(_v)
+#     s_clusters1 = shape.g_clusters_min_in_var(_v)
+#     for s in s_clusters1:
+#         s_clusters.append(s)
+
+    print len(s_clusters)
+    dv = shape.g_data_for_fig(s_clusters)
 
     ax = fig.add_subplot(2, 1, 1)
-    k_cp(dv, 'Name', ax=ax, u_legend=True, u_grid=False,
+    k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=False,
          _xaxis=False, one_color=False, _loc='upper left',
          _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
     ax = axe_con(ax)
-    ax.legend(prop={'size': 9},
-              loc='upper left').get_frame().set_edgecolor('#DDDDDD')
+#     ax.legend(prop={'size': 9},
+#               loc='upper left').get_frame().set_edgecolor('#DDDDDD')
 
     # resumenes de clusters
     dv = shape.g_resume_for_fig(s_clusters)
     # print len(dv.values)
     ax = fig.add_subplot(2, 1, 2)
-    k_cp(dv, 'Name', ax=ax, u_legend=True, u_grid=False,
+    k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=False,
          _xaxis=False, one_color=False, _loc='upper left',
          _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
     ax = axe_con(ax)
-    ax.legend(prop={'size': 9},
-              loc='upper left').get_frame().set_edgecolor('#DDDDDD')
+#     ax.legend(prop={'size': 9},
+#               loc='upper left').get_frame().set_edgecolor('#DDDDDD')
     plt.show()
 
 
 if __name__ == '__main__':
 
-    f_path = '/home/afretes/tesis/proyectos/kuri/datas/objetivos_8.csv'
+    f_path = '/home/abrahan/tesis/proyectos/kuri/datas/objetivos_8.csv'
     grafic_r1(f_path, ',')
