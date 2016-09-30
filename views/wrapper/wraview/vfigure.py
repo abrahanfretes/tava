@@ -93,9 +93,10 @@ class FigurePanel(wx.Panel):
     def _welcome(self):
         Axes3D(self.fig)
 
-    def kdraw(self, dframes, key_figure):
+    def kdraw(self, dframes):
 
         self.dframes = dframes
+        key_figure = self.g_figure()
         self.key_figure = key_figure
         # actualización de figura
         self.fig.clear()
@@ -177,30 +178,33 @@ class FigurePanel(wx.Panel):
     def on_config(self, event):
         DialogConfig(self)
 
+    def g_figure(self):
+        return self.graphics.rb_figure.GetSelection()
+
+    def g_type(self):
+        return self.graphics.rb_type.GetSelection()
+
 
 class Graphics_Tava(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self.rb = wx.RadioBox(self, -1, "", wx.DefaultPosition, wx.DefaultSize,
-                              self.g_names(), 3, wx.RA_SPECIFY_COLS |
-                              wx.NO_BORDER)
+        self.rb_figure = wx.RadioBox(self, -1, "", wx.DefaultPosition,
+                                     wx.DefaultSize, self.g_names_figure(),
+                                     3, wx.RA_SPECIFY_COLS | wx.NO_BORDER)
 
-        self.rb_type = wx.RadioBox(self, -1, "", choices=self.g_type(),
+        self.rb_type = wx.RadioBox(self, -1, "", choices=self.g_names_type(),
                                    majorDimension=2,
                                    style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.rb, 0)
+        self.sizer.Add(self.rb_figure, 0)
         self.sizer.Add(self.rb_type, 0)
         self.SetSizer(self.sizer)
         self.Fit()
 
-    def g_names(self):
+    def g_names_figure(self):
         return ['Coodenadas Paralelas', 'Radar Chart Circle', 'Radviz']
 
-    def g_selected(self):
-        return self.rb.GetSelection()
-
-    def g_type(self):
+    def g_names_type(self):
         return ['Datos', 'Clusters']

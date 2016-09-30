@@ -19,7 +19,7 @@ import wx
 from wx.lib.agw.genericmessagedialog import GenericMessageDialog
 from wx.lib.agw.genericmessagedialog import GMD_USE_GRADIENTBUTTONS
 
-
+KMSG_EMPTY_DATA_SELECTED = 0
 H_EMPTY_DATA_SELECTED = 'Selección Vacío de Datos'
 EMPTY_DATA_SELECTED = "Selección de datos para Visualizar.\n\n" + \
     "No has seleccionado ninguna opción de \n" + \
@@ -27,7 +27,7 @@ EMPTY_DATA_SELECTED = "Selección de datos para Visualizar.\n\n" + \
     "las casillas disponibles en la parte\n" + \
     'superior derecha "Datas" o "Clusters".\n\n' + \
     "            TAVA-TOOL  "
-
+KMSG_EMPTY_DUPLICATE_DATA = 1
 H_EMPTY_DUPLICATE_DATA = 'Datos duplicados'
 EMPTY_DUPLICATE_DATA = "Los Datos no están duplicados.\n\n" + \
     "Los items seleccionados no contienes datos\n" + \
@@ -37,8 +37,41 @@ EMPTY_DUPLICATE_DATA = "Los Datos no están duplicados.\n\n" + \
     "            TAVA-TOOL  "
 
 
-KMSG_EMPTY_DATA_SELECTED = 0
-KMSG_EMPTY_DUPLICATE_DATA = 1
+KMSG_EMPTY_CLUSTER_DATA = 3
+H_EMPTY_CLUSTER_DATA = 'Visualización de Clusters'
+EMPTY_CLUSTER_DATA = "Falta Generar Clusters\n\n" + \
+    "Debe generar los clusters correspondientes para\n" + \
+    "luego poder visualizarlos:\n" + \
+    "1. Seleccione almenos un dato.\n" + \
+    "2. Establesca cantidad de clusters.\n" + \
+    "3. Presione button generar cluster.\n\n" + \
+    "            TAVA-TOOL  "
+KMSG_EMPTY_CLUSTER_SELECTED = 4
+H_EMPTY_CLUSTER_SELECTED = 'Visualización de Clusters'
+EMPTY_CLUSTER_SELECTED = "Falta Seleccionar Clusters\n\n" + \
+    "Debe seleccionar almenos un cluster para ser \n" + \
+    "visualizado:\n" + \
+    "1. Seleccionar almenos un clusters.\n" + \
+    "2. Vuelva a a intentar visualizar.\n\n" + \
+    "            TAVA-TOOL  "
+
+KMSG_EMPTY_DATA_GENERATE_CLUSTER = 5
+H_EMPTY_DATA_GENERATE_CLUSTER = 'Generación de Clusters'
+EMPTY_EMPTY_DATA_GENERATE_CLUSTER = "No Contiene Datos\n\n" + \
+    "No tiene datos para ser agrupados. La lista\n" + \
+    "de datos que se encuentra en la esquina superior\n" + \
+    "derecho se encuentra vacía. Agregue datos a la Vista.\n\n" + \
+    "            TAVA-TOOL  "
+KMSG_GENERATE_CLUSTER = 6
+H_GENERATE_CLUSTER = 'Generación de Clusters'
+EMPTY_GENERATE_CLUSTER = "Falta Seleccionar Datos\n\n" + \
+    "Debe seleccionar almenos un dato para ser \n" + \
+    "agrupado. La lista de datos se encuentra en\n" + \
+    "la parte superior derecho:\n" + \
+    "1. Seleccionar almenos un dato.\n" + \
+    "2. Establesca cantidad de clusters.\n" + \
+    "3. Vuelva a a intentar agrupar.\n\n" + \
+    "            TAVA-TOOL  "
 
 
 K_ICON_INFORMATION = wx.ICON_INFORMATION
@@ -71,6 +104,27 @@ class KMessage():
             self.m_msg = EMPTY_DUPLICATE_DATA
             self.k_ico = key_ico
             self.k_but = key_button
+        elif key_message == KMSG_EMPTY_CLUSTER_DATA:
+            self.h_msg = H_EMPTY_CLUSTER_DATA
+            self.m_msg = EMPTY_CLUSTER_DATA
+            self.k_ico = key_ico
+            self.k_but = key_button
+        elif key_message == KMSG_EMPTY_CLUSTER_SELECTED:
+            self.h_msg = H_EMPTY_CLUSTER_SELECTED
+            self.m_msg = EMPTY_CLUSTER_SELECTED
+            self.k_ico = key_ico
+            self.k_but = key_button
+        elif key_message == KMSG_EMPTY_DATA_GENERATE_CLUSTER:
+            self.h_msg = H_EMPTY_DATA_GENERATE_CLUSTER
+            self.m_msg = EMPTY_EMPTY_DATA_GENERATE_CLUSTER
+            self.k_ico = key_ico
+            self.k_but = key_button
+        elif key_message == KMSG_GENERATE_CLUSTER:
+            self.h_msg = H_GENERATE_CLUSTER
+            self.m_msg = EMPTY_GENERATE_CLUSTER
+            self.k_ico = key_ico
+            self.k_but = key_button
+
         else:
             self.h_msg = 'Defaul'
             self.m_msg = 'Defaul'
