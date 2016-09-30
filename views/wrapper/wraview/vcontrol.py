@@ -22,15 +22,15 @@ import wx
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
-from imgs.iview import change_normalization, selected_data
+from imgs.iview import change_normalization, selected_data, generate_cluster
 import numpy as np
 import pandas as pd
-from views.wrapper.vdialog.vfigured import DataConfig
-from views.wrapper.vdialog.vnormalize import NormalizeDialog
+from views.wrapper.vdialog.vfigured import DataConfig, DialogConfig
+from views.wrapper.vdialog.vnormalize import NormalizeDialog, FilterClustersDialog
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
-    KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED,\
-    KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER,\
+    KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED, \
+    KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
     KMSG_GENERATE_CLUSTER
 import wx.lib.agw.aui as aui
 
@@ -129,19 +129,15 @@ class ControlPanel(wx.Panel):
         self.data_seccion = DataSeccion(self, ksub_blocks)
 
         # ---- Configuración de Clusters
-        sizer_cluster = wx.BoxSizer(wx.HORIZONTAL)
         self.sc_count_clusters = wx.SpinCtrl(self, 0, "", (30, 50))
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
-        sizer_cluster.Add(self.sc_count_clusters,
-                          flag=wx.ALIGN_CENTER_VERTICAL)
         b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                   bitmap=change_normalization.GetBitmap())
+                                   bitmap=generate_cluster.GetBitmap())
         b_create.Bind(wx.EVT_BUTTON, self.on_generate)
-        sizer_cluster.Add(b_create, flag=wx.ALIGN_CENTER_VERTICAL)
-
         b_selected = wx.BitmapButton(self, style=wx.NO_BORDER,
                                      bitmap=selected_data.GetBitmap())
+        b_selected.Bind(wx.EVT_BUTTON, self.on_filter)
 
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
@@ -163,9 +159,14 @@ class ControlPanel(wx.Panel):
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(control_panel, 0, wx.EXPAND | wx.ALL, 2)
-        self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL, 1)
-        self.sizer.Add(sizer_cluster, 0, wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+        self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
+                       wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(self.sc_count_clusters, 0, wx.ALL |
+                       wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(b_create, 0, wx.EXPAND | wx.ALL |
+                       wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL |
+                       wx.ALIGN_CENTER_VERTICAL, 3)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
         self.Fit()
@@ -258,7 +259,7 @@ class ControlPanel(wx.Panel):
             if True in col_aux:
                 c_d = 'duplicate_true'
                 df[c_d] = col_aux
-                _blocks.append(df[df[c_d]==True].drop(c_d, axis=1))
+                _blocks.append(df[df[c_d] == True].drop(c_d, axis=1))
         return _blocks
 
     def change_nor(self, event):
@@ -274,6 +275,18 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
         self.clusters_seccion.generate(self.sc_count_clusters.GetValue())
+
+    def on_filter(self, event):
+        # ---- controlar valores consistentes para clusters
+        if not self.data_seccion.contain_elemens():
+            KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
+            return
+
+        if not self.data_seccion.checked_elemens():
+            KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
+            return
+
+        FilterClustersDialog(self, 1)
 
 
 # -------------------                                  ------------------------
@@ -335,7 +348,7 @@ class ClusterSeccion(wx.Panel):
         # ---- agregar clusters a la vista
         for i, c in enumerate(self.shape.clusters):
             # name = data[0] + _tit + 'c' + str(vclus)
-            name = 'cluster_' + str(i+1) + ': ' + c.g_percent_format()
+            name = 'cluster_' + str(i + 1) + ': ' + c.g_percent_format()
             index = self.list_control.InsertStringItem(sys.maxint, name)
             self.list_control.SetItemData(index, index)
             self.row_index.append(index)
