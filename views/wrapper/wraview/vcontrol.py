@@ -22,7 +22,7 @@ import wx
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
-from imgs.iview import change_normalization
+from imgs.iview import change_normalization, selected_data
 import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig
@@ -140,6 +140,9 @@ class ControlPanel(wx.Panel):
         b_create.Bind(wx.EVT_BUTTON, self.on_generate)
         sizer_cluster.Add(b_create, flag=wx.ALIGN_CENTER_VERTICAL)
 
+        b_selected = wx.BitmapButton(self, style=wx.NO_BORDER,
+                                     bitmap=selected_data.GetBitmap())
+
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
 
@@ -161,7 +164,8 @@ class ControlPanel(wx.Panel):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(control_panel, 0, wx.EXPAND | wx.ALL, 2)
         self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL, 1)
-        self.sizer.Add(sizer_cluster, 0, wx.EXPAND | wx.ALL, 2)
+        self.sizer.Add(sizer_cluster, 0, wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+        self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
         self.Fit()
