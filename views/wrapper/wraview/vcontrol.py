@@ -26,8 +26,10 @@ from imgs.iview import change_normalization, selected_data, generate_cluster
 import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig, DialogConfig
-from views.wrapper.vdialog.vnormalize import NormalizeDialog, FilterClustersDialog
-from views.wrapper.vdialog.vvisualization import ClusterConfig
+from views.wrapper.vdialog.vnormalize import NormalizeDialog,\
+FilterClustersDialog
+from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
+V_M_SUMMARY, V_M_CLUSTER_SUMMARY
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED, \
@@ -87,6 +89,7 @@ class ControlPanel(wx.Panel):
         self.duplicate_true = K_DATE_DUPLICATE_TRUE
         self.k_plot = K_PLOT_BLOCK
         self.k_color = K_COLOR_SUB_BLOCK
+        self.cluster_config = None
 
 #         self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
 #         self.nb_dates.SetArtProvider(aui.VC71TabArt())
@@ -238,11 +241,18 @@ class ControlPanel(wx.Panel):
         shape = self.clusters_seccion.g_for_view()
 
         # porcentajes requeridos
-        s_clusters = shape.g_percent_up(3.0)
+        s_clusters = shape.g_percent_up(15.0)
 
-        dd = shape.g_data_for_fig(s_clusters)
-        dr = shape.g_resume_for_fig(s_clusters)
-        _v = [dd, dr]
+#        Se establece el modo de visualizacion para los clusters.
+        _v = []
+        if self.visualization_mode == V_M_CLUSTER or\
+                self.visualization_mode == V_M_CLUSTER_SUMMARY:
+            dd = shape.g_data_for_fig(s_clusters)
+            _v.append(dd)
+        if self.visualization_mode == V_M_SUMMARY or\
+                self.visualization_mode == V_M_CLUSTER_SUMMARY:
+            dr = shape.g_resume_for_fig(s_clusters)
+            _v.append(dr)
 
         # datos seleccionados
         # dd = shape.g_data_checkeds_for_fig()
@@ -310,8 +320,10 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
-        self.visualization_mode = None
-        ClusterConfig(self)
+        self.visualization_mode = V_M_CLUSTER
+        if not self.cluster_config:
+            self.cluster_config = ClusterConfig(self)
+        self.cluster_config.ShowModal()
 
 
 # -------------------                                  ------------------------

@@ -16,6 +16,10 @@
 '''
 import wx
 
+V_M_CLUSTER = 0
+V_M_SUMMARY = 1
+V_M_CLUSTER_SUMMARY = 2
+
 
 class ClusterConfig(wx.Dialog):
     """
@@ -87,17 +91,17 @@ class ClusterConfig(wx.Dialog):
 
     def set_visualization_mode_parent_value(self):
         if self.radio1.GetValue():
-            self.GetParent().visualization_mode = 0
+            self.GetParent().visualization_mode = V_M_CLUSTER
             return
         if self.radio2.GetValue():
-            self.GetParent().visualization_mode = 1
+            self.GetParent().visualization_mode = V_M_SUMMARY
             return
         if self.radio3.GetValue():
-            self.GetParent().visualization_mode = 2
+            self.GetParent().visualization_mode = V_M_CLUSTER_SUMMARY
 
     def on_close(self, e):
         self.set_visualization_mode_parent_value()
-        self.Destroy()
+        self.Close()
 
 
 class Example(wx.Frame):
