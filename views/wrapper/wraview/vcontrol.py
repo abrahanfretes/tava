@@ -237,13 +237,11 @@ class ControlPanel(wx.Panel):
         if not self.clusters_seccion.checked_elemens():
             KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_SELECTED).kshow()
             return
-
+        # ---- selección de clusters checked
         shape = self.clusters_seccion.g_for_view()
+        s_clusters = shape.g_checkeds()
 
-        # porcentajes requeridos
-        s_clusters = shape.g_percent_up(15.0)
-
-#        Se establece el modo de visualizacion para los clusters.
+        # ---- Se establece el modo de visualizacion para los clusters.
         _v = []
         if self.visualization_mode == V_M_CLUSTER or\
                 self.visualization_mode == V_M_CLUSTER_SUMMARY:
@@ -254,11 +252,7 @@ class ControlPanel(wx.Panel):
             dr = shape.g_resume_for_fig(s_clusters)
             _v.append(dr)
 
-        # datos seleccionados
-        # dd = shape.g_data_checkeds_for_fig()
-        # dr = shape.g_resume_checkeds_for_fig()
-
-        # update figure
+        # ---- update figure
         self.kfigure.kdraw(_v)
 
     def on_refresh(self, event):
@@ -309,6 +303,15 @@ class ControlPanel(wx.Panel):
         if self.data_selected is not None:
             print self.data_selected.option
             print self.data_selected.more_repre
+
+            # ---- seleccionar clusters automáticamente
+            if self.data_selected.option == 0:
+                # ---- seleccionar todos los clusters
+                self.clusters_seccion.select_all()
+            if self.data_selected.option == 1:
+                # ---- seleccionar los mas representativos
+                _v = self.data_selected.more_repre
+                self.clusters_seccion.more_significants(_v)
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters
@@ -397,8 +400,15 @@ class ClusterSeccion(wx.Panel):
             for index in self.row_index:
                 self.list_control.CheckItem(index)
         else:
-            for index in self.row_index:
-                self.list_control.CheckItem(index, False)
+            self.un_select_all()
+
+    def select_all(self):
+        for index in self.row_index:
+            self.list_control.CheckItem(index)
+
+    def un_select_all(self):
+        for index in self.row_index:
+            self.list_control.CheckItem(index, False)
 
     def contain_elemens(self):
         return self.list_control.GetItemCount()
@@ -408,6 +418,12 @@ class ClusterSeccion(wx.Panel):
             if self.list_control.IsChecked(index):
                 return True
         return False
+
+    # ---- funciones para análisis
+    def more_significants(self, significant):
+        self.un_select_all()
+        for index in self.row_index[:significant]:
+            self.list_control.CheckItem(index)
 
 
 # -------------------                                  ------------------------

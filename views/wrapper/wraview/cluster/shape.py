@@ -385,7 +385,7 @@ def grafic_r1(f_path=None, _sep=' '):
     # s_clusters = shape.clusters[130:]
     # s_clusters = shape.g_with_percent(0.25)
     # s_clusters = shape.g_with_percent(0.25)
-    _v = 0
+    _v = 4
     s_clusters = shape.g_clusters_max_in_var(_v)
     s_clusters1 = shape.g_clusters_min_in_var(_v)
     for s in s_clusters1:
@@ -394,8 +394,8 @@ def grafic_r1(f_path=None, _sep=' '):
     print len(s_clusters)
     dv = shape.g_data_for_fig(s_clusters)
 
-    ax = fig.add_subplot(2, 1, 1)
-    k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=False,
+    ax = fig.add_subplot(1, 1, 1)
+    k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=True,
          _xaxis=True, one_color=False, _loc='upper left',
          _yaxis=True, klinewidth=0.3, klinecolor='#6e6e6e')
     ax = axe_con(ax)
@@ -403,13 +403,13 @@ def grafic_r1(f_path=None, _sep=' '):
 #               loc='upper left').get_frame().set_edgecolor('#DDDDDD')
 
     # resumenes de clusters
-    dv = shape.g_resume_for_fig(s_clusters)
-    # print len(dv.values)
-    ax = fig.add_subplot(2, 1, 2)
-    k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=False,
-         _xaxis=False, one_color=False, _loc='upper left',
-         _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
-    ax = axe_con(ax)
+#     dv = shape.g_resume_for_fig(s_clusters)
+#     # print len(dv.values)
+#     ax = fig.add_subplot(2, 1, 2)
+#     k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=False,
+#          _xaxis=False, one_color=False, _loc='upper left',
+#          _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
+#     ax = axe_con(ax)
 #     ax.legend(prop={'size': 9},
 #               loc='upper left').get_frame().set_edgecolor('#DDDDDD')
     plt.show()
