@@ -33,6 +33,7 @@ from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
     KMSG_GENERATE_CLUSTER
 import wx.lib.agw.aui as aui
+from views.wrapper.vdialog.vvisualization import ClusterConfig
 
 
 K_MANY_PAGE = 0
@@ -139,6 +140,10 @@ class ControlPanel(wx.Panel):
                                      bitmap=selected_data.GetBitmap())
         b_selected.Bind(wx.EVT_BUTTON, self.on_filter)
 
+        b_config = wx.BitmapButton(self, style=wx.NO_BORDER,
+                                     bitmap=selected_data.GetBitmap())
+        b_config.Bind(wx.EVT_BUTTON, self.on_config)
+
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
 
@@ -166,6 +171,8 @@ class ControlPanel(wx.Panel):
         self.sizer.Add(b_create, 0, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL |
+                       wx.ALIGN_CENTER_VERTICAL, 3)
+        self.sizer.Add(b_config, 0, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_VERTICAL, 3)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
@@ -287,6 +294,19 @@ class ControlPanel(wx.Panel):
             return
 
         FilterClustersDialog(self, 1)
+
+    def on_config(self, event):
+        # ---- controlar valores consistentes para clusters
+        if not self.data_seccion.contain_elemens():
+            KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
+            return
+
+        if not self.data_seccion.checked_elemens():
+            KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
+            return
+
+        self.visualization_mode = None
+        ClusterConfig(self)
 
 
 # -------------------                                  ------------------------
