@@ -27,13 +27,13 @@ import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig, DialogConfig
 from views.wrapper.vdialog.vnormalize import NormalizeDialog, FilterClustersDialog
+from views.wrapper.vdialog.vvisualization import ClusterConfig
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
     KMSG_GENERATE_CLUSTER
 import wx.lib.agw.aui as aui
-from views.wrapper.vdialog.vvisualization import ClusterConfig
 
 
 K_MANY_PAGE = 0
@@ -98,9 +98,9 @@ class ControlPanel(wx.Panel):
 #         self.clusters_seccion = ClusterSeccion(self.nb_dates)
 #         self.nb_dates.AddPage(self.clusters_seccion, "Clusters")
 
-#         # ---------------- controles medios -------------
+# ---------------- controles medios -------------
 #         cpanel = wx.Panel(self)
-#         cpanel.SetBackgroundColour('#DCE5EE')
+# cpanel.SetBackgroundColour('#DCE5EE')
 #         sampleList = ['Datos', 'Clusters']
 #         psizer = wx.BoxSizer(wx.HORIZONTAL)
 #         self.rb_option = wx.RadioBox(cpanel, -1, "", wx.DefaultPosition,
@@ -112,7 +112,7 @@ class ControlPanel(wx.Panel):
 #         _refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
 #         psizer.Add(_refresh, flag=wx.ALIGN_CENTER_VERTICAL)
 #         cpanel.SetSizer(psizer)
-#         # /---------------- controles medios -------------
+# /---------------- controles medios -------------
 
         # ---- control de datos
         control_panel = wx.Panel(self)
@@ -142,7 +142,7 @@ class ControlPanel(wx.Panel):
         b_selected.Bind(wx.EVT_BUTTON, self.on_filter)
 
         b_config = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                     bitmap=selected_data.GetBitmap())
+                                   bitmap=selected_data.GetBitmap())
         b_config.Bind(wx.EVT_BUTTON, self.on_config)
 
         # ---- Lista de Clusters
@@ -401,6 +401,7 @@ class ClusterSeccion(wx.Panel):
 # -------------------                                  ------------------------
 # -------------------                                  ------------------------
 class DataSeccion(wx.Panel):
+
     def __init__(self, parent, kblocks):
         wx.Panel.__init__(self, parent, -1)
         self.SetBackgroundColour('#FFFFFF')
@@ -476,6 +477,7 @@ class DataSeccion(wx.Panel):
 
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
+
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, -1,
                              style=wx.LC_REPORT | wx.LC_NO_HEADER)
