@@ -80,6 +80,7 @@ class ControlPanel(wx.Panel):
         self.kfigure = kfigure
         self.SetBackgroundColour("#3B598D")
 
+        self.data_selected = None
         self.current_nor = 0
 
         self.normalized = True
@@ -293,7 +294,11 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
-        FilterClustersDialog(self, 1)
+        FilterClustersDialog(self)
+
+        if self.data_selected is not None:
+            print self.data_selected.option
+            print self.data_selected.more_repre
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters

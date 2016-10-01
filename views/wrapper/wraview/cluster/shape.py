@@ -95,7 +95,7 @@ class Shape():
                     _s = [int(_i) for _i in s_shape.split('_')]
                     _r = [int(_i) for _i in r_shape.split('_')]
                     rho, _pva = st.spearmanr(_s, _r)
-                    if abs(rho) < l_rho:
+                    if abs(rho) <= l_rho:
                         l_rho = abs(rho)
                         a_shape = s_shape
                 df_shapes[self.column_name].replace(r_shape, a_shape,
@@ -277,7 +277,7 @@ class Shape():
 
 class Cluster():
     name = ''
-    shape = []
+    shape = ''
     individuals = 0
     df_value = None
     column_name = 'Name'
