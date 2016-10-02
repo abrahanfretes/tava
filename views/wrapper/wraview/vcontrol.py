@@ -19,6 +19,7 @@
 from pandas.core.frame import DataFrame
 import sys
 import wx
+from wx.lib import platebtn
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
@@ -72,6 +73,8 @@ K_COLOR_BLOCK = 1
 K_COLOR_SUB_BLOCK = 2
 K_COLOR_VALUE = 3
 
+NORMA_METO = ['objetivos         ', 'obervaciones', 'ninguno']
+
 
 class ControlPanel(wx.Panel):
 
@@ -83,7 +86,7 @@ class ControlPanel(wx.Panel):
         self.SetBackgroundColour("#3B598D")
 
         self.data_selected = None
-        self.current_nor = 0
+        self.normalization = 0
 
         self.normalized = True
         self.duplicate_true = K_DATE_DUPLICATE_TRUE
@@ -113,20 +116,55 @@ class ControlPanel(wx.Panel):
         # ---- Lista de Datos
         self.data_seccion = DataSeccion(self, ksub_blocks)
 
+        # ---- normalización de datos
+        self.tbtn0 = platebtn.PlateButton(self, -1,
+                                          NORMA_METO[self.normalization], None,
+                                          style=platebtn.PB_STYLE_DEFAULT |
+                                          platebtn.PB_STYLE_NOBG)
+        menu = wx.Menu()
+        menu.Append(wx.NewId(), NORMA_METO[0])
+        menu.Append(wx.NewId(), NORMA_METO[1])
+        menu.Append(wx.NewId(), NORMA_METO[2])
+        self.tbtn0.SetMenu(menu)
+        self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
+
         # ---- Configuración de Clusters
         self.sc_count_clusters = wx.SpinCtrl(self, 0, "", (30, 50))
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
-        b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                   bitmap=generate_cluster.GetBitmap())
-        b_create.Bind(wx.EVT_BUTTON, self.on_generate)
-        b_selected = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                     bitmap=selected_data.GetBitmap())
-        b_selected.Bind(wx.EVT_BUTTON, self.on_filter)
 
-        b_config = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                   bitmap=selected_data.GetBitmap())
-        b_config.Bind(wx.EVT_BUTTON, self.on_config)
+        tbtn = platebtn.PlateButton(self, -1, '  Crear  ', None,
+                                    style=platebtn.PB_STYLE_SQUARE |
+                                    platebtn.PB_STYLE_NOBG)
+        tbtn.SetPressColor(wx.Colour(245, 55, 245))
+        tbtn.SetLabelColor(wx.Colour(0, 0, 255))
+        tbtn.Bind(wx.EVT_BUTTON, self.on_generate)
+
+        tbtn1 = platebtn.PlateButton(self, -1, 'Marcar', None,
+                                     style=platebtn.PB_STYLE_DEFAULT |
+                                     platebtn.PB_STYLE_NOBG)
+        tbtn1.SetPressColor(wx.Colour(255, 165, 0))
+        tbtn1.SetLabelColor(wx.Colour(127, 0, 255))
+        tbtn1.Bind(wx.EVT_BUTTON, self.on_filter)
+
+        tbtn2 = platebtn.PlateButton(self, -1, '    Ver    ', None,
+                                     style=platebtn.PB_STYLE_DEFAULT |
+                                     platebtn.PB_STYLE_NOBG)
+        tbtn2.SetPressColor(wx.Colour(255, 165, 0))
+        tbtn2.SetLabelColor(wx.Colour(127, 0, 255))
+        tbtn2.Bind(wx.EVT_BUTTON, self.on_config)
+
+
+#         b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
+#                                    bitmap=generate_cluster.GetBitmap())
+#         b_create.Bind(wx.EVT_BUTTON, self.on_generate)
+#         b_selected = wx.BitmapButton(self, style=wx.NO_BORDER,
+#                                      bitmap=selected_data.GetBitmap())
+#         b_selected.Bind(wx.EVT_BUTTON, self.on_filter)
+#
+#         b_config = wx.BitmapButton(self, style=wx.NO_BORDER,
+#                                    bitmap=selected_data.GetBitmap())
+#         b_config.Bind(wx.EVT_BUTTON, self.on_config)
 
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
@@ -135,14 +173,23 @@ class ControlPanel(wx.Panel):
         self.sizer.Add(control_panel, 0, wx.EXPAND | wx.ALL, 2)
         self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(self.tbtn0, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+                       wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(self.sc_count_clusters, 0, wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(b_create, 0, wx.EXPAND | wx.ALL |
-                       wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL |
-                       wx.ALIGN_CENTER_VERTICAL, 3)
-        self.sizer.Add(b_config, 0, wx.EXPAND | wx.ALL |
-                       wx.ALIGN_CENTER_VERTICAL, 3)
+        self.sizer.Add(tbtn, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+                       wx.ALIGN_CENTER_HORIZONTAL, 5)
+        self.sizer.Add(tbtn1, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+                       wx.ALIGN_CENTER_HORIZONTAL, 5)
+        self.sizer.Add(tbtn2, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+                       wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+#         self.sizer.Add(b_create, 0, wx.EXPAND | wx.ALL |
+#                        wx.ALIGN_CENTER_HORIZONTAL, 2)
+#         self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL |
+#                        wx.ALIGN_CENTER_VERTICAL, 3)
+#         self.sizer.Add(b_config, 0, wx.EXPAND | wx.ALL |
+#                        wx.ALIGN_CENTER_VERTICAL, 3)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
         self.Fit()
@@ -245,7 +292,7 @@ class ControlPanel(wx.Panel):
         return _blocks
 
     def change_nor(self, event):
-        NormalizeDialog(self, self.current_nor)
+        NormalizeDialog(self, self.normalization)
 
     def on_generate(self, event):
         self.data_selected = None
@@ -327,6 +374,16 @@ class ControlPanel(wx.Panel):
         if not self.cluster_config:
             self.cluster_config = ClusterConfig(self)
         self.cluster_config.ShowModal()
+
+    def on_nor_menu(self, evt):
+        """Events from button menus"""
+
+        e_obj = evt.GetEventObject()
+        mitem = e_obj.FindItemById(evt.GetId())
+        if mitem != wx.NOT_FOUND:
+            label = mitem.GetItemLabel()
+            self.tbtn0.SetLabel(label)
+            self.normalization = NORMA_METO.index(label)
 
 
 # -------------------                                  ------------------------

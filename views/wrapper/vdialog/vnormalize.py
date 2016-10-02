@@ -59,7 +59,7 @@ class NormalizeDialog(wx.Dialog):
         self.Close()
 
     def on_accept(self, event):
-        self.parent.current_nor = self.rb_nor.GetSelection()
+        self.parent.normalization = self.rb_nor.GetSelection()
         label = self.parent.nor_label.GetLabel().split(':')[0]
         new_label = label + ': ' + self.rb_nor.GetStringSelection()
         self.parent.nor_label.SetLabel(new_label)
