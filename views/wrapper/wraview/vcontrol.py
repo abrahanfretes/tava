@@ -93,32 +93,6 @@ class ControlPanel(wx.Panel):
         self.legends_cluster = []
         self.legends_summary = []
 
-#         self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
-#         self.nb_dates.SetArtProvider(aui.VC71TabArt())
-#
-#         self.data_seccion = DataSeccion(
-#             self.nb_dates, ksub_blocks)
-#
-#         self.nb_dates.AddPage(self.data_seccion, "Datas")
-#         self.clusters_seccion = ClusterSeccion(self.nb_dates)
-#         self.nb_dates.AddPage(self.clusters_seccion, "Clusters")
-
-# ---------------- controles medios -------------
-#         cpanel = wx.Panel(self)
-# cpanel.SetBackgroundColour('#DCE5EE')
-#         sampleList = ['Datos', 'Clusters']
-#         psizer = wx.BoxSizer(wx.HORIZONTAL)
-#         self.rb_option = wx.RadioBox(cpanel, -1, "", wx.DefaultPosition,
-#                                      wx.DefaultSize, sampleList, 2,
-#                                      wx.RA_SPECIFY_COLS | wx.NO_BORDER)
-#         psizer.Add(self.rb_option, flag=wx.ALIGN_CENTER_VERTICAL)
-#         _refresh = wx.BitmapButton(cpanel, style=wx.NO_BORDER,
-#                                    bitmap=refresh_plot.GetBitmap())
-#         _refresh.Bind(wx.EVT_BUTTON, self.on_refresh)
-#         psizer.Add(_refresh, flag=wx.ALIGN_CENTER_VERTICAL)
-#         cpanel.SetSizer(psizer)
-# /---------------- controles medios -------------
-
         # ---- control de datos
         control_panel = wx.Panel(self)
         control_panel.SetBackgroundColour('#DCE5EE')
@@ -152,21 +126,6 @@ class ControlPanel(wx.Panel):
 
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
-
-        # ---- selección de Figuras
-#         self.nb_figure = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE1)
-#         self.nb_figure.SetArtProvider(aui.VC71TabArt())
-#         self.many_dimension = FigureManyD(self.nb_figure)
-#         self.nb_figure.InsertPage(K_MANY_PAGE, self.many_dimension,
-#                                   "> 3D", True)
-#         page = FigureD(self.nb_figure, [])
-#         self.nb_figure.InsertPage(K_3D_PAGE, page, " 3D")
-#         self.nb_figure.EnableTab(K_3D_PAGE, False)
-#         page = FigureD(self.nb_figure, [])
-#         self.nb_figure.InsertPage(K_2D_PAGE, page, " 2D")
-#         self.nb_figure.EnableTab(K_2D_PAGE, False)
-#         self.one_dimension = Figure1D(self.nb_figure)
-#         self.nb_figure.InsertPage(K_1D_PAGE, self.one_dimension, " 1D")
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(control_panel, 0, wx.EXPAND | wx.ALL, 2)
@@ -253,7 +212,8 @@ class ControlPanel(wx.Panel):
             _v.append(dr)
         if self.visualization_mode == V_M_CLUSTER_SUMMARY:
             dcr = shape.g_data_and_resume_for_fig(s_clusters,
-                                    self.legends_cluster, self.legends_summary)
+                                                  self.legends_cluster,
+                                                  self.legends_summary)
             _v.append(dcr)
 
         # ---- update figure
@@ -275,7 +235,7 @@ class ControlPanel(wx.Panel):
             if True in col_aux:
                 c_d = 'duplicate_true'
                 df[c_d] = col_aux
-                _blocks.append(df[df[c_d] == True].drop(c_d, axis=1))
+                _blocks.append(df[df[c_d]==True].drop(c_d, axis=1))
         return _blocks
 
     def change_nor(self, event):
