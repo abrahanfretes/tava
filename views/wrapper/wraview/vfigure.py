@@ -81,14 +81,17 @@ class FigurePanel(wx.Panel):
         sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
 
         choice_grafic = self.get_choice_grafic()
-        sizer_tool.Add(choice_grafic, wx.ALIGN_CENTER_VERTICAL)
+        sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
 
-        self.graphics = Graphics_Tava(self)
+        choice_mode = self.get_choice_type()
+        sizer_tool.Add(choice_mode, wx.ALIGN_LEFT)
+
+#         self.graphics = Graphics_Tava(self)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(sizer_tool, 0, wx.EXPAND)
         self.sizer.Add(self.canvas, 1, wx.EXPAND)
-        self.sizer.Add(self.graphics, 0, wx.EXPAND)
+#         self.sizer.Add(self.graphics, 0, wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
         self._welcome()
@@ -144,7 +147,7 @@ class FigurePanel(wx.Panel):
 
             ax.set_color_cycle(g_color(_len_color))
             y = np.linspace(0, 1, _len)
-            x = [0]*_len
+            x = [0] * _len
             ic = 0
             for n in col_names:
                 d = df1[n].values.tolist()
@@ -182,27 +185,34 @@ class FigurePanel(wx.Panel):
         DialogConfig(self)
 
     def g_figure(self):
-        return self.graphics.rb_figure.GetSelection()
+        return self.ch_graph.GetSelection()
 
     def g_type(self):
-        return self.graphics.rb_type.GetSelection()
+        return self.ch_type.GetSelection()
 
     def get_choice_grafic(self):
         grid = wx.FlexGridSizer(cols=2)
-        sampleList = ['Coordendas Paralelas', 'Radar Chart', 'Radvis']
+        sampleList = ['Coordenadas Paralelas', 'Radar Chart', 'Radvis']
 
-        choice_label = wx.StaticText(self, -1, "Select one:")
-        self.ch = wx.Choice(self, -1, choices=sampleList)
-        self.Bind(wx.EVT_CHOICE, self.on_choice, self.ch)
+        self.ch_graph = wx.Choice(self, -1, choices=sampleList)
+        self.ch_graph.SetSelection(0)
+        self.ch_graph.SetToolTipString("Seleccione un grafico")
 
-        grid.Add(choice_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
-        grid.Add(self.ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(self.ch_graph, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         return grid
 
-    def on_choice(self, event):
-        pass
+    def get_choice_type(self):
+        grid = wx.FlexGridSizer(cols=2)
+        sampleList = ['Datos', 'Cluster']
+
+        self.ch_type = wx.Choice(self, -1, choices=sampleList)
+        self.ch_type.SetSelection(0)
+        self.ch_type.SetToolTipString("Seleccione un tipo")
+
+        grid.Add(self.ch_type, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        return grid
 
 
 class Graphics_Tava(wx.Panel):

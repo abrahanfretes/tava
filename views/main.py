@@ -53,7 +53,7 @@ class MainFrame(wx.Frame):
 
     def v_setting(self):
         self.SetTitle("FPUNA: Tavai")
-        self.SetSize(wx.Size(800, 700))
+        self.SetSize(wx.Size(1110, 700))
         self.SetBackgroundColour("#F5D0A9")
         self.SetMinSize((660, 480))
         self.SetIcon(shortcut.GetIcon())
