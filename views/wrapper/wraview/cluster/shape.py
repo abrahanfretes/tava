@@ -213,7 +213,7 @@ class Shape():
                 return df_resumes
         return df_resumes
 
-    def g_data_for_fig(self, s_clusters):
+    def g_data_for_fig(self, s_clusters, legends_cluster):
         if s_clusters == []:
             return pd.DataFrame()
         _clusters = []
@@ -221,13 +221,13 @@ class Shape():
 
         for c in s_clusters:
             _df = c.df_value.copy()
-            _leg = c.g_legend(_legends)
+            _leg = c.g_legend(_legends, legends_cluster)
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
         return pd.concat(_clusters)
 
-    def g_resume_for_fig(self, s_clusters):
+    def g_resume_for_fig(self, s_clusters, legends_summary):
         if s_clusters == []:
             return pd.DataFrame()
 
@@ -235,13 +235,14 @@ class Shape():
         _legends = []
         for c in s_clusters:
             _df = c.df_resume.copy()
-            _leg = c.g_legend(_legends, por=1, sh=0)
+            _leg = c.g_legend(_legends, legends_summary)
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
         return pd.concat(_clusters)
 
-    def g_data_and_resume_for_fig(self, s_clusters):
+    def g_data_and_resume_for_fig(self, s_clusters, legends_cluster,
+                                                            legends_summary):
         if s_clusters == []:
             return pd.DataFrame()
         _clusters = []
@@ -250,13 +251,13 @@ class Shape():
         for c in s_clusters:
             # data
             _df = c.df_value.copy()
-            _leg = c.g_legend(_legends)
+            _leg = c.g_legend(_legends, legends_cluster)
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
             # resume
             _df = c.df_resume.copy()
-            _leg = c.g_legend(_legends, por=1, sh=0)
+            _leg = c.g_legend(_legends, legends_summary)
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
@@ -321,25 +322,25 @@ class Cluster():
         df_mean[self.column_name] = shape
         return df_mean
 
-    def g_legend(self, legends, repeat=False, sh=1, por=0, ind=0, name=0):
+    def g_legend(self, legends, legends_condition, repeat=False):
         _legend = ""
 
-        if por == 1:
+        if legends_condition[0]:
             if _legend != "":
                 _legend = _legend + ' - '
             _legend = _legend + str(self.g_percent()) + '%'
 
-        if ind == 1:
+        if legends_condition[1]:
             if _legend != "":
                 _legend = _legend + ' - '
             _legend = _legend + str(self.count)
 
-        if name == 1:
+        if legends_condition[2]:
             if _legend != "":
                 _legend = _legend + ' - '
             _legend = _legend + self.name
 
-        if sh == 1:
+        if legends_condition[3]:
             if _legend != "":
                 _legend = _legend + ' - '
             _legend = _legend + self.shape

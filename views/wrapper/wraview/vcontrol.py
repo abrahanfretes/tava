@@ -25,7 +25,7 @@ from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from imgs.iview import change_normalization, selected_data, generate_cluster
 import numpy as np
 import pandas as pd
-from views.wrapper.vdialog.vfigured import DataConfig, DialogConfig
+from views.wrapper.vdialog.vfigured import DataConfig
 from views.wrapper.vdialog.vnormalize import NormalizeDialog,\
     FilterClustersDialog, SelectedData
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
@@ -90,6 +90,8 @@ class ControlPanel(wx.Panel):
         self.k_plot = K_PLOT_BLOCK
         self.k_color = K_COLOR_SUB_BLOCK
         self.cluster_config = None
+        self.legends_cluster = []
+        self.legends_summary = []
 
 #         self.nb_dates = aui.AuiNotebook(self, agwStyle=KURI_AUI_NB_STYLE)
 #         self.nb_dates.SetArtProvider(aui.VC71TabArt())
@@ -243,14 +245,16 @@ class ControlPanel(wx.Panel):
 
         # Se establece el modo de visualizacion para los clusters.
         _v = []
-        if self.visualization_mode == V_M_CLUSTER or \
-                self.visualization_mode == V_M_CLUSTER_SUMMARY:
-            dd = shape.g_data_for_fig(s_clusters)
+        if self.visualization_mode == V_M_CLUSTER:
+            dd = shape.g_data_for_fig(s_clusters, self.legends_cluster)
             _v.append(dd)
-        if self.visualization_mode == V_M_SUMMARY or \
-                self.visualization_mode == V_M_CLUSTER_SUMMARY:
-            dr = shape.g_resume_for_fig(s_clusters)
+        if self.visualization_mode == V_M_SUMMARY:
+            dr = shape.g_resume_for_fig(s_clusters, self.legends_summary)
             _v.append(dr)
+        if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+            dcr = shape.g_data_and_resume_for_fig(s_clusters,
+                                    self.legends_cluster, self.legends_summary)
+            _v.append(dcr)
 
         # ---- update figure
         self.kfigure.kdraw(_v)

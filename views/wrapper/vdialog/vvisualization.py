@@ -124,8 +124,24 @@ class ClusterConfig(wx.Dialog):
         if self.radio3.GetValue():
             self.GetParent().visualization_mode = V_M_CLUSTER_SUMMARY
 
+    def set_legends_parent_values(self):
+#        Para Cluster
+        self.GetParent().legends_cluster = []
+        self.GetParent().legends_cluster.append(self.clus_check1.GetValue())
+        self.GetParent().legends_cluster.append(self.clus_check2.GetValue())
+        self.GetParent().legends_cluster.append(self.clus_check3.GetValue())
+        self.GetParent().legends_cluster.append(self.clus_check4.GetValue())
+
+#         Para Resumen
+        self.GetParent().legends_summary = []
+        self.GetParent().legends_summary.append(self.summ_check1.GetValue())
+        self.GetParent().legends_summary.append(self.summ_check2.GetValue())
+        self.GetParent().legends_summary.append(self.summ_check3.GetValue())
+        self.GetParent().legends_summary.append(self.summ_check4.GetValue())
+
     def on_close(self, e):
         self.set_visualization_mode_parent_value()
+        self.set_legends_parent_values()
         self.Close()
 
 
@@ -133,18 +149,18 @@ class ClusterPage(wx.Panel):
     def __init__(self, parent, dialog_ref):
         wx.Panel.__init__(self, parent)
         sizer = wx.BoxSizer(wx.VERTICAL)
-        checkbox1 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
+        checkbox1 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
+                                                            "observaciones")
         dialog_ref.clus_check1 = checkbox1
 
-        checkbox2 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
-                                                            "observaciones")
+        checkbox2 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
+        checkbox2.SetValue(True)
         dialog_ref.clus_check2 = checkbox2
 
-        checkbox3 = wx.CheckBox(self, -1, "Mostrar shapes")
-        checkbox3.SetValue(True)
+        checkbox3 = wx.CheckBox(self, -1, "Mostrar nombre")
         dialog_ref.clus_check3 = checkbox3
 
-        checkbox4 = wx.CheckBox(self, -1, "Mostrar nombre")
+        checkbox4 = wx.CheckBox(self, -1, "Mostrar shapes")
         dialog_ref.clus_check4 = checkbox4
 
         sizer.Add(checkbox1, 0, wx.ALL, 5)
@@ -159,21 +175,24 @@ class SummaryPage(wx.Panel):
     def __init__(self, parent, dialog_ref):
         wx.Panel.__init__(self, parent)
         sizer = wx.BoxSizer(wx.VERTICAL)
-
         checkbox1 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
                                                             "observaciones")
         checkbox1.SetValue(True)
         dialog_ref.summ_check1 = checkbox1
 
-        checkbox2 = wx.CheckBox(self, -1, "Mostrar shapes")
+        checkbox2 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
         dialog_ref.summ_check2 = checkbox2
 
         checkbox3 = wx.CheckBox(self, -1, "Mostrar nombre")
         dialog_ref.summ_check3 = checkbox3
 
+        checkbox4 = wx.CheckBox(self, -1, "Mostrar shapes")
+        dialog_ref.summ_check4 = checkbox4
+
         sizer.Add(checkbox1, 0, wx.ALL, 5)
         sizer.Add(checkbox2, 0, wx.ALL, 5)
         sizer.Add(checkbox3, 0, wx.ALL, 5)
+        sizer.Add(checkbox4, 0, wx.ALL, 5)
 
         self.SetSizer(sizer)
 
