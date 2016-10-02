@@ -76,6 +76,7 @@ class FilterClustersDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, size=(700, 630))
 
         self.parent = parent
+        self.data = data
 
         # ---- titulo de cabecera
         title_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -86,21 +87,32 @@ class FilterClustersDialog(wx.Dialog):
 
         # ---- panel de datos
         b_panel = wx.Panel(self, -1)
-        self.radio1 = wx.RadioButton(b_panel, -1, " Todos los clusters.",
-                                     style=wx.RB_GROUP)
-        self.radio2 = wx.RadioButton(b_panel, -1,
-                                     "Clusters más representativos.")
 
-        # ---- Configuración de Clusters
+        # ---- selección de todos los clusters
+        label = "Todos los clusters."
+        self.radio1 = wx.RadioButton(b_panel, -1, label, style=wx.RB_GROUP)
+
+        # ---- selección de todos clusters más representativos
+        label = "Clusters más representativos."
+        self.radio2 = wx.RadioButton(b_panel, -1, label)
         self.first_repre = wx.SpinCtrl(b_panel, 1, "", (30, 50))
-        self.first_repre.SetRange(1, data.max_repre)
+        self.first_repre.SetRange(1, data.count_tendency)
         self.first_repre.SetValue(data.more_repre)
+
+        # ---- selección de todos clusters menos representativos
+        label = "Clusters menos representativos."
+        self.radio3 = wx.RadioButton(b_panel, -1, label)
+        self.less_repre = wx.SpinCtrl(b_panel, 1, "", (30, 50))
+        self.less_repre.SetRange(1, data.count_tendency)
+        self.less_repre.SetValue(data.less_repre)
 
         # Layout controls on panel:
         vs = wx.BoxSizer(wx.VERTICAL)
         vs.Add(self.radio1)
         vs.Add(self.radio2)
         vs.Add(self.first_repre)
+        vs.Add(self.radio3)
+        vs.Add(self.less_repre)
         b_panel.SetSizer(vs)
         vs.Fit(b_panel)
 
@@ -129,26 +141,44 @@ class FilterClustersDialog(wx.Dialog):
         elif data.option == 1:
             self.radio2.SetValue(True)
             self.first_repre.SetValue(data.more_repre)
+        elif data.option == 2:
+            self.radio3.SetValue(True)
+            self.less_repre.SetValue(data.less_repre)
 
     def on_cancel(self, event):
+        self.parent.data_selected.cancel = True
         self.Close()
 
     def on_accept(self, event):
-        a = SelectedData()
-        a.max_repre = self.first_repre.GetMax()
+        # a = SelectedData()
+        self.parent.data_selected.max_repre = self.first_repre.GetMax()
 
         if self.radio1.GetValue():
-            a.option = 0
+            self.parent.data_selected.option = 0
+        elif self.radio2.GetValue():
+            self.parent.data_selected.option = 1
+            self.parent.data_selected.more_repre = self.first_repre.GetValue()
         else:
-            a.option = 1
-            a.more_repre = self.first_repre.GetValue()
+            self.parent.data_selected.option = 2
+            self.parent.data_selected.less_repre = self.less_repre.GetValue()
 
-        self.parent.data_selected = a
         self.Close()
 
 
 class SelectedData():
     def __init__(self):
+
+        # ---- opción seleccionado
         self.option = None
+
+        # ---- cantidad de tendencias existentes
+        self.count_tendency = None
+
+        # ---- más representivos
         self.more_repre = None
-        self.max_repre = None
+
+        # ---- menos representativos
+        self.less_repre = None
+
+        # ----  cancelar la selección
+        self.cancel = False

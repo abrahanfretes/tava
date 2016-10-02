@@ -266,22 +266,41 @@ class ControlPanel(wx.Panel):
 
         if self.data_selected is None:
             self.data_selected = SelectedData()
-            self.data_selected.option = 0
+            _data = self.data_selected
 
-            _c = self.clusters_seccion
-            self.data_selected.more_repre = 1
-            self.data_selected.max_repre = _c.shape.clusters_count
+            # --- opción de selección
+            _data.option = 0
+
+            # ---- cantidad de tendencias
+            _data.count_tendency = self.clusters_seccion.shape.clusters_count
+
+            # ---- clusters más representativos - en número de individuos
+            _data.more_repre = 1
+
+            # ---- clusters menos representativos - en número de individuos
+            _data.less_repre = 1
 
         FilterClustersDialog(self, self.data_selected)
 
+        # ---- se cancela - retorna sin seleccionar
+        if self.data_selected.cancel:
+            return
+
+        _data = self.clusters_seccion
         # ---- seleccionar clusters automáticamente
         if self.data_selected.option == 0:
             # ---- seleccionar todos los clusters
             self.clusters_seccion.select_all()
         if self.data_selected.option == 1:
             # ---- seleccionar los mas representativos
-            _v = self.data_selected.more_repre
-            self.clusters_seccion.more_significants(_v)
+            _max = self.data_selected.more_repre
+            self.clusters_seccion.more_representative(_max)
+        if self.data_selected.option == 2:
+            # seleccionar los menos representativos
+            _ten = self.data_selected.count_tendency
+            _min = self.data_selected.less_repre
+            self.clusters_seccion.less_representative(_ten - _min)
+
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters
@@ -389,9 +408,15 @@ class ClusterSeccion(wx.Panel):
         return False
 
     # ---- funciones para análisis
-    def more_significants(self, significant):
+
+    def more_representative(self, repre):
         self.un_select_all()
-        for index in self.row_index[:significant]:
+        for index in self.row_index[:repre]:
+            self.list_control.CheckItem(index)
+
+    def less_representative(self, repre):
+        self.un_select_all()
+        for index in self.row_index[repre:]:
             self.list_control.CheckItem(index)
 
 
