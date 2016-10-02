@@ -153,7 +153,7 @@ class Shape():
             vals = df[cols]
             _min = vals.min()
             _max = vals.max()
-            _vnor = [(x-_min)/(_max-_min) for x in vals]
+            _vnor = [(x - _min) / (_max - _min) for x in vals]
             df[cols] = _vnor
         return df
 
@@ -216,7 +216,7 @@ class Shape():
                 return df_resumes
         return df_resumes
 
-    def g_data_for_fig(self, s_clusters, legends_cluster):
+    def g_data_for_fig(self, s_clusters, legends_cluster, one_axe):
         if s_clusters == []:
             return pd.DataFrame()
         _clusters = []
@@ -228,9 +228,12 @@ class Shape():
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
-        return pd.concat(_clusters)
 
-    def g_resume_for_fig(self, s_clusters, legends_summary):
+        if one_axe:
+            return [pd.concat(_clusters)]
+        return _clusters
+
+    def g_resume_for_fig(self, s_clusters, legends_summary, one_axe):
         if s_clusters == []:
             return pd.DataFrame()
 
@@ -242,14 +245,35 @@ class Shape():
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
-        return pd.concat(_clusters)
+
+        if one_axe:
+            return [pd.concat(_clusters)]
+        return _clusters
 
     def g_data_and_resume_for_fig(self, s_clusters, legends_cluster,
-                                                            legends_summary):
+                                            legends_summary, clus_summ_axs):
         if s_clusters == []:
             return pd.DataFrame()
         _clusters = []
         _legends = []
+
+        if clus_summ_axs[2]:
+            for c in s_clusters:
+                # data
+                _df_c = c.df_value.copy()
+                _leg = c.g_legend(_legends, legends_cluster)
+                _legends.append(_leg)
+                _df_c[self.column_name] = [_leg] * c.count
+
+                # resume
+                _df_s = c.df_resume.copy()
+                _leg = c.g_legend(_legends, legends_summary)
+                _legends.append(_leg)
+                _df_s[self.column_name] = [_leg]
+
+                _clusters.append(pd.concat([_df_c, _df_s]))
+
+            return _clusters
 
         for c in s_clusters:
             # data
@@ -264,7 +288,12 @@ class Shape():
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
-        return pd.concat(_clusters)
+
+        if clus_summ_axs[0]:
+            return [pd.concat(_clusters)]
+
+        if clus_summ_axs[1]:
+            return _clusters
 
     def g_data_checkeds_for_fig(self):
         return self.g_data_for_fig(self.g_checkeds())
@@ -312,7 +341,7 @@ class Cluster():
     def g_percent(self, total=None):
         if total is None:
             total = self.all_count
-        return (self.count*100.0)/total
+        return (self.count * 100.0) / total
 
     def g_percent_format(self, total=None):
         _por = self.g_percent(total)
@@ -332,7 +361,7 @@ class Cluster():
         if legends_condition[0]:
             if _legend != "":
                 _legend = _legend + ' - '
-            _legend = _legend + str(self.g_percent()) + '%'
+            _legend = _legend + self.g_percent_format()
 
         if legends_condition[1]:
             if _legend != "":

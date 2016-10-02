@@ -93,6 +93,9 @@ class ControlPanel(wx.Panel):
         self.visualization_mode = V_M_CLUSTER
         self.legends_cluster = [False, False, False, True]
         self.legends_summary = [True, False, False, False]
+        self.clus_one_axe = True
+        self.summ_one_axe = True
+        self.clus_summ_axs = [True, False, False]
 
         # ---- control de datos
         control_panel = wx.Panel(self)
@@ -206,16 +209,18 @@ class ControlPanel(wx.Panel):
         # Se establece el modo de visualizacion para los clusters.
         _v = []
         if self.visualization_mode == V_M_CLUSTER:
-            dd = shape.g_data_for_fig(s_clusters, self.legends_cluster)
-            _v.append(dd)
+            dd = shape.g_data_for_fig(s_clusters, self.legends_cluster,
+                                                            self.clus_one_axe)
+            _v = dd
         if self.visualization_mode == V_M_SUMMARY:
-            dr = shape.g_resume_for_fig(s_clusters, self.legends_summary)
-            _v.append(dr)
+            dr = shape.g_resume_for_fig(s_clusters, self.legends_summary,
+                                                            self.summ_one_axe)
+            _v = dr
         if self.visualization_mode == V_M_CLUSTER_SUMMARY:
             dcr = shape.g_data_and_resume_for_fig(s_clusters,
-                                                  self.legends_cluster,
-                                                  self.legends_summary)
-            _v.append(dcr)
+                                self.legends_cluster, self.legends_summary,
+                                                           self.clus_summ_axs)
+            _v = dcr
 
         # ---- update figure
         self.kfigure.kdraw(_v)
