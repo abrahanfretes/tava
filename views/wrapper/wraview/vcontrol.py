@@ -90,8 +90,9 @@ class ControlPanel(wx.Panel):
         self.k_plot = K_PLOT_BLOCK
         self.k_color = K_COLOR_SUB_BLOCK
         self.cluster_config = None
-        self.legends_cluster = []
-        self.legends_summary = []
+        self.visualization_mode = V_M_CLUSTER
+        self.legends_cluster = [False, False, False, True]
+        self.legends_summary = [True, False, False, False]
 
         # ---- control de datos
         control_panel = wx.Panel(self)
@@ -292,7 +293,6 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
-        self.visualization_mode = V_M_CLUSTER
         if not self.cluster_config:
             self.cluster_config = ClusterConfig(self)
         self.cluster_config.ShowModal()

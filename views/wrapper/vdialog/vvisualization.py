@@ -154,13 +154,13 @@ class ClusterPage(wx.Panel):
         dialog_ref.clus_check1 = checkbox1
 
         checkbox2 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
-        checkbox2.SetValue(True)
         dialog_ref.clus_check2 = checkbox2
 
         checkbox3 = wx.CheckBox(self, -1, "Mostrar nombre")
         dialog_ref.clus_check3 = checkbox3
 
         checkbox4 = wx.CheckBox(self, -1, "Mostrar shapes")
+        checkbox4.SetValue(True)
         dialog_ref.clus_check4 = checkbox4
 
         sizer.Add(checkbox1, 0, wx.ALL, 5)
