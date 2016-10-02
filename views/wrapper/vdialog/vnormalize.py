@@ -106,6 +106,30 @@ class FilterClustersDialog(wx.Dialog):
         self.less_repre.SetRange(1, data.count_tendency)
         self.less_repre.SetValue(data.less_repre)
 
+        # ---- selección de clusters respecto a objetivos
+        label = "Clusters representativos respecto a los Objetivos."
+        self.radio4 = wx.RadioButton(b_panel, -1, label)
+        sizer_lb = wx.BoxSizer(wx.HORIZONTAL)
+
+        sizer_lb1 = wx.BoxSizer(wx.VERTICAL)
+        lb1_label = wx.StaticText(b_panel, -1, "Valores Mayores:")
+        lb1_label.SetFont(wx.FFont(15, wx.SWISS, wx.FONTFLAG_BOLD))
+        self.lb1 = wx.CheckListBox(b_panel, choices=data.max_objetives)
+        sizer_lb1.Add(lb1_label, flag=wx.ALL, border=2)
+        sizer_lb1.Add(self.lb1, flag=wx.ALL, border=2)
+
+        sizer_lb2 = wx.BoxSizer(wx.VERTICAL)
+        lb2_label = wx.StaticText(b_panel, -1, "Valores Mayores:")
+        lb2_label.SetFont(wx.FFont(15, wx.SWISS, wx.FONTFLAG_BOLD))
+        # self.Bind(wx.EVT_LISTBOX, self.EvtListBox, lb1)
+        self.lb2 = wx.CheckListBox(b_panel, choices=data.max_objetives)
+        # self.Bind(wx.EVT_LISTBOX, self.EvtListBox, lb2)
+        sizer_lb2.Add(lb2_label, flag=wx.ALL, border=2)
+        sizer_lb2.Add(self.lb2, flag=wx.ALL, border=2)
+
+        sizer_lb.Add(sizer_lb1)
+        sizer_lb.Add(sizer_lb2)
+
         # Layout controls on panel:
         vs = wx.BoxSizer(wx.VERTICAL)
         vs.Add(self.radio1)
@@ -113,6 +137,8 @@ class FilterClustersDialog(wx.Dialog):
         vs.Add(self.first_repre)
         vs.Add(self.radio3)
         vs.Add(self.less_repre)
+        vs.Add(self.radio4)
+        vs.Add(sizer_lb, flag=wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, border=5)
         b_panel.SetSizer(vs)
         vs.Fit(b_panel)
 
@@ -144,6 +170,10 @@ class FilterClustersDialog(wx.Dialog):
         elif data.option == 2:
             self.radio3.SetValue(True)
             self.less_repre.SetValue(data.less_repre)
+        elif data.option == 3:
+            self.radio4.SetValue(True)
+            self.lb1.SetChecked(data.max_objetives_use)
+            self.lb2.SetChecked(data.min_objetives_use)
 
     def on_cancel(self, event):
         self.parent.data_selected.cancel = True
@@ -158,9 +188,13 @@ class FilterClustersDialog(wx.Dialog):
         elif self.radio2.GetValue():
             self.parent.data_selected.option = 1
             self.parent.data_selected.more_repre = self.first_repre.GetValue()
-        else:
+        elif self.radio3.GetValue():
             self.parent.data_selected.option = 2
             self.parent.data_selected.less_repre = self.less_repre.GetValue()
+        elif self.radio4.GetValue():
+            self.parent.data_selected.option = 3
+            self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
+            self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
 
         self.Close()
 
@@ -186,3 +220,4 @@ class SelectedData():
         # ---- valores de objetivos mayores
         self.max_objetives = []
         self.max_objetives_use = []
+        self.min_objetives_use = []

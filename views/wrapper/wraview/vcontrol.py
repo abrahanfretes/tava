@@ -308,7 +308,11 @@ class ControlPanel(wx.Panel):
             _ten = self.data_selected.count_tendency
             _min = self.data_selected.less_repre
             self.clusters_seccion.less_representative(_ten - _min)
-
+        if self.data_selected.option == 3:
+            # seleccionar los menos representativos
+            _o_max = self.data_selected.max_objetives_use
+            _o_min = self.data_selected.min_objetives_use
+            self.clusters_seccion.max_min_objective(_o_max, _o_min)
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters
@@ -426,6 +430,13 @@ class ClusterSeccion(wx.Panel):
         self.un_select_all()
         for index in self.row_index[repre:]:
             self.list_control.CheckItem(index)
+
+    def max_min_objective(self, v_max, v_min):
+        self.un_select_all()
+        for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
+            self.list_control.CheckItem(index)
+
+
 
 
 # -------------------                                  ------------------------
