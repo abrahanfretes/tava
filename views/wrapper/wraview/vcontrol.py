@@ -241,13 +241,13 @@ class ControlPanel(wx.Panel):
         shape = self.clusters_seccion.g_for_view()
         s_clusters = shape.g_checkeds()
 
-        # ---- Se establece el modo de visualizacion para los clusters.
+        # Se establece el modo de visualizacion para los clusters.
         _v = []
-        if self.visualization_mode == V_M_CLUSTER or\
+        if self.visualization_mode == V_M_CLUSTER or \
                 self.visualization_mode == V_M_CLUSTER_SUMMARY:
             dd = shape.g_data_for_fig(s_clusters)
             _v.append(dd)
-        if self.visualization_mode == V_M_SUMMARY or\
+        if self.visualization_mode == V_M_SUMMARY or \
                 self.visualization_mode == V_M_CLUSTER_SUMMARY:
             dr = shape.g_resume_for_fig(s_clusters)
             _v.append(dr)

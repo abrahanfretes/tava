@@ -275,13 +275,10 @@ class ClusterConfig(wx.Panel):
 
         sboxs_sm = self.set_summary()
 
-        sboxs_lg = self.set_legend()
-
         msizer = wx.BoxSizer(wx.VERTICAL)
 
         msizer.Add(sboxs_mv, 0, wx.EXPAND | wx.ALL, 7)
         msizer.Add(sboxs_sm, 0, wx.EXPAND | wx.ALL, 7)
-        msizer.Add(sboxs_lg, 0, wx.EXPAND | wx.ALL, 7)
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(msizer, 0, wx.EXPAND)
@@ -319,18 +316,6 @@ class ClusterConfig(wx.Panel):
         sboxs_sm.Add(radio2, 0, wx.ALL, 5)
         sboxs_sm.Add(checkbox1, 0, wx.ALL, 5)
         return sboxs_sm
-
-    def set_legend(self):
-        sbox_mv = wx.StaticBox(self, -1, "Leyenda")
-        sboxs_mv = wx.StaticBoxSizer(sbox_mv, wx.VERTICAL)
-
-        checkbox1 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones por cluster")
-
-        checkbox2 = wx.CheckBox(self, -1, "Mostrar porcentaje de observaciones por cluster")
-
-        sboxs_mv.Add(checkbox1, 0, wx.ALL, 5)
-        sboxs_mv.Add(checkbox2, 0, wx.ALL, 5)
-        return sboxs_mv
 
 
 class SamplePane(wx.Panel):

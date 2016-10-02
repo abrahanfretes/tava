@@ -23,14 +23,17 @@ V_M_CLUSTER_SUMMARY = 2
 
 class ClusterConfig(wx.Dialog):
     """
-    Just a simple test window to put into the LabelBook.
+    Vista de configuración para la visualizacion de clusters.
     """
 
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, title="Cluster Config")
+        wx.Dialog.__init__(self, parent, title="Cluster Config",
+                                                    size=(400, 460))
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
 
         sboxs_mv = self.set_visualization_mode()
+
+        sboxs_lg = self.set_legend()
 
         sbuttons = self.set_buttons()
 
@@ -39,6 +42,7 @@ class ClusterConfig(wx.Dialog):
         msizer = wx.BoxSizer(wx.VERTICAL)
 
         msizer.Add(sboxs_mv, 0, wx.EXPAND | wx.ALL, 7)
+        msizer.Add(sboxs_lg, 0, wx.EXPAND | wx.ALL, 7)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(msizer, 0, wx.EXPAND)
@@ -66,6 +70,27 @@ class ClusterConfig(wx.Dialog):
         sboxs_mv.Add(self.radio1, 0, wx.ALL, 5)
         sboxs_mv.Add(self.radio2, 0, wx.ALL, 5)
         sboxs_mv.Add(self.radio3, 0, wx.ALL, 5)
+        return sboxs_mv
+
+    def set_legend(self):
+        sbox_mv = wx.StaticBox(self, -1, "Leyenda")
+        sboxs_mv = wx.StaticBoxSizer(sbox_mv, wx.VERTICAL)
+
+        # Here we create a panel and a notebook on the panel
+        p = wx.Panel(self)
+        nb = wx.Notebook(p)
+
+        # add the pages to the notebook with the label to show on the tab
+        nb.AddPage(ClusterPage(nb, self), "Cluster")
+        nb.AddPage(SummaryPage(nb, self), "Resumen")
+
+        # finally, put the notebook in a sizer for the panel to manage
+        # the layout
+        sizer = wx.BoxSizer()
+        sizer.Add(nb, 1, wx.EXPAND)
+        p.SetSizer(sizer)
+
+        sboxs_mv.Add(p, 0, wx.ALL | wx.EXPAND, 5)
         return sboxs_mv
 
     def set_buttons(self):
@@ -104,6 +129,55 @@ class ClusterConfig(wx.Dialog):
         self.Close()
 
 
+class ClusterPage(wx.Panel):
+    def __init__(self, parent, dialog_ref):
+        wx.Panel.__init__(self, parent)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        checkbox1 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
+        dialog_ref.clus_check1 = checkbox1
+
+        checkbox2 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
+                                                            "observaciones")
+        dialog_ref.clus_check2 = checkbox2
+
+        checkbox3 = wx.CheckBox(self, -1, "Mostrar shapes")
+        checkbox3.SetValue(True)
+        dialog_ref.clus_check3 = checkbox3
+
+        checkbox4 = wx.CheckBox(self, -1, "Mostrar nombre")
+        dialog_ref.clus_check4 = checkbox4
+
+        sizer.Add(checkbox1, 0, wx.ALL, 5)
+        sizer.Add(checkbox2, 0, wx.ALL, 5)
+        sizer.Add(checkbox3, 0, wx.ALL, 5)
+        sizer.Add(checkbox4, 0, wx.ALL, 5)
+
+        self.SetSizer(sizer)
+
+
+class SummaryPage(wx.Panel):
+    def __init__(self, parent, dialog_ref):
+        wx.Panel.__init__(self, parent)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        checkbox1 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
+                                                            "observaciones")
+        checkbox1.SetValue(True)
+        dialog_ref.summ_check1 = checkbox1
+
+        checkbox2 = wx.CheckBox(self, -1, "Mostrar shapes")
+        dialog_ref.summ_check2 = checkbox2
+
+        checkbox3 = wx.CheckBox(self, -1, "Mostrar nombre")
+        dialog_ref.summ_check3 = checkbox3
+
+        sizer.Add(checkbox1, 0, wx.ALL, 5)
+        sizer.Add(checkbox2, 0, wx.ALL, 5)
+        sizer.Add(checkbox3, 0, wx.ALL, 5)
+
+        self.SetSizer(sizer)
+
+
 class Example(wx.Frame):
 
     def __init__(self, *args, **kwargs):
@@ -118,7 +192,6 @@ class Example(wx.Frame):
         self.Centre()
         self.Show(True)
         self.SetPosition((0, 0))
-#         self.Centre()
 
         ClusterConfig(self)
 
