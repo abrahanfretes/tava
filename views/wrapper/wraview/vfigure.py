@@ -80,6 +80,9 @@ class FigurePanel(wx.Panel):
         self.toolbar.SetBackgroundColour('#DCE5EE')
         sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
 
+        choice_grafic = self.get_choice_grafic()
+        sizer_tool.Add(choice_grafic, wx.ALIGN_CENTER_VERTICAL)
+
         self.graphics = Graphics_Tava(self)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -183,6 +186,23 @@ class FigurePanel(wx.Panel):
 
     def g_type(self):
         return self.graphics.rb_type.GetSelection()
+
+    def get_choice_grafic(self):
+        grid = wx.FlexGridSizer(cols=2)
+        sampleList = ['Coordendas Paralelas', 'Radar Chart', 'Radvis']
+
+        choice_label = wx.StaticText(self, -1, "Select one:")
+        self.ch = wx.Choice(self, -1, choices=sampleList)
+        self.Bind(wx.EVT_CHOICE, self.on_choice, self.ch)
+
+        grid.Add(choice_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
+                                                                    wx.ALL, 5)
+        grid.Add(self.ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        return grid
+
+    def on_choice(self, event):
+        pass
 
 
 class Graphics_Tava(wx.Panel):
