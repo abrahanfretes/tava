@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig
 from views.wrapper.vdialog.vnormalize import NormalizeDialog,\
-    FilterClustersDialog, SelectedData
+    FilterClusterDialog, SelectedData
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY
 from views.wrapper.wraview.cluster.shape import Shape
@@ -93,6 +93,7 @@ class ControlPanel(wx.Panel):
         self.k_plot = K_PLOT_BLOCK
         self.k_color = K_COLOR_SUB_BLOCK
         self.cluster_config = None
+        self.cluster_filter = None
         self.visualization_mode = V_M_CLUSTER
         self.legends_cluster = [False, False, False, True]
         self.legends_summary = [True, False, False, False]
@@ -334,8 +335,10 @@ class ControlPanel(wx.Panel):
             _shape.name_objectives
             _data.max_objetives = list(_shape.name_objectives)
 
-
-        FilterClustersDialog(self, self.data_selected)
+        if not self.cluster_filter:
+            self.cluster_filter = FilterClusterDialog(self, self.data_selected)
+        else:
+            self.cluster_filter.ShowModal()
 
         # ---- se cancela - retorna sin seleccionar
         if self.data_selected.cancel:
