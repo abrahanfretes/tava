@@ -27,9 +27,9 @@ import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig, DialogConfig
 from views.wrapper.vdialog.vnormalize import NormalizeDialog,\
-FilterClustersDialog
+    FilterClustersDialog, SelectedData
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
-V_M_SUMMARY, V_M_CLUSTER_SUMMARY
+    V_M_SUMMARY, V_M_CLUSTER_SUMMARY
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED, \
@@ -278,6 +278,7 @@ class ControlPanel(wx.Panel):
         NormalizeDialog(self, self.current_nor)
 
     def on_generate(self, event):
+        self.data_selected = None
         # ---- controlar valores consistentes para clusters
         if not self.data_seccion.contain_elemens():
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
@@ -298,20 +299,24 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
-        FilterClustersDialog(self)
+        if self.data_selected is None:
+            self.data_selected = SelectedData()
+            self.data_selected.option = 0
 
-        if self.data_selected is not None:
-            print self.data_selected.option
-            print self.data_selected.more_repre
+            _c = self.clusters_seccion
+            self.data_selected.more_repre = 1
+            self.data_selected.max_repre = _c.shape.clusters_count
 
-            # ---- seleccionar clusters automáticamente
-            if self.data_selected.option == 0:
-                # ---- seleccionar todos los clusters
-                self.clusters_seccion.select_all()
-            if self.data_selected.option == 1:
-                # ---- seleccionar los mas representativos
-                _v = self.data_selected.more_repre
-                self.clusters_seccion.more_significants(_v)
+        FilterClustersDialog(self, self.data_selected)
+
+        # ---- seleccionar clusters automáticamente
+        if self.data_selected.option == 0:
+            # ---- seleccionar todos los clusters
+            self.clusters_seccion.select_all()
+        if self.data_selected.option == 1:
+            # ---- seleccionar los mas representativos
+            _v = self.data_selected.more_repre
+            self.clusters_seccion.more_significants(_v)
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters

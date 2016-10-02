@@ -72,7 +72,7 @@ class NormalizeDialog(wx.Dialog):
 
 
 class FilterClustersDialog(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, data):
         wx.Dialog.__init__(self, parent, size=(700, 630))
 
         self.parent = parent
@@ -87,14 +87,14 @@ class FilterClustersDialog(wx.Dialog):
         # ---- panel de datos
         b_panel = wx.Panel(self, -1)
         self.radio1 = wx.RadioButton(b_panel, -1, " Todos los clusters.",
-                                style=wx.RB_GROUP)
-        self.radio2 = wx.RadioButton(b_panel, -1, "Clusters más representativos.")
+                                     style=wx.RB_GROUP)
+        self.radio2 = wx.RadioButton(b_panel, -1,
+                                     "Clusters más representativos.")
 
         # ---- Configuración de Clusters
-        _count_clus = 10
         self.first_repre = wx.SpinCtrl(b_panel, 1, "", (30, 50))
-        self.first_repre.SetRange(1, _count_clus)
-        self.first_repre.SetValue(1)
+        self.first_repre.SetRange(1, data.max_repre)
+        self.first_repre.SetValue(data.more_repre)
 
         # Layout controls on panel:
         vs = wx.BoxSizer(wx.VERTICAL)
@@ -119,14 +119,24 @@ class FilterClustersDialog(wx.Dialog):
         sizer.Add(b_sizer)
         self.SetSizer(sizer)
 
+        self._init_value(data)
         self.Centre()
         self.ShowModal()
+
+    def _init_value(self, data):
+        if data.option == 0:
+            self.radio1.SetValue(True)
+        elif data.option == 1:
+            self.radio2.SetValue(True)
+            self.first_repre.SetValue(data.more_repre)
 
     def on_cancel(self, event):
         self.Close()
 
     def on_accept(self, event):
         a = SelectedData()
+        a.max_repre = self.first_repre.GetMax()
+
         if self.radio1.GetValue():
             a.option = 0
         else:
@@ -141,3 +151,4 @@ class SelectedData():
     def __init__(self):
         self.option = None
         self.more_repre = None
+        self.max_repre = None
