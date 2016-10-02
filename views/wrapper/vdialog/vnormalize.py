@@ -182,3 +182,7 @@ class SelectedData():
 
         # ----  cancelar la selección
         self.cancel = False
+
+        # ---- valores de objetivos mayores
+        self.max_objetives = []
+        self.max_objetives_use = []

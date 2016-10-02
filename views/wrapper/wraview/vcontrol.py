@@ -255,30 +255,33 @@ class ControlPanel(wx.Panel):
         self.clusters_seccion.generate(self.sc_count_clusters.GetValue())
 
     def on_filter(self, event):
-        # ---- controlar valores consistentes para clusters
-        if not self.data_seccion.contain_elemens():
-            KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
-            return
 
-        if not self.data_seccion.checked_elemens():
-            KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
+        # ---- controlar valores consistentes para clusters
+        if not self.clusters_seccion.contain_elemens():
+            KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_DATA).kshow()
             return
 
         if self.data_selected is None:
             self.data_selected = SelectedData()
             _data = self.data_selected
+            _shape = self.clusters_seccion.shape
 
             # --- opción de selección
             _data.option = 0
 
             # ---- cantidad de tendencias
-            _data.count_tendency = self.clusters_seccion.shape.clusters_count
+            _data.count_tendency = _shape.clusters_count
 
             # ---- clusters más representativos - en número de individuos
             _data.more_repre = 1
 
             # ---- clusters menos representativos - en número de individuos
             _data.less_repre = 1
+
+            # ---- clusters por valor de objetivos mayores
+            _shape.name_objectives
+            _data.max_objetives = list(_shape.name_objectives)
+
 
         FilterClustersDialog(self, self.data_selected)
 

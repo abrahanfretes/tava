@@ -41,10 +41,13 @@ class Shape():
     cluster_checkeds = []
     cluster_uncheckeds = []
 
+    name_objectives = []
+
     def __init__(self, df_population, clus=0, nor=0):
         self.population = len(df_population.values.tolist())
         self.clusters = self.generate_clusters(df_population, clus, nor)
         self.clusters_count = len(self.clusters)
+        self.name_objectives = df_population.columns.tolist()[:-1]
 
     def generate_clusters(self, df_population,  clus, nor):
 
@@ -284,6 +287,7 @@ class Cluster():
     column_name = 'Name'
     min_values = []
     max_values = []
+    name_objectives = []
 
     def __init__(self, name, shape, count, df_value, all_count):
         self.name = name
