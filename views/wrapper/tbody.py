@@ -74,10 +74,6 @@ class CentralPanel(wx.Panel):
     def show_view(self, message):
         view = message.data
 
-        # self.nb_main.AddPage(TView(self.nb_main), "Prueba Matplotlib")
-        # self.nb_main.InsertPage(idx, TViewWelCome(self.nb_main),
-        # "Welcome to Tava")
-
         if view.id in self.instancias.keys():
             idx = self.instancias[view.id]
             self.nb_main.SetSelection(idx)
