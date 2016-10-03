@@ -380,7 +380,6 @@ class Example(wx.Frame):
         ClusterConfig(self)
 
 
-
 class FilterClusterDialog(wx.Dialog):
     def __init__(self, parent, data):
         wx.Dialog.__init__(self, parent, title="Cluster Filter",
@@ -552,7 +551,8 @@ class FilterClusterDialog(wx.Dialog):
         lb1_label = wx.StaticText(panel, -1, "Valores Mayores:")
         pts = lb1_label.GetFont().GetPointSize()
         lb1_label.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
-        self.lb1 = wx.CheckListBox(panel, choices=self.data.max_objetives)
+        self.lb1 = wx.CheckListBox(panel, choices=self.data.max_objetives,
+                                   size=(100, 160))
         sizer_lb1.Add(lb1_label, flag=wx.ALL, border=2)
         sizer_lb1.Add(self.lb1, flag=wx.ALL | wx.EXPAND, border=5)
 
@@ -560,7 +560,8 @@ class FilterClusterDialog(wx.Dialog):
         lb2_label = wx.StaticText(panel, -1, "Valores Menores:")
         pts = lb2_label.GetFont().GetPointSize()
         lb2_label.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
-        self.lb2 = wx.CheckListBox(panel, choices=self.data.max_objetives)
+        self.lb2 = wx.CheckListBox(panel, choices=self.data.max_objetives,
+                                   size=(100, 160))
         sizer_lb2.Add(lb2_label, flag=wx.ALL, border=2)
         sizer_lb2.Add(self.lb2, flag=wx.ALL | wx.EXPAND, border=5)
 
