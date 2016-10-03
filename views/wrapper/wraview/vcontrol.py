@@ -26,10 +26,8 @@ from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig
-from views.wrapper.vdialog.vnormalize import NormalizeDialog,\
-    FilterClusterDialog, SelectedData
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
-    V_M_SUMMARY, V_M_CLUSTER_SUMMARY
+    V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED, \
