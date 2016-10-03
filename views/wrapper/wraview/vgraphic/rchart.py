@@ -177,7 +177,7 @@ def k_radar_chart(dframes, class_column, fig=None, frame='circle',
 
         if legend:
             if len(classes) == 1:
-                ax.set_title(classes[0], weight='bold', size='medium',
+                ax.set_title(classes.tolist()[0], weight='bold', size='medium',
                              position=(0.5, 1.1),
                              horizontalalignment='center',
                              verticalalignment='center')
