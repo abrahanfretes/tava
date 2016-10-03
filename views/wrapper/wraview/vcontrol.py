@@ -23,7 +23,6 @@ from wx.lib import platebtn
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
-from imgs.iview import change_normalization, selected_data, generate_cluster
 import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vfigured import DataConfig
@@ -101,19 +100,6 @@ class ControlPanel(wx.Panel):
         self.summ_one_axe = True
         self.clus_summ_axs = [True, False, False]
 
-        # ---- control de datos
-        control_panel = wx.Panel(self)
-        control_panel.SetBackgroundColour('#DCE5EE')
-        self.nor_label = wx.StaticText(control_panel, -1,
-                                       "Datos Normalizados\npor: Observación")
-        change_nor = wx.BitmapButton(control_panel, style=wx.NO_BORDER,
-                                     bitmap=change_normalization.GetBitmap())
-        change_nor.Bind(wx.EVT_BUTTON, self.change_nor)
-        p_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        p_sizer.Add(self.nor_label, 0, wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        p_sizer.Add(change_nor, 0, wx.ALIGN_CENTER_VERTICAL)
-        control_panel.SetSizer(p_sizer)
-
         # ---- Lista de Datos
         self.data_seccion = DataSeccion(self, ksub_blocks)
 
@@ -155,23 +141,10 @@ class ControlPanel(wx.Panel):
         tbtn2.SetLabelColor(wx.Colour(127, 0, 255))
         tbtn2.Bind(wx.EVT_BUTTON, self.on_config)
 
-
-#         b_create = wx.BitmapButton(self, style=wx.NO_BORDER,
-#                                    bitmap=generate_cluster.GetBitmap())
-#         b_create.Bind(wx.EVT_BUTTON, self.on_generate)
-#         b_selected = wx.BitmapButton(self, style=wx.NO_BORDER,
-#                                      bitmap=selected_data.GetBitmap())
-#         b_selected.Bind(wx.EVT_BUTTON, self.on_filter)
-#
-#         b_config = wx.BitmapButton(self, style=wx.NO_BORDER,
-#                                    bitmap=selected_data.GetBitmap())
-#         b_config.Bind(wx.EVT_BUTTON, self.on_config)
-
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(control_panel, 0, wx.EXPAND | wx.ALL, 2)
         self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(self.tbtn0, 0, wx.TOP | wx.RIGHT | wx.LEFT |
@@ -185,12 +158,6 @@ class ControlPanel(wx.Panel):
         self.sizer.Add(tbtn2, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                        wx.ALIGN_CENTER_HORIZONTAL, 5)
 
-#         self.sizer.Add(b_create, 0, wx.EXPAND | wx.ALL |
-#                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-#         self.sizer.Add(b_selected, 0, wx.EXPAND | wx.ALL |
-#                        wx.ALIGN_CENTER_VERTICAL, 3)
-#         self.sizer.Add(b_config, 0, wx.EXPAND | wx.ALL |
-#                        wx.ALIGN_CENTER_VERTICAL, 3)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(self.sizer)
         self.Fit()
@@ -258,16 +225,16 @@ class ControlPanel(wx.Panel):
         _v = []
         if self.visualization_mode == V_M_CLUSTER:
             dd = shape.g_data_for_fig(s_clusters, self.legends_cluster,
-                                                            self.clus_one_axe)
+                                      self.clus_one_axe)
             _v = dd
         if self.visualization_mode == V_M_SUMMARY:
             dr = shape.g_resume_for_fig(s_clusters, self.legends_summary,
-                                                            self.summ_one_axe)
+                                        self.summ_one_axe)
             _v = dr
         if self.visualization_mode == V_M_CLUSTER_SUMMARY:
             dcr = shape.g_data_and_resume_for_fig(s_clusters,
-                                self.legends_cluster, self.legends_summary,
-                                                           self.clus_summ_axs)
+                                                  self.legends_cluster, self.legends_summary,
+                                                  self.clus_summ_axs)
             _v = dcr
 
         # ---- update figure
@@ -289,11 +256,8 @@ class ControlPanel(wx.Panel):
             if True in col_aux:
                 c_d = 'duplicate_true'
                 df[c_d] = col_aux
-                _blocks.append(df[df[c_d]==True].drop(c_d, axis=1))
+                _blocks.append(df[df[c_d] == True].drop(c_d, axis=1))
         return _blocks
-
-    def change_nor(self, event):
-        NormalizeDialog(self, self.normalization)
 
     def on_generate(self, event):
         self.data_selected = None
@@ -492,8 +456,6 @@ class ClusterSeccion(wx.Panel):
         self.un_select_all()
         for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
             self.list_control.CheckItem(index)
-
-
 
 
 # -------------------                                  ------------------------
