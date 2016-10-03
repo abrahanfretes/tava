@@ -101,25 +101,20 @@ class FilterClusterDialog(wx.Dialog):
 
         self.ShowModal()
 
-    def _init_value(self, data):
-        if data.option == 0:
-            self.radio1.SetValue(True)
-        elif data.option == 1:
-            self.radio2.SetValue(True)
-            self.first_repre.SetValue(data.more_repre)
-        elif data.option == 2:
-            self.radio3.SetValue(True)
-            self.less_repre.SetValue(data.less_repre)
-        elif data.option == 3:
-            self.radio4.SetValue(True)
-            self.lb1.SetChecked(data.max_objetives_use)
-            self.lb2.SetChecked(data.min_objetives_use)
-
     def on_cancel(self, event):
         self.parent.data_selected.cancel = True
         self.Close()
 
     def on_accept(self, event):
+        self.parent.data_selected.max_repre = self.more_repre.GetMax()
+        selection = self.parent.data_selected.option
+        if selection == 0:
+            self.parent.data_selected.more_repre = self.more_repre.GetValue()
+        elif selection == 1:
+            self.parent.data_selected.less_repre = self.less_repre.GetValue()
+        elif selection == 2:
+            self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
+            self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
         self.Close()
 
     def get_line(self):
@@ -167,21 +162,7 @@ class FilterClusterDialog(wx.Dialog):
         return sboxs_fc
 
     def on_page_changed(self, e):
-        selection = e.GetSelection()
-        self.GetParent().visualization_mode = selection
-
-        self.parent.data_selected.max_repre = self.more_repre.GetMax()
-
-        if selection == 0:
-            self.parent.data_selected.option = 1
-            self.parent.data_selected.more_repre = self.more_repre.GetValue()
-        elif selection == 1:
-            self.parent.data_selected.option = 2
-            self.parent.data_selected.less_repre = self.less_repre.GetValue()
-        elif selection == 2:
-            self.parent.data_selected.option = 3
-            self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
-            self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
+        self.parent.data_selected.option = e.GetSelection()
 
         e.Skip()
 

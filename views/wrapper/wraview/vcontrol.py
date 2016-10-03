@@ -347,18 +347,15 @@ class ControlPanel(wx.Panel):
         _data = self.clusters_seccion
         # ---- seleccionar clusters automáticamente
         if self.data_selected.option == 0:
-            # ---- seleccionar todos los clusters
-            self.clusters_seccion.select_all()
-        if self.data_selected.option == 1:
             # ---- seleccionar los mas representativos
             _max = self.data_selected.more_repre
             self.clusters_seccion.more_representative(_max)
-        if self.data_selected.option == 2:
+        if self.data_selected.option == 1:
             # seleccionar los menos representativos
             _ten = self.data_selected.count_tendency
             _min = self.data_selected.less_repre
             self.clusters_seccion.less_representative(_ten - _min)
-        if self.data_selected.option == 3:
+        if self.data_selected.option == 2:
             # seleccionar los menos representativos
             _o_max = self.data_selected.max_objetives_use
             _o_min = self.data_selected.min_objetives_use
