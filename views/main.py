@@ -44,6 +44,9 @@ class MainFrame(wx.Frame):
 
         pub().subscribe(self.new_view, T.CREATE_VIEW)
 
+        # ---- results
+        pub.subscribe(self.new_results, T.NEW_RESULTS)
+
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
 
@@ -143,6 +146,35 @@ class MainFrame(wx.Frame):
                 wx.GetApp().GetTopWindow().Raise()
 
             pub().sendMessage(T.ADD_PROJECT_IN_TREE, project)
+
+    def new_results(self, message):
+        self.p_project = message.data
+        self.p_path_files = []
+        self.p_formate = 10
+        self.p_create = False
+
+        NewProject(self, True)
+        if self.p_create:
+
+            style = wx.PD_APP_MODAL
+            style |= wx.PD_CAN_ABORT
+            dlg = PP.PyProgress(self, -1, L('MSG_PRO_HEADER_TITLE'),
+                                "                              :)",
+                                agwStyle=style)
+
+            results = self.ppr.add_results_by_project(self.p_project,
+                                                      self.p_path_files,
+                                                      self.p_formate, dlg)
+
+            dlg.Destroy()
+            wx.SafeYield()
+            wx.GetApp().GetTopWindow().Raise()
+
+            pub().sendMessage(T.ADD_RESULTS_IN_TREE, results)
+
+            print 'Resultados Agregados Correctamente'
+        else:
+            print 'Proyecto Cancelado'
 
     def new_view(self, message):
         project = message.data

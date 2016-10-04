@@ -90,3 +90,29 @@ class MenuVista(wx.Menu):
         # self.parent.delete_item_selected()
         # pub().sendMessage(T.DELETE_VIEW, self.view)
         pass
+
+
+# ------ menu para paquete de resultados -------------------------------------
+class MenuResult(wx.Menu):
+    '''
+    Clase Menu que estará contenida en un contextMenu de la entidad proyecto
+    '''
+    def __init__(self, parent, project):
+        wx.Menu.__init__(self)
+
+        # ------ definiciones iniciales ---------------------------------------
+        self.project = project
+        self.init_ui()
+        # ---------------------------------------------------------------------
+
+    def init_ui(self):
+
+        # ------ items projects ----------------------------------------
+
+        # -- add result
+        self.add = wx.MenuItem(self, wx.ID_ANY, L('ADD_FILE_RESOULT'))
+        self.AppendItem(self.add)
+        self.Bind(wx.EVT_MENU, self.on_add, self.add)
+
+    def on_add(self, event):
+        pub.sendMessage(T.NEW_RESULTS, self.project)

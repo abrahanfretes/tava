@@ -33,6 +33,9 @@ class TTreeP(object):
         pub().subscribe(self.add_project_in_tree, T.ADD_PROJECT_IN_TREE)
         pub().subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
 
+        # --- results
+        pub.subscribe(self.add_results_in_tree, T.ADD_RESULTS_IN_TREE)
+
         self.iview = iview
         self.init_tree()
 
@@ -81,6 +84,12 @@ class TTreeP(object):
     def add_view_in_tree(self, message):
         new_view = message.data
         self.iview.add_views(self.iview.c_item, new_view)
+        self.iview.Expand(self.iview.c_item)
+
+    def add_results_in_tree(self, message):
+        for r in message.data:
+            self.iview.add_results(self.iview.c_item, r)
+
         self.iview.Expand(self.iview.c_item)
 
 

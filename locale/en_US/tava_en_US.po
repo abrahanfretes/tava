@@ -236,3 +236,10 @@ msgstr "Iterations"
 msgid "VIEW_ITERATION_OPTION"
 msgstr "Select"
 
+# -------------------------------- vmenu --------------------------------------
+msgid "ADD_FILE_RESOULT"
+msgstr "Add File Result"
+
+msgid "DELETE_FILE_RESOULT"
+msgstr "Delete"
+

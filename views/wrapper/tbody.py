@@ -27,7 +27,7 @@ from imgs.itree import iopen, iopened, iclose, \
     iview_package_open, iview_package_close, iview_pack
 from languages import topic as T
 from presenters.ptree import TTreeP, PackageFile, PackageView
-from views.wrapper.vmenu.vtree import MenuVista, MenuPackageView
+from views.wrapper.vmenu.vtree import MenuVista, MenuPackageView, MenuResult
 from views.wrapper.wraview.mainview import ViewMainPanel
 
 
@@ -235,8 +235,8 @@ class TTree(CT.CustomTreeCtrl):
             # self.PopupMenu(menu_p)
         elif isinstance(data, PackageFile):
             print 'Click derecho en Paquete Resultado'
-            # menu_p = MenuPR(self, data.project)
-            # self.PopupMenu(menu_p)
+            menu_p = MenuResult(self, data.project)
+            self.PopupMenu(menu_p)
         elif isinstance(data, PackageView):
             print 'Click derecho en Paquete de Vista'
             menu_p = MenuPackageView(self, data.project)
