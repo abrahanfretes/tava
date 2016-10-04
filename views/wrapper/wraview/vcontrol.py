@@ -231,7 +231,8 @@ class ControlPanel(wx.Panel):
             _v = dr
         if self.visualization_mode == V_M_CLUSTER_SUMMARY:
             dcr = shape.g_data_and_resume_for_fig(s_clusters,
-                                                  self.legends_cluster, self.legends_summary,
+                                                  self.legends_cluster,
+                                                  self.legends_summary,
                                                   self.clus_summ_axs)
             _v = dcr
 

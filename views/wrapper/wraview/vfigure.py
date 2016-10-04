@@ -29,7 +29,7 @@ from views.wrapper.wraview.vgraphic.fuse import g_color
 from views.wrapper.wraview.vgraphic.rchart import k_radar_chart
 from views.wrapper.wraview.vgraphic.rviz import k_radviz
 from imgs.ifigure import settings_fig, play_fig
-from views.wrapper.vdialog.vfigured import DialogConfig
+from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig
 
 
 K_PARALLEL_COORDENATE = 0
@@ -60,6 +60,8 @@ class FigurePanel(wx.Panel):
                           horizontalalignment='center',
                           verticalalignment='center')
         self.canvas = FigureCanvas(self, -1, self.fig)
+
+        self.ax_conf = AxesConfig()
 
         # toolbar
         sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
@@ -109,7 +111,7 @@ class FigurePanel(wx.Panel):
 
         if key_figure == K_PARALLEL_COORDENATE:
             self.fig = k_parallel_coordinates(dframes, 'Name', self.fig,
-                                              legend=True)
+                                              self.ax_conf, legend=True)
         elif key_figure == K_ANDREWS_CURVES:
             self.fig = k_andrews_curves(dframes, 'Name', self.fig)
         elif key_figure == K_RADVIZ:
@@ -182,7 +184,7 @@ class FigurePanel(wx.Panel):
         pass
 
     def on_config(self, event):
-        DialogConfig(self)
+        FigureConfigDialog(self)
 
     def g_figure(self):
         return self.ch_graph.GetSelection()

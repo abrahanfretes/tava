@@ -93,67 +93,78 @@ class DataConfig(wx.Dialog):
         self.parent.k_plot = event.GetSelection()
 
 
-class DialogConfig(wx.Dialog):
+class FigureConfigDialog(wx.Dialog):
+    '''
+    Dialog de configuración de la Figura.
+    '''
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, size=(600, 500),
                            title='Configuración de Gráfico')
 
-#         Possible values for Tab placement are INB_TOP, INB_BOTTOM,
-#         INB_RIGHT, INB_LEFT
-
         notebook = LB.LabelBook(self, -1, agwStyle=LB.INB_FIT_LABELTEXT |
                 LB.INB_LEFT | LB.INB_DRAW_SHADOW | LB.INB_GRADIENT_BACKGROUND |
-                LB.INB_SHOW_ONLY_TEXT)
+                LB.INB_SHOW_ONLY_TEXT | LB.INB_BOLD_TAB_SELECTION)
         notebook.SetFontBold(False)
-        notebook.SetColour(LB.INB_TAB_AREA_BACKGROUND_COLOUR, wx.Colour(132, 164, 213))
+        notebook.SetColour(LB.INB_TAB_AREA_BACKGROUND_COLOUR,
+                           wx.Colour(132, 164, 213))
 
         imagelist = wx.ImageList(32, 32)
         imagelist.Add(wx.Bitmap("my_bitmap.png", wx.BITMAP_TYPE_PNG))
         notebook.AssignImageList(imagelist)
 
-        pane1 = FigureConfig(notebook)
-        pane2 = ClusterConfig(notebook)
+        notebook.AddPage(FigureConfigPanel(notebook, self), "Figura", 1, 0)
+        notebook.AddPage(AxesConfigPanel(notebook, self), "Ejes", 0, 0)
 
-        notebook.AddPage(pane1, "Figura", 1, 0)
-        notebook.AddPage(pane2, "Análisis", 0, 0)
-#         self.CenterOnScreen()
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
+        self.CenterOnScreen()
         self.Show()
 
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+    def set_axes_parent_values(self):
+        ax_conf = self.GetParent().ax_conf
+        ax_conf.color_top_spine = self.clr_top_sp.GetValue().\
+        GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_bottom_spine = self.clr_bottom_sp.GetValue().\
+        GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_left_spine = self.clr_left_sp.GetValue().\
+        GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_right_spine = self.clr_right_sp.GetValue().\
+        GetAsString(wx.C2S_HTML_SYNTAX)
 
-    def OnClose(self, event):
-        self.GetParent().Close()
-        event.Skip()
+    def on_close(self, e):
+        self.set_axes_parent_values()
+        self.Destroy()
 
 
-# ver ButtonPanel
-class FigureConfig(wx.Panel):
-    """
-    Just a simple test window to put into the LabelBook.
-    """
+class FigureConfigPanel(wx.Panel):
+    '''
+    Panel de configuracion de la figura.
+    '''
 
-    def __init__(self, parent):
+    def __init__(self, parent, dialog_ref):
+        '''
+        Método de inicialización del Panel.
+        :param parent: referencia al contenedor padre.
+        '''
         wx.Panel.__init__(self, parent, style=0)
+
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
 
-        sboxs_sf = self.set_size_figure()
+        sboxs_sf = self.get_size_figure()
 
-        sboxs_spf = self.set_spacing_figure()
-
-        sboxs_spif = self.set_spines_figure()
+        sboxs_spf = self.get_spacing_figure()
 
         msizer = wx.BoxSizer(wx.VERTICAL)
 
         msizer.Add(sboxs_sf, 0, wx.EXPAND | wx.ALL, 10)
         msizer.Add(sboxs_spf, 0, wx.EXPAND | wx.ALL, 10)
-        msizer.Add(sboxs_spif, 0, wx.EXPAND | wx.ALL, 10)
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(msizer, 0, wx.EXPAND)
 
         self.SetSizer(sizer)
 
-    def set_size_figure(self):
+    def get_size_figure(self):
         sbox_sf = wx.StaticBox(self, -1, "Tamaño")
         sboxs_sf = wx.StaticBoxSizer(sbox_sf, wx.VERTICAL)
 
@@ -179,7 +190,7 @@ class FigureConfig(wx.Panel):
 
         return sboxs_sf
 
-    def set_spacing_figure(self):
+    def get_spacing_figure(self):
         sbox_spf = wx.StaticBox(self, -1, "Espaciado")
         sboxs_spf = wx.StaticBoxSizer(sbox_spf, wx.VERTICAL)
 
@@ -221,142 +232,116 @@ class FigureConfig(wx.Panel):
 
         return sboxs_spf
 
-    def set_spines_figure(self):
+
+class AxesConfigPanel(wx.Panel):
+    """
+    Panel de configuración de los ejes de la Figura.
+    """
+
+    def __init__(self, parent, dialog_ref):
+        '''
+        Método de inicialización de la clase.
+        :param parent: referencia al contenedor padre.
+        :param dialog_ref: referencia a la clase Dialog principal
+        '''
+        wx.Panel.__init__(self, parent, style=0)
+
+        self.dialog_ref = dialog_ref
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+
+        sboxs_spif = self.get_spines_figure()
+
+        sizer.Add(sboxs_spif, 0, wx.EXPAND | wx.ALL, 3)
+
+        self.SetSizer(sizer)
+
+    def get_spines_figure(self):
         sbox_spf = wx.StaticBox(self, -1, "Bordes")
         sboxs_spf = wx.StaticBoxSizer(sbox_spf, wx.VERTICAL)
 
-        grid = wx.FlexGridSizer(cols=4)
+        grid = wx.FlexGridSizer(cols=5)
 
         top_label = wx.StaticText(self, -1, "Top:")
-
-        self.top_color = csel.ColourSelect(self, -1, "", (255, 255, 0), (60, 20))
+        clr_top_sp = csel.ColourSelect(self, -1, label="Escoja un color",
+                                           colour=(255, 255, 0),
+                                           size=(120, 30))
+        self.dialog_ref.clr_top_sp = clr_top_sp
 
         bottom_label = wx.StaticText(self, -1, "Bottom:")
-
-        self.bottom_color = csel.ColourSelect(self, -1, "", (255, 0, 255), (60, 20))
+        clr_bottom_sp = csel.ColourSelect(self, -1, "Escoja un color",
+                                              colour=(255, 0, 255),
+                                              size=(120, 30))
+        self.dialog_ref.clr_bottom_sp = clr_bottom_sp
 
         left_label = wx.StaticText(self, -1, "Left:")
-        self.left_color = csel.ColourSelect(self, -1, "", (127, 0, 255), (60, 20))
+        clr_left_sp = csel.ColourSelect(self, -1, "Escoja un color",
+                                            colour=(127, 0, 255),
+                                            size=(120, 30))
+        self.dialog_ref.clr_left_sp = clr_left_sp
 
         right_label = wx.StaticText(self, -1, "Right:")
-        self.right_color = csel.ColourSelect(self, -1, "", (255, 100, 130), (60, 20))
+        clr_right_sp = csel.ColourSelect(self, -1, "Escoja un color",
+                                             colour=(255, 100, 130),
+                                             size=(120, 30))
+        self.dialog_ref.clr_right_sp = clr_right_sp
 
         grid.Add(top_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
                                                                     wx.ALL, 5)
-        grid.Add(self.top_color, 0, wx.EXPAND | wx.ALL, 5)
+        grid.Add(clr_top_sp, 0, wx.EXPAND | wx.ALL, 5)
+
+        grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
 
         grid.Add(bottom_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
                                                                     wx.ALL, 5)
-        grid.Add(self.bottom_color, 0, wx.EXPAND | wx.ALL, 5)
+        grid.Add(clr_bottom_sp, 0, wx.EXPAND | wx.ALL, 5)
 
         grid.Add(left_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
                                                                      wx.ALL, 5)
-        grid.Add(self.left_color, 0, wx.EXPAND | wx.ALL, 5)
+        grid.Add(clr_left_sp, 0, wx.EXPAND | wx.ALL, 5)
+
+        grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
 
         grid.Add(right_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
                                                                     wx.ALL, 5)
-        grid.Add(self.right_color, 0, wx.EXPAND | wx.ALL, 5)
+        grid.Add(clr_right_sp, 0, wx.EXPAND | wx.ALL, 5)
 
-        sboxs_spf.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+        sboxs_spf.Add(grid, 0, wx.ALL, 3)
 
         return sboxs_spf
 
 
-class ClusterConfig(wx.Panel):
-    """
-    Just a simple test window to put into the LabelBook.
-    """
-
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent, style=0)
-        self.SetBackgroundColour(wx.Colour(255, 255, 255))
-
-        sboxs_mv = self.set_visualization_mode()
-
-        sboxs_sm = self.set_summary()
-
-        msizer = wx.BoxSizer(wx.VERTICAL)
-
-        msizer.Add(sboxs_mv, 0, wx.EXPAND | wx.ALL, 7)
-        msizer.Add(sboxs_sm, 0, wx.EXPAND | wx.ALL, 7)
-
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(msizer, 0, wx.EXPAND)
-
-        self.SetSizer(sizer)
-
-    def set_visualization_mode(self):
-        sbox_mv = wx.StaticBox(self, -1, "Modo Visualización")
-        sboxs_mv = wx.StaticBoxSizer(sbox_mv, wx.VERTICAL)
-
-        radio1 = wx.RadioButton(self, -1, "Mostrar en un solo eje",
-                                style=wx.RB_GROUP)
-
-        radio2 = wx.RadioButton(self, -1, "Mostrar en varios ejes")
-        radio2.SetValue(False)
-
-        sboxs_mv.Add(radio1, 0, wx.ALL, 5)
-        sboxs_mv.Add(radio2, 0, wx.ALL, 5)
-        return sboxs_mv
-
-    def set_summary(self):
-        sbox_sm = wx.StaticBox(self, -1, "Resumen")
-        sboxs_sm = wx.StaticBoxSizer(sbox_sm, wx.VERTICAL)
-
-        radio1 = wx.RadioButton(self, -1, "Mostrar en un solo eje",
-                                style=wx.RB_GROUP)
-        radio1.SetValue(False)
-
-        radio2 = wx.RadioButton(self, -1, "Mostrar en varios ejes")
-        radio2.SetValue(False)
-
-        checkbox1 = wx.CheckBox(self, -1, "Mostrar cluster de fondo")
-
-        sboxs_sm.Add(radio1, 0, wx.ALL, 5)
-        sboxs_sm.Add(radio2, 0, wx.ALL, 5)
-        sboxs_sm.Add(checkbox1, 0, wx.ALL, 5)
-        return sboxs_sm
-
-
-class SamplePane(wx.Panel):
-    """
-    Just a simple test window to put into the LabelBook.
-    """
-    def __init__(self, parent, label):
-
-        wx.Panel.__init__(self, parent, style=0)  # wx.BORDER_SUNKEN)
-        self.SetBackgroundColour(wx.Colour(255, 255, 255))
-
-        label = label + "\nEnjoy the LabelBook && FlatImageBook demo!"
-        wx.StaticText(self, -1, label, pos=(10, 10))
+class AxesConfig():
+    '''
+    Clase que contendrá las configuraciones de los ejes contenidas en las
+    Figuras.
+    '''
+    def __init__(self):
+        '''
+        Método de inicializacion de variables
+        '''
+        self.color_top_spine = (0, 0, 0)
+        self.color_bottom_spine = (0, 0, 0)
+        self.color_left_spine = (0, 0, 0)
+        self.color_right_spine = (0, 0, 0)
 
 
 class Example(wx.Frame):
 
     def __init__(self, *args, **kwargs):
-        super(Example, self).__init__(*args, **kwargs) 
+        super(Example, self).__init__(*args, **kwargs)
 
         self.InitUI()
 
     def InitUI(self):
-
-        menubar = wx.MenuBar()
-        help_ = wx.Menu()
-        help_.Append(100, '&About')
-        self.Bind(wx.EVT_MENU, self.OnAboutBox, id=100)
-        menubar.Append(help_, '&Help')
-        self.SetMenuBar(menubar)
         self.SetSize((300, 200))
-        self.SetTitle('About dialog box')
         self.Centre()
         self.Show(True)
         self.SetPosition((0, 0))
-#         self.Centre()
-
-        DialogConfig(self)
-
-    def OnAboutBox(self, e):
-        DialogConfig(self)
+        self.ax_conf = AxesConfig()
+        FigureConfigDialog(self)
 
 
 def main():
