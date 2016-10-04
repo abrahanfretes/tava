@@ -31,11 +31,14 @@ class TTreeP(object):
         Constructor
         '''
         pub().subscribe(self.add_project_in_tree, T.ADD_PROJECT_IN_TREE)
+
+        # ---- vistas
         pub().subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
+        pub().subscribe(self.delete_view, T.DELETE_VIEW_TREE)
 
         # --- results
         pub.subscribe(self.add_results_in_tree, T.ADD_RESULTS_IN_TREE)
-        pub.subscribe(self.deleteFileResult, T.DELETE_RESULT_TREE)
+        pub.subscribe(self.delete_result, T.DELETE_RESULT_TREE)
 
         self.iview = iview
         self.init_tree()
@@ -84,15 +87,23 @@ class TTreeP(object):
 
     def add_view_in_tree(self, message):
         new_view = message.data
-        self.iview.add_views(self.iview.c_item, new_view)
+        item = self.iview.add_views(self.iview.c_item, new_view)
+        for i, vr in enumerate(new_view.results):
+            name = 'r' + str(i+1) + ' - ' + vr.result.name
+            self.iview.add_result_view(item, name)
         self.iview.Expand(self.iview.c_item)
+        self.iview.Expand(item)
+        self.iview.SelectItem(item)
 
     def add_results_in_tree(self, message):
         for r in message.data:
             self.iview.add_results(self.iview.c_item, r)
         self.iview.Expand(self.iview.c_item)
 
-    def deleteFileResult(self, message):
+    def delete_result(self, message):
+        self.iview.delete_item_selected()
+
+    def delete_view(self, message):
         self.iview.delete_item_selected()
 
 

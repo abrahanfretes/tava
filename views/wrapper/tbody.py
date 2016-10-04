@@ -45,6 +45,7 @@ class CentralPanel(wx.Panel):
         self.v_setting()
 
         pub().subscribe(self.show_view, T.SHOW_SELECTED_VIEW)
+        pub().subscribe(self.pre_delete_page, T.PRE_DELETE_VIEW)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.sizer)
@@ -89,7 +90,6 @@ class CentralPanel(wx.Panel):
 
     def on_close(self, event):
         page = self.nb_main.GetCurrentPage()
-
         if page is not None:
             id_page = self.nb_main.GetPageIndex(page)
             self.instancias_page.remove(self.instancias_page[id_page])
@@ -97,6 +97,12 @@ class CentralPanel(wx.Panel):
             if id_page != len(self.instancias_page):
                 p = self.instancias_page
                 self.instancias_page = p[:id_page] + [i-1 for i in p[id_page:]]
+
+    def pre_delete_page(self, message):
+        view_id = message.data.id
+        if view_id in self.instancias_view:
+            self.nb_main.RemovePage(self.instancias_view.index(view_id))
+        pub().sendMessage(T.DELETE_VIEW, message.data)
 
     def on_change(self, event):
         print 'Change tab'

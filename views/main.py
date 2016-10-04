@@ -42,7 +42,9 @@ class MainFrame(wx.Frame):
 
         self.v_setting()
 
+        # --- vistas
         pub().subscribe(self.new_view, T.CREATE_VIEW)
+        pub.subscribe(self.delete_view, T.DELETE_VIEW)
 
         # ---- results
         pub.subscribe(self.new_results, T.NEW_RESULTS)
@@ -196,6 +198,10 @@ class MainFrame(wx.Frame):
             view = self.ppr.add_views(self.view_name,
                                       self.vews_results, project)
             pub().sendMessage(T.ADD_VIEW_IN_TREE, view)
+
+    def delete_view(self, message):
+        self.ppr.delete_view(message.data)
+        pub().sendMessage(T.DELETE_VIEW_TREE)
 
 
 class SplashFrame(wx.SplashScreen):

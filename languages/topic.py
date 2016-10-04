@@ -42,6 +42,12 @@ DELETE_RESULT_TREE = 'DELETE.RESULTS_TREE'
 # Send = vmenu->MenuAR
 # Subscribe = main->TavaFrame
 DELETE_VIEW = 'DELETE.VIEW'
+PRE_DELETE_VIEW = 'PRE.DELETE_VIEW'
+
+
+# Send = vmenu->MenuAR
+# Subscribe = main->TavaFrame
+DELETE_VIEW_TREE = 'DELETE.VIEW_TREE'
 
 # Send = vmenu->MenuAV
 # Subscribe = main->TavaFrame

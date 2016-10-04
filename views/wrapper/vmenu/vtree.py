@@ -87,9 +87,7 @@ class MenuVista(wx.Menu):
         pass
 
     def on_delete(self, event):
-        # self.parent.delete_item_selected()
-        # pub().sendMessage(T.DELETE_VIEW, self.view)
-        pass
+        pub().sendMessage(T.PRE_DELETE_VIEW, self.view)
 
 
 # ------ menu para paquete de resultados -------------------------------------

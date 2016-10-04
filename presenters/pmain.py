@@ -70,6 +70,10 @@ class MainFrameP(object):
 
         return ViewM().add(view)
 
+    def delete_view(self, view):
+        ViewM().delete(view)
+        return True
+
     def add_results_by_project(self, project, path_files, t_format, dlg=None):
 
         results = []
