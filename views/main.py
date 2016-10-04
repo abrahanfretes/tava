@@ -46,6 +46,7 @@ class MainFrame(wx.Frame):
 
         # ---- results
         pub.subscribe(self.new_results, T.NEW_RESULTS)
+        pub.subscribe(self.delete_result, T.DELETE_RESULT)
 
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
@@ -165,16 +166,25 @@ class MainFrame(wx.Frame):
             results = self.ppr.add_results_by_project(self.p_project,
                                                       self.p_path_files,
                                                       self.p_formate, dlg)
-
             dlg.Destroy()
             wx.SafeYield()
             wx.GetApp().GetTopWindow().Raise()
 
             pub().sendMessage(T.ADD_RESULTS_IN_TREE, results)
 
-            print 'Resultados Agregados Correctamente'
+    def delete_result(self, message):
+
+        if self.ppr.contain_view(message.data.id):
+            # ---- no se puede eliminar resultado, utilizado en vista
+            dlg = wx.MessageDialog(self, L('RESULT_NOT_DELETE'),
+                                   L('RESULT_NOT_DELETE_HEADER'),
+                                   wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
         else:
-            print 'Proyecto Cancelado'
+            # --- elimina de la bd y envía mensaje de eliminación
+            self.ppr.delete_result(message.data)
+            pub().sendMessage(T.DELETE_RESULT_TREE)
 
     def new_view(self, message):
         project = message.data

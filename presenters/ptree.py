@@ -35,6 +35,7 @@ class TTreeP(object):
 
         # --- results
         pub.subscribe(self.add_results_in_tree, T.ADD_RESULTS_IN_TREE)
+        pub.subscribe(self.deleteFileResult, T.DELETE_RESULT_TREE)
 
         self.iview = iview
         self.init_tree()
@@ -89,8 +90,10 @@ class TTreeP(object):
     def add_results_in_tree(self, message):
         for r in message.data:
             self.iview.add_results(self.iview.c_item, r)
-
         self.iview.Expand(self.iview.c_item)
+
+    def deleteFileResult(self, message):
+        self.iview.delete_item_selected()
 
 
 class PackageFile():

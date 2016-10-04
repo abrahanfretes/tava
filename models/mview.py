@@ -62,4 +62,7 @@ class ViewResultM(Dao):
 
     def count_results(self, result_id):
         query = self.session.query(ViewResult).filter_by(result_id=result_id)
-        return query.scalar()
+        return query.count()
+
+    def use_in_viste(self, result_id):
+        return True if self.count_results(result_id) > 0 else False

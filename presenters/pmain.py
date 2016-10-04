@@ -16,16 +16,16 @@
 # ##############################################################
 '''
 
+from wx import GetTranslation as L
+
 from bd.entity import Project, View, ViewResult, ViewIteration
 from exception.tava_exception import PreParserError, ParserError
 from models.mproject import ProjectM
 from models.mresult import ResultModel
+from models.mview import ViewM, ViewResultM
 from parser.preparser import VonToTavaParser
 from parser.tavaparser import TavaFileToResult
 from resources.tava_path import tava_dir_parsed, tava_dir_temp
-
-from wx import GetTranslation as L
-from models.mview import ViewM
 
 
 FORMAT_TAVA = 0
@@ -173,3 +173,10 @@ class MainFrameP(object):
                         parse_correct.append(object)
 
         return results
+
+    def contain_view(self, result_id):
+        return ViewResultM().use_in_viste(result_id)
+
+    def delete_result(self, result):
+        ResultModel().delete(result)
+        return True

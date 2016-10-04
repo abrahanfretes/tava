@@ -116,3 +116,33 @@ class MenuResult(wx.Menu):
 
     def on_add(self, event):
         pub.sendMessage(T.NEW_RESULTS, self.project)
+
+
+# ------ menu para archivo de resultados -------------------------------------
+class MenuResultFile(wx.Menu):
+    '''
+    Clase Menu que estará contenida en un contextMenu de la entidad proyecto
+    '''
+    def __init__(self, parent, result):
+        wx.Menu.__init__(self)
+
+        # ------ definiciones iniciales ---------------------------------------
+        self.result = result
+        self.parent = parent
+        self.init_ui()
+        # ---------------------------------------------------------------------
+
+    def init_ui(self):
+
+        self.AppendSeparator()
+
+        # -- delete result
+        self.add = wx.MenuItem(self, wx.ID_ANY, L('DELETE_FILE_RESOULT'))
+        self.AppendItem(self.add)
+        self.Bind(wx.EVT_MENU, self.on_delete, self.add)
+
+        self.AppendSeparator()
+
+    def on_delete(self, event):
+        # self.parent.delete_item_selected()
+        pub().sendMessage(T.DELETE_RESULT, self.result)
