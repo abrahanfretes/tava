@@ -27,7 +27,6 @@ from imgs.itree import iopen, iopened, iclose, \
     iview_package_open, iview_package_close, iview_pack
 from languages import topic as T
 from presenters.ptree import TTreeP, PackageFile, PackageView
-from views.wrapper.view import TView
 from views.wrapper.vmenu.vtree import MenuVista, MenuPackageView
 from views.wrapper.wraview.mainview import ViewMainPanel
 
@@ -56,14 +55,16 @@ class CentralPanel(wx.Panel):
 
     def v_content(self):
 
-        self.instancias = {}
-        self.instancias_d = {}
+        self.instancias_page = []
+        self.instancias_view = []
 
         self.nb_main = aui.AuiNotebook(self)
-        self.nb_main.SetArtProvider(aui.ChromeTabArt())
+        ar = aui.ChromeTabArt()
+        ar.SetAGWFlags(aui.AUI_NB_TAB_SPLIT)
+        self.nb_main.SetArtProvider(ar)
         # self.nb_main.SetAGWWindowStyleFlag(KURI_AUI_NB_STYLE)
         self.nb_main.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.on_close)
-        self.nb_main.Bind(aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.on_change)
+        # self.nb_main.Bind(aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.on_change)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.nb_main, 1,
@@ -74,24 +75,27 @@ class CentralPanel(wx.Panel):
     def show_view(self, message):
         view = message.data
 
-        if view.id in self.instancias.keys():
-            idx = self.instancias[view.id]
-            self.nb_main.SetSelection(idx)
+        if view.id in self.instancias_view:
+            id_page = self.instancias_view.index(view.id)
+            self.nb_main.SetSelection(id_page)
         else:
-            idx = self.nb_main.GetPageCount()
             self.nb_main.AddPage(ViewMainPanel(self.nb_main, view),
-                                 "Prueba Matplotlib")
-            self.instancias[view.id] = idx
-            self.instancias_d[idx] = view.id
-            self.nb_main.SetSelection(idx)
+                                 view.name, True)
+
+            # --- se guardan las instancias
+            self.instancias_page.append(len(self.instancias_page))
+            self.instancias_view.append(view.id)
 
     def on_close(self, event):
         page = self.nb_main.GetCurrentPage()
+
         if page is not None:
-            idx = self.nb_main.GetPageIndex(page)
-            _id = self.instancias_d[idx]
-            del self.instancias[_id]
-            del self.instancias_d[idx]
+            id_page = self.nb_main.GetPageIndex(page)
+            self.instancias_page.remove(self.instancias_page[id_page])
+            self.instancias_view.remove(self.instancias_view[id_page])
+            if id_page != len(self.instancias_page):
+                p = self.instancias_page
+                self.instancias_page = p[:id_page] + [i-1 for i in p[id_page:]]
 
     def on_change(self, event):
         print 'Change tab'
