@@ -18,9 +18,9 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
-opts = {'packages': ['wx.lib.pubsub', 'scipy'],
+opts = {'packages': ['wx.lib.pubsub', 'scipy', 'matplotlib'],
         'include_files': ['./locale/', './properties/']
-       }
+        }
 
 executables = [
     Executable('tavai.py', base=base)
