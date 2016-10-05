@@ -209,7 +209,7 @@ class FigurePanel(wx.Panel):
         sampleList = ['Datos', 'Cluster']
 
         self.ch_type = wx.Choice(self, -1, choices=sampleList)
-        self.ch_type.SetSelection(0)
+        self.ch_type.SetSelection(1)
         self.ch_type.SetToolTipString("Seleccione un tipo")
 
         grid.Add(self.ch_type, 0, wx.ALIGN_LEFT | wx.ALL, 5)
