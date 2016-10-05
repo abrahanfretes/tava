@@ -70,9 +70,9 @@ class ViewMainPanel(wx.Panel):
                                     ksub_blocks, self)
         self.kfigure.control_panel = self.control
 
-        self.splitter.SplitVertically(self.kfigure, self.control, 1000)
-        self.splitter.SetMinimumPaneSize(165)
-        self.splitter.SetSashGravity(0.6)
+        self.splitter.SplitVertically(self.kfigure, self.control, 630)
+#         self.splitter.SetMinimumPaneSize(10)
+        self.splitter.SetSashGravity(0.9)
 
     def transform_data(self):
         kblocks = {}
