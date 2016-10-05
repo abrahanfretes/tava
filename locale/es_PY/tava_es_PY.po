@@ -35,6 +35,9 @@ msgstr "El archivo no puede ser eliminado, esta siendo usado en alguna vista!"
 msgid "RESULT_NOT_DELETE_HEADER"
 msgstr "Eliminar Archivos Resultado!"
 
+msgid "EXIT_TAVA"
+msgstr "Salir de TAVA!"
+
 # ------------------------------- TavaMenuBar ---------------------------------
 msgid "MENU_BAR_FILE"
 msgstr "Archivo"

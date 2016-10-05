@@ -63,9 +63,17 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_close_tava)
 
     def on_close_tava(self, event):
-        print 'inica cierre'
+
+        result = wx.MessageBox(L('EXIT_TAVA'),
+                               style=wx.CENTER | wx.ICON_QUESTION |
+                               wx.YES_NO | wx.NO_DEFAULT)
+        if result == wx.YES:
+            self.tree.ppr.do_exit()
+            self.Destroy()
+        return False
+
+    def on_exit(self, event):
         self.tree.ppr.do_exit()
-        print 'termina cierre'
         self.Destroy()
 
     def v_setting(self):
@@ -112,9 +120,6 @@ class MainFrame(wx.Frame):
         self._mgr.AddPane(CentralPanel(self), aui.AuiPaneInfo().
                           Name("space_work_pane").CenterPane())
         self._mgr.Update()
-
-    def on_exit(self, event):
-        self.Close()
 
     def change_language(self, language):
         if not self.i18n.isEnUsLanguage() and language == 'en':

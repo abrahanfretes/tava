@@ -35,6 +35,9 @@ msgstr "The file can not be removed, is being used in any view!"
 msgid "RESULT_NOT_DELETE_HEADER"
 msgstr "Delete Files Result!"
 
+msgid "EXIT_TAVA"
+msgstr "Exit TAVA!"
+
 # ------------------------------- TavaMenuBar ---------------------------------
 msgid "MENU_BAR_FILE"
 msgstr "File"
