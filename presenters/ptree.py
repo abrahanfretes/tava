@@ -192,6 +192,24 @@ class TTreeP(object):
         self.init_vars()
         pub().sendMessage(T.TYPE_CHANGED_SELECTED_PROJECT, 4)
 
+    # --- exit app ---------------------------------------------
+    def do_exit(self):
+        for item_p in self.iview.root.GetChildren():
+            data_item = item_p.GetData()
+            p = data_item[0]
+            pp = data_item[1]
+
+            chil_p = item_p.GetChildren()
+            if len(chil_p) > 0:
+                pf = chil_p[0].GetData()[1]
+                pv = chil_p[1].GetData()[1]
+
+                if p.proj_open != pp or p.pack_file != pf or p.pack_view != pv:
+                    p.proj_open = pp
+                    p.pack_file = pf
+                    p.pack_view = pv
+                    pm().update(p)
+
 
 class PackageFile():
     def __init__(self, state, project):

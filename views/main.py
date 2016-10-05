@@ -60,6 +60,14 @@ class MainFrame(wx.Frame):
 
         self.ppr = MainFrameP(self)
 
+        self.Bind(wx.EVT_CLOSE, self.on_close_tava)
+
+    def on_close_tava(self, event):
+        print 'inica cierre'
+        self.tree.ppr.do_exit()
+        print 'termina cierre'
+        self.Destroy()
+
     def v_setting(self):
         self.SetTitle("FPUNA: Tavai")
         self.SetSize(wx.Size(1030, 700))
@@ -85,13 +93,14 @@ class MainFrame(wx.Frame):
 
     def build_panels(self):
 
-        # Agrega los Toolbar
+        # ---- toolbar de la aplicación
         self.ttoolbar = TToolBar(self)
         self._mgr.AddPane(self.ttoolbar, aui.AuiPaneInfo().Name("tb1").
                           Caption("Big Toolbar").ToolbarPane().Top())
 
-        # tree panel
-        self._mgr.AddPane(TTree(self),
+        # ---- tree de proyectos
+        self.tree = TTree(self)
+        self._mgr.AddPane(self.tree,
                           aui.AuiPaneInfo().Name("tree_pane").
                           Icon(explorer.GetBitmap()).
                           Caption(L('PROJECT_EXPLORER')).

@@ -123,6 +123,8 @@ class TTree(CT.CustomTreeCtrl):
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_selected)
         self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.on_dclick)
         self.Bind(wx.EVT_RIGHT_UP, self.on_contex)
+        self.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.on_expanded)
+        self.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.on_collapsed)
 
     def v_setting(self):
         # self.SetBackgroundColour("red")
@@ -223,6 +225,14 @@ class TTree(CT.CustomTreeCtrl):
         if result == wx.YES:
             return True
         return False
+
+    def on_expanded(self, event):
+        data = event.GetItem().GetData()
+        data[1] = True
+
+    def on_collapsed(self, event):
+        data = event.GetItem().GetData()
+        data[1] = False
 
     # ------------------------------------------------------------------
     # --------------- metodos privados ---------------------------------
