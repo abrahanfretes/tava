@@ -128,6 +128,7 @@ class MainFrame(wx.Frame):
         self.p_path_files = []
         self.p_formate = 10
         self.p_create = False
+        self.p_sep = ','
 
         NewProject(self)
         if self.p_create:
@@ -142,7 +143,8 @@ class MainFrame(wx.Frame):
                                     agwStyle=style)
                 self.ppr.add_results_by_project(project,
                                                 self.p_path_files,
-                                                self.p_formate, dlg)
+                                                self.p_formate,
+                                                self.p_sep, dlg)
 
                 dlg.Destroy()
                 wx.SafeYield()
@@ -155,6 +157,7 @@ class MainFrame(wx.Frame):
         self.p_path_files = []
         self.p_formate = 10
         self.p_create = False
+        self.p_sep = ','
 
         NewProject(self, True)
         if self.p_create:
@@ -167,7 +170,8 @@ class MainFrame(wx.Frame):
 
             results = self.ppr.add_results_by_project(self.p_project,
                                                       self.p_path_files,
-                                                      self.p_formate, dlg)
+                                                      5,
+                                                      self.p_sep, dlg)
             dlg.Destroy()
             wx.SafeYield()
             wx.GetApp().GetTopWindow().Raise()

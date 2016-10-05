@@ -220,3 +220,99 @@ class TavaFileToResult():
 
     def value_error(self, message):
         raise ParserError(self.f_tava, 'message', self.c_line)
+
+
+class SepFileToResult():
+    '''
+
+    '''
+
+    def __init__(self, f_tava):
+        self.result = Result()
+        self.c_line = 0
+        self.all_headers = {}
+        self.f_tava = f_tava
+        self.size_header = 0
+        pass
+
+    def make_parsing(self, m_tit, sep, dlg):
+
+        try:
+            dlg.UpdatePulse(m_tit + '.')
+
+            # ---- completar atributos de results
+            # ----
+
+            self.result.runstore = 1
+            # self.result.objectives = int(all_headers[OBJECTIVES])
+            # self.result.variables = int(all_headers[VARIABLES])
+            self.result.name = tava_base_name(self.f_tava)
+            self.result.alias = tava_base_name(self.f_tava)
+            # self.result.name_variables = all_headers[VARIABLESNAMES]
+
+            # ---- verificar cantidad de iteraciones
+
+            # ---- agregar un bloque
+            dlg.UpdatePulse(m_tit + '..')
+            _mps = '.'
+            with open(self.f_tava, 'r') as f_tava:
+
+                # ---- creación de iteraciones
+                _it = Iteration()
+                _it.number = 1
+                _its = []
+
+                # ---- creación de individuos
+                _ins = []
+                _count_objec = 0
+                for i_num, line in enumerate(f_tava.readlines()):
+                    indi = line.strip().split(sep)
+                    _in = Individual()
+                    _in.number = i_num + 1
+                    _in.objectives = self.g_individuals(indi)
+                    _ins.append(_in)
+                    _count_objec = len(indi)
+
+                    dlg.UpdatePulse(m_tit + '\n' + _mps)
+                    _mps = _mps + '.'
+                    _mps = '.' if len(_mps) == 5 else _mps
+
+                _it.individual = len(_ins)
+                _it.individuals = _ins
+                _its.append(_it)
+
+                # ---- agregación de resultado
+                self.result.iterations = _its
+                self.result.objectives = _count_objec
+                n_objs = ','.join([str(_i) for _i in range(_count_objec)])
+                self.result.name_objectives = n_objs
+
+        except IOError as ioerror:
+            self.value_error("Error IOError: {0}".format(ioerror))
+        except IndexError as indexerror:
+            self.value_error("Error IndexError: {0}".format(indexerror))
+        except ValueError as valueerror:
+            self.value_error("Error ValueError: {0}".format(valueerror))
+        except Exception as e:
+            self.value_error("Error Exception: {0}".format(e))
+
+    def g_individuals(self, indi):
+        '''
+        Verifica que los valores o individuos cumplen con los tipos de datos
+        necesarios.
+
+        :param str_indi:
+        :type str_indi:
+        '''
+
+        # ---- verificación del individuo float o exade
+        try:
+            [float(o) for o in indi]
+            str_o = ','.join(indi)
+        except:
+            str_o = ','.join([str(float.fromhex(o)) for o in indi])
+
+        return str_o
+
+    def value_error(self, message):
+        raise ParserError(self.f_tava, 'message', self.c_line)

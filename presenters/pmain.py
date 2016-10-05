@@ -24,7 +24,7 @@ from models.mproject import ProjectM
 from models.mresult import ResultModel
 from models.mview import ViewM, ViewResultM
 from parser.preparser import VonToTavaParser
-from parser.tavaparser import TavaFileToResult
+from parser.tavaparser import TavaFileToResult, SepFileToResult
 from resources.tava_path import tava_dir_parsed, tava_dir_temp
 
 
@@ -74,7 +74,8 @@ class MainFrameP(object):
         ViewM().delete(view)
         return True
 
-    def add_results_by_project(self, project, path_files, t_format, dlg=None):
+    def add_results_by_project(self, project, path_files,
+                               t_format, sep, dlg=None):
 
         results = []
         parse_correct = []
@@ -172,6 +173,57 @@ class MainFrameP(object):
                                           None)
                         print('Error', p_e)
                         parse_error[tava_file] = p_e
+                    else:
+                        results.append(result)
+                        parse_correct.append(object)
+
+        elif 5 == t_format:
+            _all = len(path_files)
+            for i, p in enumerate(path_files):
+
+                try:
+                    m_lit = '\t' + L('MSG_PRO_PARSER')
+                    m_num = ': ' + str(i + 1) + '/' + str(_all)
+                    m_tit = m_lit + m_num
+                    keepGoing = dlg.UpdatePulse(m_tit)
+
+                    tfr = SepFileToResult(p[0])
+                    tfr.make_parsing(m_tit, sep, dlg)
+
+                except ParserError as parseerror:
+                    parse_error.append(parseerror)
+                else:
+                    try:
+                        m_lit = '\t' + L('MSG_PRO_SAVE')
+                        m_tit = m_lit + m_num
+                        keepGoing = dlg.UpdatePulse(m_tit)
+
+                        # agrega a la base de datos
+                        tfr.result.project_id = project.id
+                        _iterations = list(tfr.result.iterations)
+                        result = tfr.result
+                        result.iterations = []
+                        result = ResultModel().add(result)
+
+                        _ite_all = len(_iterations)
+                        for ii, ite in enumerate(_iterations):
+                            m_lit_b = '\n' + L('MSG_PRO_DATA_SAVE')
+                            m_num_b = ': ' + str(ii + 1) + '/' + str(_ite_all)
+                            m_tit_b = m_tit + m_lit_b + m_num_b
+                            keepGoing = dlg.UpdatePulse(m_tit_b)
+
+                            result.iterations.append(ite)
+                            result = ResultModel().update_init(result)
+                            if not keepGoing:
+                                dlg.UpdatePulse('Aborting')
+                                return results
+
+                    except Exception as e:
+                        p_e = ParserError(tava_file,
+                                          "Error Exception: {0}".format(e),
+                                          None)
+                        print('Error', p_e)
+                        parse_error.append(p_e)
                     else:
                         results.append(result)
                         parse_correct.append(object)
