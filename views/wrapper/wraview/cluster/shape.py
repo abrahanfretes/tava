@@ -52,9 +52,7 @@ class Shape():
     def generate_clusters(self, df_population,  clus, nor):
 
         # ---- normalizar los datos
-        if nor == 1:
-            df_population = self.frobenius_nor(df_population)
-        elif nor == 2:
+        if nor == 0:
             df_population = self.rangecero_nor(df_population)
 
         # ---- calculo de shape para cada elemento

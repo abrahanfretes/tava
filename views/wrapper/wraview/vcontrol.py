@@ -70,7 +70,7 @@ K_COLOR_BLOCK = 1
 K_COLOR_SUB_BLOCK = 2
 K_COLOR_VALUE = 3
 
-NORMA_METO = ['objetivos         ', 'obervaciones', 'ninguno']
+NORMA_METO = ['Normalizado', 'Natural']
 
 
 class ControlPanel(wx.Panel):
@@ -108,7 +108,6 @@ class ControlPanel(wx.Panel):
         menu = wx.Menu()
         menu.Append(wx.NewId(), NORMA_METO[0])
         menu.Append(wx.NewId(), NORMA_METO[1])
-        menu.Append(wx.NewId(), NORMA_METO[2])
         self.tbtn0.SetMenu(menu)
         self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
 
@@ -267,7 +266,8 @@ class ControlPanel(wx.Panel):
         if not self.data_seccion.checked_elemens():
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
-        self.clusters_seccion.generate(self.sc_count_clusters.GetValue())
+        self.clusters_seccion.generate(self.sc_count_clusters.GetValue(),
+                                       self.normalization)
 
     def on_filter(self, event):
 
@@ -383,7 +383,7 @@ class ClusterSeccion(wx.Panel):
         self.shape.cluster_uncheckeds = position_unchecked
         return self.shape
 
-    def generate(self, clus):
+    def generate(self, clus, nor):
         _tit = '- '
 
         # ----- limpiar clusters anteriores
@@ -402,7 +402,7 @@ class ClusterSeccion(wx.Panel):
         _tit = ''
 
         # ---- generar clusters
-        self.shape = Shape(df_population, clus=clus, nor=2)
+        self.shape = Shape(df_population, clus=clus, nor=nor)
 
         # ---- agregar clusters a la vista
         for i, c in enumerate(self.shape.clusters):
