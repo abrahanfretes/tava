@@ -482,13 +482,13 @@ class FilterClusterDialog(wx.Dialog):
         self.parent.data_selected.max_repre = self.more_repre.GetMax()
 
         if selection == 0:
-            self.parent.data_selected.option = 1
+            self.parent.data_selected.option = 0
             self.parent.data_selected.more_repre = self.more_repre.GetValue()
         elif selection == 1:
-            self.parent.data_selected.option = 2
+            self.parent.data_selected.option = 1
             self.parent.data_selected.less_repre = self.less_repre.GetValue()
         elif selection == 2:
-            self.parent.data_selected.option = 3
+            self.parent.data_selected.option = 2
             self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
             self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
 
@@ -506,6 +506,7 @@ class FilterClusterDialog(wx.Dialog):
         self.more_repre = wx.SpinCtrl(panel, 1, "", (30, 50))
         self.more_repre.SetRange(1, self.data.count_tendency)
         self.more_repre.SetValue(self.data.more_repre)
+        self.Bind(wx.EVT_SPINCTRL, self.on_more_repre, self.more_repre)
 
         grid.Add(label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
                                                                     wx.ALL, 5)
@@ -516,6 +517,9 @@ class FilterClusterDialog(wx.Dialog):
         panel.SetSizer(sizer)
 
         return panel
+
+    def on_more_repre(self, event):
+        self.parent.data_selected.more_repre = self.more_repre.GetValue()
 
     def get_less_representative(self, parent):
         panel = wx.Panel(parent)
@@ -529,6 +533,7 @@ class FilterClusterDialog(wx.Dialog):
         self.less_repre = wx.SpinCtrl(panel, 1, "", (30, 50))
         self.less_repre.SetRange(1, self.data.count_tendency)
         self.less_repre.SetValue(self.data.more_repre)
+        self.Bind(wx.EVT_SPINCTRL, self.on_less_repre, self.less_repre)
 
         grid.Add(label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
                                                                     wx.ALL, 5)
@@ -539,6 +544,9 @@ class FilterClusterDialog(wx.Dialog):
         panel.SetSizer(sizer)
 
         return panel
+
+    def on_less_repre(self, event):
+        self.parent.data_selected.less_repre = self.less_repre.GetValue()
 
     def get_representative_per_obj(self, parent):
         panel = wx.Panel(parent)
@@ -553,6 +561,8 @@ class FilterClusterDialog(wx.Dialog):
         lb1_label.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
         self.lb1 = wx.CheckListBox(panel, choices=self.data.max_objetives,
                                    size=(100, 160))
+        self.Bind(wx.EVT_CHECKLISTBOX, self.on_lb1, self.lb1)
+
         sizer_lb1.Add(lb1_label, flag=wx.ALL, border=2)
         sizer_lb1.Add(self.lb1, flag=wx.ALL | wx.EXPAND, border=5)
 
@@ -562,6 +572,7 @@ class FilterClusterDialog(wx.Dialog):
         lb2_label.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
         self.lb2 = wx.CheckListBox(panel, choices=self.data.max_objetives,
                                    size=(100, 160))
+        self.Bind(wx.EVT_CHECKLISTBOX, self.on_lb2, self.lb2)
         sizer_lb2.Add(lb2_label, flag=wx.ALL, border=2)
         sizer_lb2.Add(self.lb2, flag=wx.ALL | wx.EXPAND, border=5)
 
@@ -577,6 +588,12 @@ class FilterClusterDialog(wx.Dialog):
         panel.SetSizer(sizer)
 
         return panel
+
+    def on_lb1(self, event):
+        self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
+
+    def on_lb2(self, event):
+        self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
 
 
 class SelectedData():
