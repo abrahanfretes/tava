@@ -85,7 +85,6 @@ class ControlPanel(wx.Panel):
         self.data_selected = None
         self.normalization = 0
 
-        self.normalized = True
         self.duplicate_true = K_DATE_DUPLICATE_TRUE
         self.k_plot = K_PLOT_BLOCK
         self.k_color = K_COLOR_SUB_BLOCK
@@ -174,7 +173,7 @@ class ControlPanel(wx.Panel):
         blocks = []
         # se obtine la lista de bloques marcados
         if self.kfigure.g_type() == 0:
-            blocks = self.data_seccion.get_checkeds(self.normalized)
+            blocks = self.data_seccion.get_checkeds()
 
             if blocks == []:
                 KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
@@ -489,16 +488,8 @@ class DataSeccion(wx.Panel):
 
         self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
-    def get_checkeds(self, nor):
+    def get_checkeds(self):
         _subblocks_checked = []
-
-        if nor:
-            for index in self.row_index:
-                if self.list_control.IsChecked(index):
-                    key = self.list_control.GetItemData(index)
-                    kblock = self.kblocks[key][1]
-                    _subblocks_checked.append(kblock.dframe_nor)
-            return _subblocks_checked
 
         for index in self.row_index:
             if self.list_control.IsChecked(index):
@@ -513,7 +504,6 @@ class DataSeccion(wx.Panel):
         for index in self.row_index:
             if self.list_control.IsChecked(index):
                 key = self.list_control.GetItemData(index)
-                # _subblocks_checked.append(kblock.dframe)
                 block_checked[key] = self.kblocks[key]
         return block_checked
 
@@ -554,7 +544,7 @@ class KBlock():
     def __init__(self, name, dframe):
         self.name = name
         self.dframe = dframe
-        self.dframe_nor = self.normalized()
+#         self.dframe_nor = self.normalized()
         self.columns = self.g_columns(dframe)
         self.order = 0
 

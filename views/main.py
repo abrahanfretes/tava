@@ -170,7 +170,7 @@ class MainFrame(wx.Frame):
 
             results = self.ppr.add_results_by_project(self.p_project,
                                                       self.p_path_files,
-                                                      5,
+                                                      self.p_formate,
                                                       self.p_sep, dlg)
             dlg.Destroy()
             wx.SafeYield()

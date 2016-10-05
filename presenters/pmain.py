@@ -153,31 +153,6 @@ class MainFrameP(object):
                         parse_correct.append(object)
 
         elif FORMAT_OBJETIVE == t_format:
-
-            # crear resultdos a partir de archivos preparseados
-            for tava_file in path_files:
-                try:
-                    tfr = TavaFileToResult(tava_file)
-                    tfr.make_parsing()
-                except ParserError as parseerror:
-                    print('Error', parseerror)
-                    parse_error[tava_file] = parseerror
-                else:
-                    try:
-                        # agrega a la base de datos
-                        tfr.result.project_id = project.id
-                        result = ResultModel().add(tfr.result)
-                    except Exception as e:
-                        p_e = ParserError(tava_file,
-                                          "Error Exception: {0}".format(e),
-                                          None)
-                        print('Error', p_e)
-                        parse_error[tava_file] = p_e
-                    else:
-                        results.append(result)
-                        parse_correct.append(object)
-
-        elif 5 == t_format:
             _all = len(path_files)
             for i, p in enumerate(path_files):
 
@@ -224,6 +199,31 @@ class MainFrameP(object):
                                           None)
                         print('Error', p_e)
                         parse_error.append(p_e)
+                    else:
+                        results.append(result)
+                        parse_correct.append(object)
+
+        elif 10 == t_format:
+
+            # crear resultdos a partir de archivos preparseados
+            for tava_file in path_files:
+                try:
+                    tfr = TavaFileToResult(tava_file)
+                    tfr.make_parsing()
+                except ParserError as parseerror:
+                    print('Error', parseerror)
+                    parse_error[tava_file] = parseerror
+                else:
+                    try:
+                        # agrega a la base de datos
+                        tfr.result.project_id = project.id
+                        result = ResultModel().add(tfr.result)
+                    except Exception as e:
+                        p_e = ParserError(tava_file,
+                                          "Error Exception: {0}".format(e),
+                                          None)
+                        print('Error', p_e)
+                        parse_error[tava_file] = p_e
                     else:
                         results.append(result)
                         parse_correct.append(object)

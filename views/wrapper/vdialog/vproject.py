@@ -24,7 +24,11 @@ from resources.properties_helper import PropertiesHelper
 
 
 wildcard = "Files results |*"
-FILES_FORMATS = ['Von Tava', 'Tava']
+
+FILES_FORMATS = ['Von Tava', 'Separador:']
+SEPARATOR_FILE = [', (coma)', '; (punto y coma)', '  (espacio e blanco)',
+                  '- (guion medio)', '_ (guion bajo)']
+SEPARATOR_FILE_VALUE = [',', ';', ' ', '-', '_']
 
 
 class NewProject(wx.Dialog):
@@ -118,17 +122,36 @@ class NewProject(wx.Dialog):
         self.dvlc.AppendTextColumn(L('FILE__COL_DIRECTORY'), width=150)
         boxsizer.Add(self.dvlc, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=2)
 
-        # opciones de estilos (3)
+        # ---- selección de formato
+
+        self.radio_von = wx.RadioButton(panel, -1, " Von Tava", style=wx.RB_GROUP)
+        self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_von, self.radio_von)
+        self.radio_sep = wx.RadioButton(panel, -1, "Separador:")
+        self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_sep, self.radio_sep)
+        p_sep = self.properties.get_file_format_sep()
+        self.cb_sep = wx.ComboBox(panel, 500, SEPARATOR_FILE[p_sep], (90, 50),
+                                  (160, -1), SEPARATOR_FILE, wx.CB_DROPDOWN)
+        sep_sizer = wx.BoxSizer()
+        sep_sizer.Add(self.radio_sep)
+        sep_sizer.Add(self.cb_sep)
+
+
+        self.set_option_radio()
+
+
+#         # opciones de estilos (3)
+#         s_sizer = wx.BoxSizer()
+#         self.rb = wx.RadioBox(panel, -1, L('FILE_RADIO_BOX_TITLE'),
+#                               wx.DefaultPosition, (580, 50), FILES_FORMATS,
+#                               len(FILES_FORMATS), wx.RA_SPECIFY_COLS)
+# 
+#         self.rb.SetSelection(self.properties.get_file_format())
+#         self.rb.Bind(wx.EVT_RADIOBOX, self.on_change_formate)
+#         s_sizer.Add(self.rb, 1, wx.EXPAND)
         s_sizer = wx.BoxSizer()
-        self.rb = wx.RadioBox(panel, -1, L('FILE_RADIO_BOX_TITLE'),
-                              wx.DefaultPosition, (580, 50), FILES_FORMATS,
-                              len(FILES_FORMATS), wx.RA_SPECIFY_COLS)
-
-        self.rb.SetSelection(self.properties.get_file_format())
-        self.rb.Bind(wx.EVT_RADIOBOX, self.on_change_formate)
-
-        s_sizer.Add(self.rb, 1, wx.EXPAND)
-        boxsizer.Add(s_sizer, flag=wx.EXPAND | wx.TOP | wx.BOTTOM, border=10)
+        s_sizer.Add(self.radio_von, 0, wx.EXPAND)
+        s_sizer.Add(sep_sizer, 0, wx.EXPAND)
+        boxsizer.Add(s_sizer, 1, flag=wx.EXPAND | wx.TOP | wx.BOTTOM, border=10)
 
         sizer.Add(boxsizer, pos=(4, 0), span=(1, 5), flag=wx.RIGHT |
                   wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, border=10)
@@ -161,6 +184,32 @@ class NewProject(wx.Dialog):
         # self.existing_names = ProjectM().names_not_hidden()
         # self.hidden_names = ProjectM().names_hidden()
 
+    def on_radio_von(self, event):
+        self.cb_sep.Disable()
+
+    def on_radio_sep(self, event):
+        self.cb_sep.Enable()
+
+    def set_option_radio(self):
+        option = self.properties.get_file_format()
+        if option == 0:
+            self.radio_von.SetValue(True)
+            self.cb_sep.Disable()
+        elif option == 1:
+            self.radio_sep.SetValue(True)
+            self.cb_sep.Enable()
+
+    def update_selected_formate(self):
+        if self.radio_von.GetValue():
+            self.properties.set_file_format(0)
+            self.parent.p_formate = 0
+        elif self.radio_sep.GetValue():
+            self.properties.set_file_format(1)
+            i_value = SEPARATOR_FILE.index(self.cb_sep.GetValue())
+            self.properties.set_file_format_sep(i_value)
+            self.parent.p_formate = 1
+            self.parent.p_sep = SEPARATOR_FILE_VALUE[i_value]
+
     def add_only_results(self):
         self.alert_text.SetLabel(L('ADD_FILE_RESULT_HEADER'))
         self.name.SetValue(self.parent.p_project.name)
@@ -180,18 +229,16 @@ class NewProject(wx.Dialog):
             for p in self.path_files:
                 _, name = os.path.split(p)
                 self.parent.p_path_files.append([p, name])
-            # self.parent.p_path_files = self.path_files
-            self.parent.p_formate = self.rb.GetSelection()
         else:
             if len(self.path_files) > 0:
                 for p in self.path_files:
                     _, name = os.path.split(p)
                     self.parent.p_path_files.append([p, name])
-                # self.parent.p_path_files = self.path_files
-                self.parent.p_formate = self.rb.GetSelection()
             else:
                 self.parent.p_create = False
+
         self.parent.p_create = True
+        self.update_selected_formate()
         self.Close()
 
     def on_key_down(self, e):

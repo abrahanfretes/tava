@@ -66,3 +66,9 @@ class PropertiesHelper():
 
     def set_file_format(self, new_value):
         self.set_by_key('FILE_FORMAT', str(new_value))
+
+    def get_file_format_sep(self):
+        return int(self.get_by_key('FILE_FORMAT_SEP'))
+
+    def set_file_format_sep(self, new_value):
+        self.set_by_key('FILE_FORMAT_SEP', str(new_value))
