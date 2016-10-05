@@ -57,15 +57,14 @@ class FigurePanel(wx.Panel):
         self.figure_config_dialog_ref = None
 
         self.fig = Figure()
-        self.fig.suptitle('Tava Tool', fontsize=14, fontweight='light',
-                          style='italic', family='serif', color='c',
-                          horizontalalignment='center',
-                          verticalalignment='center')
-        self.canvas = FigureCanvas(self, -1, self.fig)
-
-        self.ax_conf = AxesConfig()
-
         self.fig_config = FigureConfig()
+        self.set_figure_config()
+#         self.fig.suptitle('Tava Tool', fontsize=14, fontweight='light',
+#                           style='italic', family='serif', color='c',
+#                           horizontalalignment='center',
+#                           verticalalignment='center')
+        self.canvas = FigureCanvas(self, -1, self.fig)
+        self.ax_conf = AxesConfig()
 
         # toolbar
         sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
@@ -99,6 +98,24 @@ class FigurePanel(wx.Panel):
 
     def _welcome(self):
         Axes3D(self.fig)
+
+    def set_figure_config(self):
+        fig_config = self.fig_config
+        self.fig.set_figwidth(fig_config.width)
+        self.fig.set_figheight(fig_config.height)
+        self.fig.set_facecolor(fig_config.facecolor)
+
+        self.fig.subplots_adjust(top=fig_config.subplot_top,
+                                 bottom=fig_config.subplot_bottom,
+                                 left=fig_config.subplot_left,
+                                 right=fig_config.subplot_right,
+                                 wspace=fig_config.subplot_wspace,
+                                 hspace=fig_config.subplot_hspace)
+
+        self.fig.suptitle('Tava Tool', fontsize=14, fontweight='light',
+                          style='italic', family='serif', color='c',
+                          horizontalalignment='center',
+                          verticalalignment='center')
 
     def kdraw(self, dframes):
 

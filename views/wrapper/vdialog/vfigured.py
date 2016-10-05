@@ -354,9 +354,9 @@ class FigureConfig():
         self.facecolor = 'w'    # figure facecolor; 0.75 is scalar gray
 
         # the left side of the subplots of the figure
-        self.subplot_left = 0.02
+        self.subplot_left = 0.05
         # the right side of the subplots of the figure
-        self.subplot_right = 0.98
+        self.subplot_right = 0.95
         # the bottom of the subplots of the figure
         self.subplot_bottom = 0.07
         # the top of the subplots of the figure
@@ -377,9 +377,9 @@ class AxesConfig():
         Método de inicializacion de variables
         '''
         self.color_top_spine = "#FFFFFF"
-        self.color_bottom_spine = "#000000"
-        self.color_left_spine = "#000000"
-        self.color_right_spine = "#FFFFFF"
+        self.color_bottom_spine = "#FFFFFF"
+        self.color_left_spine = "#DDDDDD"
+        self.color_right_spine = "#DDDDDD"
 
 
 class Example(wx.Frame):

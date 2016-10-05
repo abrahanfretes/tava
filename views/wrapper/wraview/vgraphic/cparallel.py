@@ -207,7 +207,7 @@ def k_parallel_coordinates(dframes, class_column='Name', fig=None,
     if fig_config is None:
         fig_config = FigureConfig()
 
-    set_figure_config(fig, fig_config)
+    # set_figure_config(fig, fig_config)
 
     if ax_conf is None:
         ax_conf = AxesConfig()
