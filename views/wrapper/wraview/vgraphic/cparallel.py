@@ -20,7 +20,7 @@ from matplotlib.figure import Figure
 from pandas.compat import lrange
 from pandas.core import common as com
 from pandas.tools.plotting import _get_standard_colors
-from views.wrapper.vdialog.vfigured import AxesConfig
+from views.wrapper.vdialog.vfigured import AxesConfig, FigureConfig
 
 import numpy as np
 from views.wrapper.wraview.vgraphic.fuse import square_plot
@@ -171,13 +171,9 @@ def g_colors(classes, colormap, color, one_color):
 
 def set_axes_config(ax, ax_conf, label=None):
     ax.spines['top'].set_color(ax_conf.color_top_spine)
-    print ax_conf.color_top_spine
     ax.spines['bottom'].set_color(ax_conf.color_bottom_spine)
-    print ax_conf.color_bottom_spine
     ax.spines['left'].set_color(ax_conf.color_left_spine)
-    print ax_conf.color_left_spine
     ax.spines['right'].set_color(ax_conf.color_right_spine)
-    print ax_conf.color_right_spine
     if label is not None:
         ax.set_xlabel(label, labelpad=-1)
         ax.xaxis.label.set_color('#606060')
@@ -185,15 +181,33 @@ def set_axes_config(ax, ax_conf, label=None):
     return ax
 
 
+def set_figure_config(fig, fig_config):
+    fig.set_figwidth(fig_config.width)
+    fig.set_figheight(fig_config.height)
+
+    fig.subplots_adjust(top=fig_config.subplot_top,
+                        bottom=fig_config.subplot_bottom,
+                        left=fig_config.subplot_left,
+                        right=fig_config.subplot_right,
+                        wspace=fig_config.subplot_wspace,
+                        hspace=fig_config.subplot_hspace)
+
+
 def k_parallel_coordinates(dframes, class_column='Name', fig=None,
-                           ax_conf=None, subplot=False, grayscale=False,
-                           fill=False, alpha=0.15, legend=True, one_d=False,
-                           u_grid=True, axvlines=True, _xaxis=True,
-                           _yaxis=True):
+                           ax_conf=None, fig_config=None, subplot=False,
+                           grayscale=False, fill=False, axvlines=True,
+                           legend=True, one_d=False, u_grid=True, alpha=0.15,
+                           _xaxis=True, _yaxis=True):
 
     # figures
     if fig is None:
         fig = Figure()
+    fig.subplots_adjust()
+
+    if fig_config is None:
+        fig_config = FigureConfig()
+
+    set_figure_config(fig, fig_config)
 
     if ax_conf is None:
         ax_conf = AxesConfig()
