@@ -186,39 +186,39 @@ class ControlPanel(wx.Panel):
             self.v_datas()
 
     def v_datas(self):
-        blocks = []
-        # se obtine la lista de bloques marcados
-        if self.kfigure.g_type() == 0:
-            blocks = self.data_seccion.get_checkeds()
 
-            if blocks == []:
-                KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
+        # ---- se obtine la lista de bloques marcados
+
+        blocks = self.data_seccion.get_checkeds()
+
+        if blocks == []:
+            KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
+            return
+
+        # se verifica datos duplicados
+        blocks_1 = []
+        if self.duplicate_true == K_DATE_DUPLICATE_TRUE:
+            blocks_1 = blocks
+        elif self.duplicate_true == K_DATE_DUPLICATE_FALSE:
+            blocks_1 = self.delete_duplicate(blocks)
+        else:
+            # self.duplicate_true == K_DATE_DUPLICATE_ONLY
+            blocks_1 = self.only_duplicate(blocks)
+            if blocks_1 == []:
+                KMessage(self.mainpanel, KMSG_EMPTY_DUPLICATE_DATA).kshow()
                 return
 
-            # se verifica datos duplicados
-            blocks_1 = []
-            if self.duplicate_true == K_DATE_DUPLICATE_TRUE:
-                blocks_1 = blocks
-            elif self.duplicate_true == K_DATE_DUPLICATE_FALSE:
-                blocks_1 = self.delete_duplicate(blocks)
-            else:
-                # self.duplicate_true == K_DATE_DUPLICATE_ONLY
-                blocks_1 = self.only_duplicate(blocks)
-                if blocks_1 == []:
-                    KMessage(self.mainpanel, KMSG_EMPTY_DUPLICATE_DATA).kshow()
-                    return
+        # se debería verificar la cantidad de plot y de acuerdo a eso
+        # crear los dataframe
 
-            # se debería verificar la cantidad de plot y de acuerdo a eso
-            # crear los dataframe
+        blocks_2 = []
+        if self.k_plot == K_PLOT_ALL_IN_ONE:
+            blocks_2 = [pd.concat(blocks_1)]
+        elif self.k_plot == K_PLOT_BLOCK:
+            blocks_2 = blocks_1
 
-            blocks_2 = []
-            if self.k_plot == K_PLOT_ALL_IN_ONE:
-                blocks_2 = [pd.concat(blocks_1)]
-            elif self.k_plot == K_PLOT_BLOCK:
-                blocks_2 = blocks_1
-
-            # update figure
-            self.kfigure.kdraw(blocks_2)
+        # update figure
+        self.kfigure.kdraw(blocks_2)
 
     def v_clusters(self):
 

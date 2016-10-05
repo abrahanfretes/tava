@@ -192,9 +192,6 @@ class FigurePanel(wx.Panel):
     def g_figure(self):
         return self.ch_graph.GetSelection()
 
-    def g_type(self):
-        return self.ch_type.GetSelection()
-
     def get_choice_grafic(self):
         grid = wx.FlexGridSizer(cols=2)
         sampleList = ['Coordenadas Paralelas', 'Radar Chart', 'Radvis']
