@@ -205,6 +205,25 @@ class TTree(CT.CustomTreeCtrl):
         self.EnableItem(item_view, False)
         return item_view
 
+    def grandfather(self, item):
+        father = self.GetItemParent(item)
+        return self.GetItemParent(father)
+
+    def sort_tree(self, item=None):
+        if item is None:
+            self.SortChildren(self.root)
+        else:
+            self.SortChildren(item)
+
+    def pre_hide_project(self, name):
+        result = wx.MessageBox(L('HIDE_PROJECT_BOX') + '\n\t\t\t\t" ' +
+                               name + ' "', L('HIDE_PROJECT_TITLE'),
+                               style=wx.CENTER | wx.ICON_WARNING |
+                               wx.YES_NO | wx.NO_DEFAULT)
+        if result == wx.YES:
+            return True
+        return False
+
     # ------------------------------------------------------------------
     # --------------- metodos privados ---------------------------------
     # ------------------------------------------------------------------
@@ -214,7 +233,7 @@ class TTree(CT.CustomTreeCtrl):
         self.c_item = event.GetItem()
         self.c_data = self.c_item.GetData()
         if self.c_data is not None:
-            # self.ppr.do_selected(self.c_data[0], self.c_item)
+            self.ppr.do_selected(self.c_data[0], self.c_item)
             pass
 
     # --- selected contex menu
@@ -231,7 +250,7 @@ class TTree(CT.CustomTreeCtrl):
         elif isinstance(data, Result):
             pass
         elif isinstance(data, View):
-            pub.sendMessage(T.SHOW_SELECTED_VIEW, data)
+            pub().sendMessage(T.SHOW_SELECTED_VIEW, data)
 
     # --- selected contex menu
     def on_contex(self, event):

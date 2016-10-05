@@ -19,19 +19,19 @@
 from wx import GetTranslation as L
 import wx
 from wx.lib.agw import aui
-from wx.lib.pubsub import Publisher as pub
 from wx.lib.agw import pyprogress as PP
+from wx.lib.pubsub import Publisher as pub
 
 from bd import entity
 from imgs.itree import explorer
 from imgs.prin import shortcut, splash
 from languages import topic as T
 from languages.i18n import I18nLocale
+from presenters.pmain import MainFrameP
 from views.wrapper.tbody import TTree, CentralPanel
 from views.wrapper.tmenubar import TMenuBar
 from views.wrapper.ttoolbar import TToolBar
-from views.wrapper.vdialog.vproject import NewProject
-from presenters.pmain import MainFrameP
+from views.wrapper.vdialog.vproject import NewProject, UnhideProject
 from views.wrapper.vdialog.vview import ViewsTava
 
 
@@ -44,11 +44,14 @@ class MainFrame(wx.Frame):
 
         # --- vistas
         pub().subscribe(self.new_view, T.CREATE_VIEW)
-        pub.subscribe(self.delete_view, T.DELETE_VIEW)
+        pub().subscribe(self.delete_view, T.DELETE_VIEW)
 
         # ---- results
-        pub.subscribe(self.new_results, T.NEW_RESULTS)
-        pub.subscribe(self.delete_result, T.DELETE_RESULT)
+        pub().subscribe(self.new_results, T.NEW_RESULTS)
+        pub().subscribe(self.delete_result, T.DELETE_RESULT)
+
+        # ---- project
+        pub().subscribe(self.unhide_project, T.PREUNHIDE_PROJECT)
 
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
@@ -206,6 +209,9 @@ class MainFrame(wx.Frame):
     def delete_view(self, message):
         self.ppr.delete_view(message.data)
         pub().sendMessage(T.DELETE_VIEW_TREE)
+
+    def unhide_project(self, message):
+        UnhideProject(self)
 
 
 class SplashFrame(wx.SplashScreen):

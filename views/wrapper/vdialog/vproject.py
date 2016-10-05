@@ -16,10 +16,16 @@
 # ##############################################################
 '''
 
-import wx
 import os
-from imgs.iproject import execute_bit, help32x32_bit, error_bit
+import sys
 from wx import GetTranslation as L
+import wx
+from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+from wx.lib.pubsub import Publisher as pub
+
+from imgs.iproject import execute_bit, help32x32_bit, error_bit
+from languages import topic as T
+from models.mproject import ProjectM
 from resources.properties_helper import PropertiesHelper
 
 
@@ -134,20 +140,8 @@ class NewProject(wx.Dialog):
         sep_sizer = wx.BoxSizer()
         sep_sizer.Add(self.radio_sep)
         sep_sizer.Add(self.cb_sep)
-
-
         self.set_option_radio()
 
-
-#         # opciones de estilos (3)
-#         s_sizer = wx.BoxSizer()
-#         self.rb = wx.RadioBox(panel, -1, L('FILE_RADIO_BOX_TITLE'),
-#                               wx.DefaultPosition, (580, 50), FILES_FORMATS,
-#                               len(FILES_FORMATS), wx.RA_SPECIFY_COLS)
-# 
-#         self.rb.SetSelection(self.properties.get_file_format())
-#         self.rb.Bind(wx.EVT_RADIOBOX, self.on_change_formate)
-#         s_sizer.Add(self.rb, 1, wx.EXPAND)
         s_sizer = wx.BoxSizer()
         s_sizer.Add(self.radio_von, 0, wx.EXPAND)
         s_sizer.Add(sep_sizer, 0, wx.EXPAND)
@@ -340,3 +334,154 @@ class NewProject(wx.Dialog):
                 self.dvlc.AppendItem([name, path])
         dlg.Destroy()
         self.properties.set_search_result(last_path)
+
+
+class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
+    def __init__(self, parent, parent_object, size):
+        wx.ListCtrl.__init__(self, parent, -1, size=size,
+                             style=wx.LC_REPORT)
+        CheckListCtrlMixin.__init__(self)
+        ListCtrlAutoWidthMixin.__init__(self)
+
+        self.p = parent_object
+        self.checked = []
+
+    def OnCheckItem(self, index, flag):
+        self.checked.append(index) if flag else self.checked.remove(index)
+        self.p.ok.Enable() if len(self.checked) else self.p.ok.Disable()
+
+
+class UnhideProject(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, size=(600, 550))
+
+#         import py.una.pol.tavad.res.images as I
+#         self.I = I
+
+        self.InitUI()
+        self.init_values()
+        self.Centre()
+        self.ShowModal()
+
+    def InitUI(self):
+
+        # ------ variables principales --------------------------------------
+        panel = wx.Panel(self)
+        sizer = wx.GridBagSizer(8, 5)
+
+        # ------ Titulo de Proyecto Tava ------------------------------------
+        font_title = wx.SystemSettings_GetFont(wx.SYS_SYSTEM_FONT)
+        font_title.SetWeight(wx.BOLD)
+        font_title.SetPointSize(14)
+        title1 = wx.StaticText(panel, label=L('NEW_PROJECT_TITLE'))
+        title1.SetFont(font_title)
+
+        exec_bmp = wx.StaticBitmap(panel)
+
+        sizer.Add(title1, pos=(0, 0), flag=wx.LEFT | wx.TOP |
+                  wx.ALIGN_LEFT, border=10)
+        sizer.Add(exec_bmp, pos=(0, 4), flag=wx.ALIGN_CENTER)
+
+        # ------ Texto Descriptivo que cambia --------------------------------
+        des_box = wx.BoxSizer(wx.HORIZONTAL)
+
+        font_description = wx.SystemSettings_GetFont(wx.SYS_SYSTEM_FONT)
+        font_description.SetPointSize(9)
+        self.alert_text = wx.StaticText(panel)
+        self.alert_text.SetFont(font_description)
+        self.alert_text.SetLabel(L('UNHIDE_DESCRIPTION'))
+
+        self.alert_bmp = wx.StaticBitmap(panel)
+        self.alert_bmp.SetBitmap(execute_bit.GetBitmap())
+
+        des_box.Add(self.alert_bmp, flag=wx.ALIGN_LEFT | wx.RIGHT, border=5)
+        des_box.Add(self.alert_text, flag=wx.ALIGN_LEFT)
+
+        sizer.Add(des_box, pos=(1, 0), span=(1, 3), flag=wx.LEFT, border=10)
+
+        # ------ linea estática horizontal -----------------------------------
+        line = wx.StaticLine(panel)
+        sizer.Add(line, pos=(2, 0), span=(1, 5), flag=wx.EXPAND |
+                  wx.ALIGN_TOP | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
+
+        boxsizer = wx.BoxSizer(wx.HORIZONTAL)
+        # grilla de archivos (2)
+
+        self.dvlc = CheckListCtrl(panel, self, size=(550, 298))
+
+        # Establecemos las columnas con sus respectivos labels
+        self.dvlc.InsertColumn(0, L('UNHIDE_COLUMN_NAME'), width=265)
+        self.dvlc.InsertColumn(1, L('UNHIDE_COLUMN_HIDDEN'), width=150)
+        self.dvlc.InsertColumn(2, L('UNHIDE_COLUMN_CREATION'), width=130)
+        boxsizer.Add(self.dvlc, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=2)
+        sizer.Add(boxsizer, pos=(3, 0), span=(1, 5), flag=wx.RIGHT |
+                  wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, border=10)
+
+        # ----- StaticBox agrupador -------------------------------------------
+        sb = wx.StaticBox(panel, label=L('UNHIDE_BOX_LABEL'))
+        static_box = wx.StaticBoxSizer(sb, wx.HORIZONTAL)
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        select_all = wx.Button(panel, -1, L('UNHIDE_SELECT_ALL'))
+        select_all.Bind(wx.EVT_BUTTON, self.on_all)
+        unselect_all = wx.Button(panel, -1, L('UNHIDE_DESELECT_ALL'))
+        unselect_all.Bind(wx.EVT_BUTTON, self.on_unall)
+        hbox2.Add(select_all, 1, wx.ALL, 10)
+        hbox2.Add(unselect_all, 1, wx.ALL, 10)
+        static_box.Add(hbox2, 1,  wx.EXPAND | wx.RIGHT, 250)
+        sizer.Add(static_box, pos=(4, 0), span=(1, 5), flag=wx.RIGHT |
+                  wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, border=10)
+
+        # ---- BoxSizer para cancel, apply ------------------------------------
+        hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+        cancel = wx.Button(panel, -1, L('UNHIDE_CANCEL'))
+        cancel.Bind(wx.EVT_BUTTON, self.on_cancel)
+
+        self.ok = wx.Button(panel, -1, L('UNHIDE_RESTORE'))
+        self.ok.Bind(wx.EVT_BUTTON, self.on_unhide)
+        self.ok.Disable()
+
+        hbox3.Add(cancel, 1, wx.RIGHT, 20)
+        hbox3.Add(self.ok)
+        sizer.Add(hbox3, pos=(5, 0), span=(1, 5), flag=wx.RIGHT |
+                  wx.LEFT | wx.ALIGN_RIGHT, border=10)
+        # -------------------------------------------------------
+
+        # ------ configuraciones Globales -----------------------------------
+        sizer.AddGrowableCol(2)
+        panel.SetSizer(sizer)
+        panel.Bind(wx.EVT_CHAR, self.on_key_down)
+
+    def on_cancel(self, event):
+        self.parent.p_create = False
+        self.Close()
+
+    def on_key_down(self, e):
+        key = e.GetKeyCode()
+        if key == wx.WXK_ESCAPE:
+            self.Close()
+
+    def on_unhide(self, event):
+        ret = []
+        for i in range(self.dvlc.GetItemCount()):
+            if self.dvlc.IsChecked(i):
+                ret.append(self.current[self.dvlc.GetItemText(i)])
+
+        self.Hide()
+        if len(ret):
+            pub().sendMessage(T.UNHIDE_PROJECT, tuple(ret))
+        self.Close()
+
+    def init_values(self):
+        self.current = ProjectM().for_unhide()
+        for name, pro in self.current.items():
+            index = self.dvlc.InsertStringItem(sys.maxint, name)
+            self.dvlc.SetStringItem(index, 1, str(pro.creation))
+            self.dvlc.SetStringItem(index, 2, str(pro.occultation))
+
+    def on_all(self, event):
+        for i in range(self.dvlc.GetItemCount()):
+            self.dvlc.CheckItem(i)
+
+    def on_unall(self, event):
+        for i in range(self.dvlc.GetItemCount()):
+            self.dvlc.CheckItem(i, False)

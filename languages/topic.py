@@ -118,6 +118,7 @@ PRE_EXIT_APP = 'PRE_EXIT.APP'
 # Subscribe = wrapper->TavaToolBar
 # Subscribe = ptree->TavaTreeP
 TYPE_CHANGED_SELECTED_PROJECT = 'TYPE_CHANGED_SELECTED_PROJECT'
+TYPE_CHANGED_UNSELECTED_PROJECT = 'TYPE_CHANGED_UNSELECTED_PROJECT'
 
 # Send = vmenu->MenuResultMetric
 # Subscribe = main->TavaFrame

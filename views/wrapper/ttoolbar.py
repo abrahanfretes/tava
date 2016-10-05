@@ -21,6 +21,9 @@ from wx.lib.agw import aui
 from imgs.itollbar import inew, iopen, iclose, idelete, iunhide, ihide
 from wx import GetTranslation as L
 
+from wx.lib.pubsub import Publisher as pub
+from languages import topic as T
+
 
 class TToolBar(aui.AuiToolBar):
 
@@ -43,9 +46,18 @@ class TToolBar(aui.AuiToolBar):
         self.AddSimpleTool(self.ID_UNHIDE_PRO, '', ihide.GetBitmap())
 
         self.Bind(wx.EVT_TOOL, self.on_new_project, id=self.ID_NEW_PRO)
+        self.Bind(wx.EVT_TOOL, self.on_close_project, id=self.ID_CLOSE_PRO)
+        self.Bind(wx.EVT_TOOL, self.on_open_project, id=self.ID_OPEN_PRO)
+        self.Bind(wx.EVT_TOOL, self.on_hide_project, id=self.ID_HIDE_PRO)
+        self.Bind(wx.EVT_TOOL, self.on_unhide_project, id=self.ID_UNHIDE_PRO)
 
         # Establecemos los labels
         self.SetLabelsLanguges()
+        self.init_disable()
+
+        # ---- actualización de los botones
+        pub().subscribe(self.update_toolbar, T.TYPE_CHANGED_SELECTED_PROJECT)
+        pub().subscribe(self.update_toolbar1, T.TYPE_CHANGED_UNSELECTED_PROJECT)
 
     def SetIdReferences(self):
         self.ID_NEW_PRO = wx.NewId()
@@ -63,5 +75,45 @@ class TToolBar(aui.AuiToolBar):
         self.SetToolShortHelp(self.ID_HIDE_PRO, L('HIDE_PROJECT'))
         self.SetToolShortHelp(self.ID_UNHIDE_PRO, L('UNHIDE_PROJECT'))
 
+    def update_toolbar(self, massage):
+        state = massage.data
+
+        self.EnableTool(self.ID_DEL_PRO, True)
+        self.EnableTool(self.ID_HIDE_PRO, True)
+
+        if state == 1:
+            self.EnableTool(self.ID_OPEN_PRO, False)
+            self.EnableTool(self.ID_CLOSE_PRO, True)
+        elif state == 2:
+            self.EnableTool(self.ID_OPEN_PRO, True)
+            self.EnableTool(self.ID_CLOSE_PRO, False)
+        elif state == 4:
+            self.init_disable()
+
+        self.Refresh()
+
+    def update_toolbar1(self, massage):
+        self.init_disable()
+
+        self.Refresh()
+
+    def init_disable(self):
+        self.EnableTool(self.ID_OPEN_PRO, False)
+        self.EnableTool(self.ID_CLOSE_PRO, False)
+        self.EnableTool(self.ID_DEL_PRO, False)
+        self.EnableTool(self.ID_HIDE_PRO, False)
+
     def on_new_project(self, event):
         self.parent.new_project()
+
+    def on_close_project(self, event):
+        pub().sendMessage(T.CLOSE_PROJECT)
+
+    def on_open_project(self, event):
+        pub().sendMessage(T.OPEN_PROJECT)
+
+    def on_hide_project(self, event):
+        pub().sendMessage(T.HIDE_PROJECT)
+
+    def on_unhide_project(self, event):
+        pub().sendMessage(T.PREUNHIDE_PROJECT)

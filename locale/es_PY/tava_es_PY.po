@@ -239,3 +239,37 @@ msgstr "Agregar"
 msgid "DELETE_FILE_RESOULT"
 msgstr "Eliminar"
 
+# ------------------------------- vproject -> UnhideProject -------------------
+
+msgid "UNHIDE_TITLE"
+msgstr "Proyectos Ocultos"
+
+msgid "UNHIDE_DESCRIPTION"
+msgstr "Marque las casillas de los proyectos que desea restaurar"
+
+msgid "UNHIDE_DESCRIPTION_EMPTY"
+msgstr "No tiene proyectos ocultos"
+
+msgid "UNHIDE_COLUMN_NAME"
+msgstr "Nombre"
+
+msgid "UNHIDE_COLUMN_CREATION"
+msgstr "Fecha de creacion"
+
+msgid "UNHIDE_COLUMN_HIDDEN"
+msgstr "Fecha oculto"
+
+msgid "UNHIDE_BOX_LABEL"
+msgstr "Marcación Rápida"
+
+msgid "UNHIDE_SELECT_ALL"
+msgstr "Seleccionar todo"
+
+msgid "UNHIDE_DESELECT_ALL"
+msgstr "Deseleccionar todo"
+
+msgid "UNHIDE_RESTORE"
+msgstr "Restaurar"
+
+msgid "UNHIDE_CANCEL"
+msgstr "Cancelar"
