@@ -71,6 +71,7 @@ K_COLOR_SUB_BLOCK = 2
 K_COLOR_VALUE = 3
 
 NORMA_METO = ['Normalizado', 'Natural']
+DATA_SELEC = ['Cluster', 'Datos']
 
 
 class ControlPanel(wx.Panel):
@@ -84,6 +85,7 @@ class ControlPanel(wx.Panel):
 
         self.data_selected = None
         self.normalization = 0
+        self.cluster_or_date = 0
 
         self.duplicate_true = K_DATE_DUPLICATE_TRUE
         self.k_plot = K_PLOT_BLOCK
@@ -100,7 +102,19 @@ class ControlPanel(wx.Panel):
         # ---- Lista de Datos
         self.data_seccion = DataSeccion(self, ksub_blocks)
 
-        # ---- normalización de datos
+        # ---- datos - normalización de datos
+
+        grid = wx.FlexGridSizer(cols=2)
+        self.tbtn = platebtn.PlateButton(self, -1,
+                                         DATA_SELEC[self.cluster_or_date],
+                                         None,
+                                         style=platebtn.PB_STYLE_DEFAULT |
+                                         platebtn.PB_STYLE_NOBG)
+        tmenu = wx.Menu()
+        tmenu.Append(wx.NewId(), DATA_SELEC[0])
+        tmenu.Append(wx.NewId(), DATA_SELEC[1])
+        self.tbtn.SetMenu(tmenu)
+        self.tbtn.Bind(wx.EVT_MENU, self.on_select_menu)
         self.tbtn0 = platebtn.PlateButton(self, -1,
                                           NORMA_METO[self.normalization], None,
                                           style=platebtn.PB_STYLE_DEFAULT |
@@ -110,63 +124,66 @@ class ControlPanel(wx.Panel):
         menu.Append(wx.NewId(), NORMA_METO[1])
         self.tbtn0.SetMenu(menu)
         self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
+        grid.Add(self.tbtn, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(self.tbtn0, 1, wx.ALIGN_LEFT | wx.ALL, 5)
 
         # ---- Configuración de Clusters
-        self.sc_count_clusters = wx.SpinCtrl(self, 0, "", (30, 50))
+        c_sizer = wx.BoxSizer()
+        self.sc_count_clusters = wx.SpinCtrl(self, -1, "", size=(75, 30))
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
-
         tbtn = platebtn.PlateButton(self, -1, '  Crear  ', None,
                                     style=platebtn.PB_STYLE_SQUARE |
                                     platebtn.PB_STYLE_NOBG)
         tbtn.SetPressColor(wx.Colour(245, 55, 245))
         tbtn.SetLabelColor(wx.Colour(0, 0, 255))
         tbtn.Bind(wx.EVT_BUTTON, self.on_generate)
+        c_sizer.Add(self.sc_count_clusters, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        c_sizer.Add(tbtn, 0, wx.TOP | wx.RIGHT | wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
+        # ---- seleccionar - analizar
+        a_sizer = wx.BoxSizer()
         tbtn1 = platebtn.PlateButton(self, -1, 'Marcar', None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
         tbtn1.SetPressColor(wx.Colour(255, 165, 0))
         tbtn1.SetLabelColor(wx.Colour(127, 0, 255))
         tbtn1.Bind(wx.EVT_BUTTON, self.on_filter)
-
         tbtn2 = platebtn.PlateButton(self, -1, '    Ver    ', None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
         tbtn2.SetPressColor(wx.Colour(255, 165, 0))
         tbtn2.SetLabelColor(wx.Colour(127, 0, 255))
         tbtn2.Bind(wx.EVT_BUTTON, self.on_config)
+        a_sizer.Add(tbtn1, 0, wx.TOP | wx.RIGHT | wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, 5)
+        a_sizer.Add(tbtn2, 0, wx.TOP | wx.RIGHT | wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
 
+        # ---- marco visualización
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(self.tbtn0, 0, wx.TOP | wx.RIGHT | wx.LEFT |
-                       wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(self.sc_count_clusters, 0, wx.ALL |
-                       wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(tbtn, 0, wx.TOP | wx.RIGHT | wx.LEFT |
-                       wx.ALIGN_CENTER_HORIZONTAL, 5)
-        self.sizer.Add(tbtn1, 0, wx.TOP | wx.RIGHT | wx.LEFT |
-                       wx.ALIGN_CENTER_HORIZONTAL, 5)
-        self.sizer.Add(tbtn2, 0, wx.TOP | wx.RIGHT | wx.LEFT |
-                       wx.ALIGN_CENTER_HORIZONTAL, 5)
 
+        self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+                       wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
+
         self.SetSizer(self.sizer)
         self.Fit()
 
     def run_fig(self):
 
-        # ---- Se desea visualizar Datos
-        if self.kfigure.g_type() == 0:
-            self.v_datas()
-
         # ---- Se desea visualizar Clusters
-        if self.kfigure.g_type() == 1:
+        if self.cluster_or_date == 0:
             self.v_clusters()
+
+        # ---- Se desea visualizar Datos
+        if self.cluster_or_date == 1:
+            self.v_datas()
 
     def v_datas(self):
         blocks = []
@@ -336,6 +353,16 @@ class ControlPanel(wx.Panel):
         if not self.cluster_config:
             self.cluster_config = ClusterConfig(self)
         self.cluster_config.ShowModal()
+
+    def on_select_menu(self, evt):
+        """Events from button menus"""
+
+        e_obj = evt.GetEventObject()
+        mitem = e_obj.FindItemById(evt.GetId())
+        if mitem != wx.NOT_FOUND:
+            label = mitem.GetItemLabel()
+            self.tbtn.SetLabel(label)
+            self.cluster_or_date = DATA_SELEC.index(label)
 
     def on_nor_menu(self, evt):
         """Events from button menus"""

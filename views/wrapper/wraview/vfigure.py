@@ -89,15 +89,10 @@ class FigurePanel(wx.Panel):
         choice_grafic = self.get_choice_grafic()
         sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
 
-        choice_mode = self.get_choice_type()
-        sizer_tool.Add(choice_mode, wx.ALIGN_LEFT)
-
-#         self.graphics = Graphics_Tava(self)
-
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(sizer_tool, 0, wx.EXPAND)
         self.sizer.Add(self.canvas, 1, wx.EXPAND)
-#         self.sizer.Add(self.graphics, 0, wx.EXPAND)
+
         self.SetSizer(self.sizer)
         self.Fit()
         self._welcome()
@@ -211,40 +206,3 @@ class FigurePanel(wx.Panel):
         grid.Add(self.ch_graph, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         return grid
-
-    def get_choice_type(self):
-        grid = wx.FlexGridSizer(cols=2)
-        sampleList = ['Datos', 'Cluster']
-
-        self.ch_type = wx.Choice(self, -1, choices=sampleList)
-        self.ch_type.SetSelection(1)
-        self.ch_type.SetToolTipString("Seleccione un tipo")
-
-        grid.Add(self.ch_type, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        return grid
-
-
-class Graphics_Tava(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-
-        self.rb_figure = wx.RadioBox(self, -1, "", wx.DefaultPosition,
-                                     wx.DefaultSize, self.g_names_figure(),
-                                     3, wx.RA_SPECIFY_COLS | wx.NO_BORDER)
-
-        self.rb_type = wx.RadioBox(self, -1, "", choices=self.g_names_type(),
-                                   majorDimension=2,
-                                   style=wx.RA_SPECIFY_COLS | wx.NO_BORDER)
-
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.rb_figure, 0)
-        self.sizer.Add(self.rb_type, 0)
-        self.SetSizer(self.sizer)
-        self.Fit()
-
-    def g_names_figure(self):
-        return ['Coodenadas Paralelas', 'Radar Chart Circle', 'Radviz']
-
-    def g_names_type(self):
-        return ['Datos', 'Clusters']

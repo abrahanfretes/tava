@@ -20,7 +20,6 @@ from pandas.core.frame import DataFrame
 import wx
 
 from views.wrapper.wraview.vcontrol import ControlPanel, KBlock
-from views.wrapper.wraview.vdata import DataPanel
 from views.wrapper.wraview.vfigure import FigurePanel
 
 
