@@ -17,9 +17,12 @@
 '''
 
 import wx
-from wx.lib import masked
-import wx.lib.colourselect as  csel
+from wx.lib.masked import Ctrl
+from wx.lib.masked.ctrl import NUMBER
+
+from imgs.iview import my_bitmap
 import wx.lib.agw.labelbook as LB
+import wx.lib.colourselect as  csel
 
 
 class DataConfig(wx.Dialog):
@@ -101,18 +104,22 @@ class FigureConfigDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, size=(600, 500),
                            title='Configuración de Gráfico')
 
-        notebook = LB.LabelBook(self, -1, agwStyle=LB.INB_FIT_LABELTEXT |
-                LB.INB_LEFT | LB.INB_DRAW_SHADOW | LB.INB_GRADIENT_BACKGROUND |
-                LB.INB_SHOW_ONLY_TEXT | LB.INB_BOLD_TAB_SELECTION)
+        # ---- variable de configuración de Figura
+        conf = parent.fig_config
+
+        ag_st = LB.INB_FIT_LABELTEXT | LB.INB_LEFT | LB.INB_DRAW_SHADOW
+        ag_st = ag_st | LB.INB_GRADIENT_BACKGROUND | LB.INB_SHOW_ONLY_TEXT
+        ag_st = ag_st | LB.INB_BOLD_TAB_SELECTION
+        notebook = LB.LabelBook(self, -1, agwStyle=ag_st)
         notebook.SetFontBold(False)
         notebook.SetColour(LB.INB_TAB_AREA_BACKGROUND_COLOUR,
                            wx.Colour(132, 164, 213))
 
         imagelist = wx.ImageList(32, 32)
-        imagelist.Add(wx.Bitmap("my_bitmap.png", wx.BITMAP_TYPE_PNG))
+        imagelist.Add(my_bitmap.GetBitmap())
         notebook.AssignImageList(imagelist)
 
-        notebook.AddPage(FigureConfigPanel(notebook, self), "Figura", 1, 0)
+        notebook.AddPage(FigureConfigPanel(notebook, self, conf), "Figura", 1, 0)
         notebook.AddPage(AxesConfigPanel(notebook, self), "Ejes", 0, 0)
         self.nb = notebook
 
@@ -120,6 +127,17 @@ class FigureConfigDialog(wx.Dialog):
 
         self.CenterOnScreen()
         self.ShowModal()
+
+    def set_figure_parent_values(self):
+        fig_config = self.GetParent().fig_config
+        fig_config.width = self.figure_width.GetValue()
+        fig_config.height = self.figure_height.GetValue()
+
+        # ---- Espaciado de Subplots
+        fig_config.subplot_top = self.top_spacing.GetValue()
+        fig_config.subplot_bottom = self.bottom_spacing.GetValue()
+        fig_config.subplot_left = self.left_spacing.GetValue()
+        fig_config.subplot_right = self.right_spacing.GetValue()
 
     def set_axes_parent_values(self):
         ax_conf = self.GetParent().ax_conf
@@ -136,17 +154,6 @@ class FigureConfigDialog(wx.Dialog):
         ax_conf.legend_loc = self.ch_loc_leg.GetStringSelection()
         ax_conf.legend_show = self.chk_show_lg.GetValue()
 
-    def set_figure_parent_values(self):
-        fig_config = self.GetParent().fig_config
-        fig_config.width = self.figure_width.GetValue()
-        fig_config.height = self.figure_height.GetValue()
-
-#         Espaciado de Subplots
-        fig_config.subplot_top = self.top_spacing.GetValue()
-        fig_config.subplot_bottom = self.bottom_spacing.GetValue()
-        fig_config.subplot_left = self.left_spacing.GetValue()
-        fig_config.subplot_right = self.right_spacing.GetValue()
-
     def on_close(self, e):
         self.set_figure_parent_values()
         self.set_axes_parent_values()
@@ -158,20 +165,18 @@ class FigureConfigPanel(wx.Panel):
     Panel de configuracion de la figura.
     '''
 
-    def __init__(self, parent, dialog_ref):
+    def __init__(self, parent, dialog_ref, conf):
         '''
         Método de inicialización del Panel.
         :param parent: referencia al contenedor padre.
         '''
         wx.Panel.__init__(self, parent, style=0)
-
         self.dialog_ref = dialog_ref
-
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
 
-        sboxs_sf = self.get_size_figure()
+        sboxs_sf = self.get_size_figure(conf)
 
-        sboxs_spf = self.get_spacing_figure()
+        sboxs_spf = self.get_spacing_figure(conf)
 
         msizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -183,64 +188,64 @@ class FigureConfigPanel(wx.Panel):
 
         self.SetSizer(sizer)
 
-    def get_size_figure(self):
+        # ----       ---------------------------------------------
+        # ---- FALTAN
+#         self.facecolor = 'w'    # figure facecolor; 0.75 is scalar gray
+#         # the amount of width reserved for blank space between subplots
+#         self.subplot_wspace = 0.05
+#         # the amount of height reserved for white space between subplots
+#         self.subplot_hspace = 0.10
+
+    def get_size_figure(self, conf):
+
         sbox_sf = wx.StaticBox(self, -1, "Tamaño")
         sboxs_sf = wx.StaticBoxSizer(sbox_sf, wx.VERTICAL)
-
         grid = wx.FlexGridSizer(cols=4)
 
         width_label = wx.StaticText(self, -1, "Figure width:")
-        figure_width = masked.Ctrl(self, value=6.75, integerWidth=5,
-                                   fractionWidth=2,
-                                   controlType=masked.controlTypes.NUMBER)
+        figure_width = Ctrl(self, value=conf.width, integerWidth=5,
+                            fractionWidth=2, controlType=NUMBER)
+
         self.dialog_ref.figure_width = figure_width
 
         height_label = wx.StaticText(self, -1, "Figure height:")
-        figure_height = masked.Ctrl(self, value=5.75, integerWidth=5,
-                                   fractionWidth=2,
-                                   controlType=masked.controlTypes.NUMBER)
+        figure_height = Ctrl(self, value=conf.height, integerWidth=5,
+                             fractionWidth=2, controlType=NUMBER)
+
         self.dialog_ref.figure_height = figure_height
 
-        grid.Add(width_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        st_grip = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(width_label, 0, st_grip, 5)
         grid.Add(figure_width, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        grid.Add(height_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(height_label, 0, st_grip, 5)
         grid.Add(figure_height, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
         sboxs_sf.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
         return sboxs_sf
 
-    def get_spacing_figure(self):
+    def get_spacing_figure(self, conf):
         sbox_spf = wx.StaticBox(self, -1, "Espaciado")
         sboxs_spf = wx.StaticBoxSizer(sbox_spf, wx.VERTICAL)
-
         grid = wx.FlexGridSizer(cols=4)
 
         top_label = wx.StaticText(self, -1, "Top:")
-        top_spacing = masked.Ctrl(self, value=0.98, integerWidth=5,
-                                       fractionWidth=2,
-                                       controlType=masked.controlTypes.NUMBER)
+        top_spacing = Ctrl(self, value=conf.subplot_top, integerWidth=5,
+                           fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.top_spacing = top_spacing
 
         bottom_label = wx.StaticText(self, -1, "Bottom:")
-        bottom_spacing = masked.Ctrl(self, value=0.07, integerWidth=5,
-                                          fractionWidth=2,
-                                        controlType=masked.controlTypes.NUMBER)
+        bottom_spacing = Ctrl(self, value=conf.subplot_bottom, integerWidth=5,
+                              fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.bottom_spacing = bottom_spacing
 
         left_label = wx.StaticText(self, -1, "Left:")
-        left_spacing = masked.Ctrl(self, value=0.02, integerWidth=5,
-                                        fractionWidth=2,
-                                        controlType=masked.controlTypes.NUMBER)
+        left_spacing = Ctrl(self, value=conf.subplot_left, integerWidth=5,
+                            fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.left_spacing = left_spacing
 
         right_label = wx.StaticText(self, -1, "Right:")
-        right_spacing = masked.Ctrl(self, value=0.98, integerWidth=5,
-                                         fractionWidth=2,
-                                        controlType=masked.controlTypes.NUMBER)
+        right_spacing = Ctrl(self, value=conf.subplot_right, integerWidth=5,
+                             fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.right_spacing = right_spacing
 
         grid.Add(top_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
@@ -418,14 +423,45 @@ class AxesConfig():
         '''
         Método de inicializacion de variables
         '''
-#         Colores de spines
+        # ---- colores de spines
         self.color_top_spine = "#FFFFFF"
         self.color_bottom_spine = "#FFFFFF"
         self.color_left_spine = "#DDDDDD"
         self.color_right_spine = "#DDDDDD"
-#         Localization de la leyenda
+
+        # ---- colores de bordes
+        self.border_top = '#FFFFFF'
+        self.border_bottom = '#FFFFFF'
+        self.border_right = '#FFFFFF'
+        self.border_left = '#FFFFFF'
+
+        # ---- color labels
+        self.x_color_label = '#606060'
+        self.y_color_label = '#606060'
+
+        # ---- axes
+        self.x_axis = True
+        self.y_axis = True
+        self.x_axis_color = 'w'
+        self.y_axis_color = '#DDDDDD'
+
+        # ---- ticks
+        self.xticks = None
+        self.yticks = None
+
+        # ---- lines
+        self.axv_line_width = 1
+        self.axv_line_color = '#DDDDDD'
+
+        # ---- grilla
+        self.grid_lines = False
+        self.grid_lines_style = ':'
+
+        # ---- legends
         self.legend_show = True
         self.legend_loc = 'upper left'
+        self.legend_size = 9
+        self.legend_edge_color = '#DDDDDD'
 
 
 class Example(wx.Frame):

@@ -424,18 +424,18 @@ def grafic_r1(f_path=None, _sep=' '):
     # s_clusters = shape.clusters
 
     # ver clusters
-    # s_clusters = shape.g_percent_up()
+    s_clusters = shape.g_percent_up(15.0)
     # s_clusters = shape.clusters[130:]
     # s_clusters = shape.g_with_percent(0.25)
     # s_clusters = shape.g_with_percent(0.25)
-    _v = 4
-    s_clusters = shape.g_clusters_max_in_var(_v)
-    s_clusters1 = shape.g_clusters_min_in_var(_v)
-    for s in s_clusters1:
-        s_clusters.append(s)
-
-    print len(s_clusters)
-    dv = shape.g_data_for_fig(s_clusters)
+#     _v = 4
+#     s_clusters = shape.g_clusters_max_in_var(_v)
+#     s_clusters1 = shape.g_clusters_min_in_var(_v)
+#     for s in s_clusters1:
+#         s_clusters.append(s)
+#
+#     print len(s_clusters)
+    dv = shape.g_data_for_fig(s_clusters, [False, False, False, False], True)
 
     ax = fig.add_subplot(1, 1, 1)
     k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=True,
@@ -460,5 +460,5 @@ def grafic_r1(f_path=None, _sep=' '):
 
 if __name__ == '__main__':
 
-    f_path = '/home/abrahan/tesis/proyectos/kuri/datas/objetivos_8.csv'
+    f_path = '/home/afretes/tesis/proyectos/kuri/datas/objetivos_8.csv'
     grafic_r1(f_path, ',')

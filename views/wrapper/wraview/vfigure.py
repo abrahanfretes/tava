@@ -56,27 +56,25 @@ class FigurePanel(wx.Panel):
         self.shape_value = True
         self.figure_config_dialog_ref = None
 
+        # ---- inicialización de figura
         self.fig = Figure()
+        self.canvas = FigureCanvas(self, -1, self.fig)
+
+        # ---- configuración de figura
         self.fig_config = FigureConfig()
         self.set_figure_config()
-#         self.fig.suptitle('Tava Tool', fontsize=14, fontweight='light',
-#                           style='italic', family='serif', color='c',
-#                           horizontalalignment='center',
-#                           verticalalignment='center')
-        self.canvas = FigureCanvas(self, -1, self.fig)
+
+        # ---- configuración de axe
         self.ax_conf = AxesConfig()
 
-        # toolbar
+        # ---- toolbar
         sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
-
-        b_play = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                 bitmap=play_fig.GetBitmap())
+        bitmap = play_fig.GetBitmap()
+        b_play = wx.BitmapButton(self, -1, bitmap, style=wx.NO_BORDER)
         sizer_tool.Add(b_play, flag=wx.ALIGN_CENTER_VERTICAL)
         b_play.Bind(wx.EVT_BUTTON, self.on_play)
-
-#       Boton de configuracion
-        b_setting = wx.BitmapButton(self, style=wx.NO_BORDER,
-                                    bitmap=settings_fig.GetBitmap())
+        bitmap = settings_fig.GetBitmap()
+        b_setting = wx.BitmapButton(self, -1, bitmap, style=wx.NO_BORDER)
         sizer_tool.Add(b_setting, flag=wx.ALIGN_CENTER_VERTICAL)
         b_setting.Bind(wx.EVT_BUTTON, self.on_config)
 
@@ -100,17 +98,18 @@ class FigurePanel(wx.Panel):
         Axes3D(self.fig)
 
     def set_figure_config(self):
-        fig_config = self.fig_config
-        self.fig.set_figwidth(fig_config.width)
-        self.fig.set_figheight(fig_config.height)
-        self.fig.set_facecolor(fig_config.facecolor)
 
-        self.fig.subplots_adjust(top=fig_config.subplot_top,
-                                 bottom=fig_config.subplot_bottom,
-                                 left=fig_config.subplot_left,
-                                 right=fig_config.subplot_right,
-                                 wspace=fig_config.subplot_wspace,
-                                 hspace=fig_config.subplot_hspace)
+        self.fig.set_figwidth(self.fig_config.width)
+        self.fig.set_figheight(self.fig_config.height)
+        self.fig.set_facecolor(self.fig_config.facecolor)
+
+        left = self.fig_config.subplot_left
+        bottom = self.fig_config.subplot_bottom
+        right = self.fig_config.subplot_right
+        top = self.fig_config.subplot_top
+        wspace = self.fig_config.subplot_wspace
+        hspace = self.fig_config.subplot_hspace
+        self.fig.subplots_adjust(left, bottom, right, top, wspace, hspace)
 
         self.fig.suptitle('Tava Tool', fontsize=14, fontweight='light',
                           style='italic', family='serif', color='c',
