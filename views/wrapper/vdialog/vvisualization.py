@@ -383,7 +383,7 @@ class Example(wx.Frame):
 class FilterClusterDialog(wx.Dialog):
     def __init__(self, parent, data):
         wx.Dialog.__init__(self, parent, title="Cluster Filter",
-                                                            size=(400, 360))
+                                                            size=(400, 390))
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
 
         self.parent = parent

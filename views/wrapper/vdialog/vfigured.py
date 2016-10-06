@@ -114,6 +114,7 @@ class FigureConfigDialog(wx.Dialog):
 
         notebook.AddPage(FigureConfigPanel(notebook, self), "Figura", 1, 0)
         notebook.AddPage(AxesConfigPanel(notebook, self), "Ejes", 0, 0)
+        self.nb = notebook
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
@@ -122,6 +123,7 @@ class FigureConfigDialog(wx.Dialog):
 
     def set_axes_parent_values(self):
         ax_conf = self.GetParent().ax_conf
+#         Colores de Spines
         ax_conf.color_top_spine = self.clr_top_sp.GetValue().\
         GetAsString(wx.C2S_HTML_SYNTAX)
         ax_conf.color_bottom_spine = self.clr_bottom_sp.GetValue().\
@@ -130,6 +132,9 @@ class FigureConfigDialog(wx.Dialog):
         GetAsString(wx.C2S_HTML_SYNTAX)
         ax_conf.color_right_spine = self.clr_right_sp.GetValue().\
         GetAsString(wx.C2S_HTML_SYNTAX)
+#       Localizacion de la leyenda
+        ax_conf.legend_loc = self.ch_loc_leg.GetStringSelection()
+        ax_conf.legend_show = self.chk_show_lg.GetValue()
 
     def set_figure_parent_values(self):
         fig_config = self.GetParent().fig_config
@@ -145,7 +150,7 @@ class FigureConfigDialog(wx.Dialog):
     def on_close(self, e):
         self.set_figure_parent_values()
         self.set_axes_parent_values()
-        self.Destroy()
+        self.Hide()
 
 
 class FigureConfigPanel(wx.Panel):
@@ -280,7 +285,10 @@ class AxesConfigPanel(wx.Panel):
 
         sboxs_spif = self.get_spines_figure()
 
+        sboxs_lglc = self.get_legend_location()
+
         sizer.Add(sboxs_spif, 0, wx.EXPAND | wx.ALL, 3)
+        sizer.Add(sboxs_lglc, 0, wx.EXPAND | wx.ALL, 3)
 
         self.SetSizer(sizer)
 
@@ -338,6 +346,40 @@ class AxesConfigPanel(wx.Panel):
 
         return sboxs_spf
 
+    def get_legend_location(self):
+        sbox_lglc = wx.StaticBox(self, -1, "Leyenda")
+        sboxs_lglc = wx.StaticBoxSizer(sbox_lglc, wx.VERTICAL)
+
+        grid = wx.FlexGridSizer(cols=2)
+
+        chk_show_lg = wx.CheckBox(self, -1, "Mostrar Leyenda",
+                                  style=wx.ALIGN_RIGHT)
+        chk_show_lg.SetValue(True)
+        self.dialog_ref.chk_show_lg = chk_show_lg
+
+        loc_label = wx.StaticText(self, -1, "localizacion:")
+
+        locations = ['upper left', 'center', 'upper center', 'lower left',
+                     'lower right', 'center left', 'upper right', 'right',
+                     'lower center', 'best', 'center right']
+
+        ch_loc_leg = wx.Choice(self, -1, choices=locations)
+        ch_loc_leg.SetSelection(0)
+        ch_loc_leg.SetToolTipString("Seleccione una localización")
+        self.dialog_ref.ch_loc_leg = ch_loc_leg
+
+        grid.Add(chk_show_lg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(loc_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
+                                                                    wx.ALL, 5)
+        grid.Add(ch_loc_leg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        sboxs_lglc.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+
+        return sboxs_lglc
+
 
 class FigureConfig():
     '''
@@ -376,10 +418,14 @@ class AxesConfig():
         '''
         Método de inicializacion de variables
         '''
+#         Colores de spines
         self.color_top_spine = "#FFFFFF"
         self.color_bottom_spine = "#FFFFFF"
         self.color_left_spine = "#DDDDDD"
         self.color_right_spine = "#DDDDDD"
+#         Localization de la leyenda
+        self.legend_show = True
+        self.legend_loc = 'upper left'
 
 
 class Example(wx.Frame):

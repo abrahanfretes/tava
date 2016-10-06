@@ -127,8 +127,7 @@ class FigurePanel(wx.Panel):
 
         if key_figure == K_PARALLEL_COORDENATE:
             self.fig = k_parallel_coordinates(dframes, 'Name', self.fig,
-                                              self.ax_conf, self.fig_config,
-                                              legend=True)
+                                              self.ax_conf, self.fig_config)
         elif key_figure == K_ANDREWS_CURVES:
             self.fig = k_andrews_curves(dframes, 'Name', self.fig)
         elif key_figure == K_RADVIZ:
@@ -204,6 +203,7 @@ class FigurePanel(wx.Panel):
         if self.figure_config_dialog_ref is None:
             self.figure_config_dialog_ref = FigureConfigDialog(self)
         else:
+            self.figure_config_dialog_ref.nb.SetSelection(0)
             self.figure_config_dialog_ref.ShowModal()
 
     def g_figure(self):

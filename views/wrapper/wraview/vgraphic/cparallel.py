@@ -212,6 +212,8 @@ def k_parallel_coordinates(dframes, class_column='Name', fig=None,
     if ax_conf is None:
         ax_conf = AxesConfig()
 
+    legend = ax_conf.legend_show
+
     s_row, s_col = square_plot(len(dframes), False)
 
     for i in range(len(dframes)):
@@ -219,12 +221,13 @@ def k_parallel_coordinates(dframes, class_column='Name', fig=None,
 #         k_cp(dframes[i], class_column, ax=ax, axvlines=False,
 #              u_legend=legend, u_grid=u_grid, _xaxis=_xaxis, _yaxis=_yaxis)
 
-        k_cp(dframes[i], class_column, ax=ax, u_legend=True, u_grid=False,
+        k_cp(dframes[i], class_column, ax=ax, u_legend=legend, u_grid=False,
              _xaxis=False, one_color=False, _loc='upper left',
              _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
 
         ax = set_axes_config(ax, ax_conf)
-        ax.legend(prop={'size': 9},
-                  loc='upper left').get_frame().set_edgecolor('#DDDDDD')
+        if legend:
+            ax.legend(prop={'size': 9}, loc=ax_conf.legend_loc).get_frame() \
+                                    .set_edgecolor('#DDDDDD')
 
     return fig

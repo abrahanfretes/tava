@@ -154,12 +154,14 @@ class ControlPanel(wx.Panel):
         tbtn1.SetPressColor(wx.Colour(165, 42, 42))
         tbtn1.SetLabelColor(wx.Colour(0, 0, 255))
         tbtn1.Bind(wx.EVT_BUTTON, self.on_filter)
+
         tbtn2 = platebtn.PlateButton(self, -1, ANALISIS_LABEL[2], None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
         tbtn2.SetPressColor(wx.Colour(165, 42, 42))
         tbtn2.SetLabelColor(wx.Colour(0, 0, 255))
         tbtn2.Bind(wx.EVT_BUTTON, self.on_config)
+
         a_sizer.Add(tbtn1, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
         a_sizer.Add(tbtn2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
@@ -318,8 +320,7 @@ class ControlPanel(wx.Panel):
             # ---- clusters por valor de objetivos mayores
             _shape.name_objectives
             _data.max_objetives = list(_shape.name_objectives)
-
-        if not self.cluster_filter:
+        if self.cluster_filter is None:
             self.cluster_filter = FilterClusterDialog(self, self.data_selected)
         else:
             self.cluster_filter.ShowModal()
@@ -355,7 +356,7 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
-        if not self.cluster_config:
+        if self.cluster_config is None:
             self.cluster_config = ClusterConfig(self)
         self.cluster_config.ShowModal()
 
