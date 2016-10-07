@@ -22,7 +22,7 @@ from wx.lib.masked.ctrl import NUMBER
 
 from imgs.iview import my_bitmap
 import wx.lib.agw.labelbook as LB
-import wx.lib.colourselect as  csel
+import wx.lib.colourselect as csel
 
 
 class DataConfig(wx.Dialog):
@@ -106,6 +106,7 @@ class FigureConfigDialog(wx.Dialog):
 
         # ---- variable de configuración de Figura
         conf = parent.fig_config
+        a_conf = parent.ax_conf
 
         ag_st = LB.INB_FIT_LABELTEXT | LB.INB_LEFT | LB.INB_DRAW_SHADOW
         ag_st = ag_st | LB.INB_GRADIENT_BACKGROUND | LB.INB_SHOW_ONLY_TEXT
@@ -119,8 +120,9 @@ class FigureConfigDialog(wx.Dialog):
         imagelist.Add(my_bitmap.GetBitmap())
         notebook.AssignImageList(imagelist)
 
-        notebook.AddPage(FigureConfigPanel(notebook, self, conf), "Figura", 1, 0)
-        notebook.AddPage(AxesConfigPanel(notebook, self), "Ejes", 0, 0)
+        notebook.AddPage(FigureConfigPanel(notebook, self, conf),
+                         "Figura", 1, 0)
+        notebook.AddPage(AxesConfigPanel(notebook, self, a_conf), "Ejes", 0, 0)
         self.nb = notebook
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
@@ -141,18 +143,20 @@ class FigureConfigDialog(wx.Dialog):
 
     def set_axes_parent_values(self):
         ax_conf = self.GetParent().ax_conf
-#         Colores de Spines
-        ax_conf.color_top_spine = self.clr_top_sp.GetValue().\
-        GetAsString(wx.C2S_HTML_SYNTAX)
-        ax_conf.color_bottom_spine = self.clr_bottom_sp.GetValue().\
-        GetAsString(wx.C2S_HTML_SYNTAX)
-        ax_conf.color_left_spine = self.clr_left_sp.GetValue().\
-        GetAsString(wx.C2S_HTML_SYNTAX)
-        ax_conf.color_right_spine = self.clr_right_sp.GetValue().\
-        GetAsString(wx.C2S_HTML_SYNTAX)
+
+        # ---- Colores de Spines
+        _v = self.clr_top_sp.GetValue().GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_top_spine = _v
+        _v1 = self.clr_bottom_sp.GetValue().GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_bottom_spine = _v1
+        _v2 = self.clr_left_sp.GetValue().GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_left_spine = _v2
+        _v3 = self.clr_right_sp.GetValue().GetAsString(wx.C2S_HTML_SYNTAX)
+        ax_conf.color_right_spine = _v3
+
 #       Localizacion de la leyenda
-        ax_conf.legend_loc = self.ch_loc_leg.GetStringSelection()
         ax_conf.legend_show = self.chk_show_lg.GetValue()
+        ax_conf.legend_loc = self.ch_loc_leg.GetStringSelection()
 
     def on_close(self, e):
         self.set_figure_parent_values()
@@ -248,22 +252,15 @@ class FigureConfigPanel(wx.Panel):
                              fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.right_spacing = right_spacing
 
-        grid.Add(top_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(top_label, 0, _style, 5)
         grid.Add(top_spacing, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        grid.Add(bottom_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(bottom_label, 0, _style, 5)
         grid.Add(bottom_spacing, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        grid.Add(left_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(left_label, 0, _style, 5)
         grid.Add(left_spacing, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        grid.Add(right_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(right_label, 0, _style, 5)
         grid.Add(right_spacing, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
         sboxs_spf.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
         return sboxs_spf
@@ -274,88 +271,68 @@ class AxesConfigPanel(wx.Panel):
     Panel de configuración de los ejes de la Figura.
     """
 
-    def __init__(self, parent, dialog_ref):
+    def __init__(self, parent, dialog_ref, a_conf):
         '''
         Método de inicialización de la clase.
         :param parent: referencia al contenedor padre.
         :param dialog_ref: referencia a la clase Dialog principal
         '''
         wx.Panel.__init__(self, parent, style=0)
-
         self.dialog_ref = dialog_ref
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
 
-        sboxs_spif = self.get_spines_figure()
+        sboxs_spif = self.get_spines_figure(a_conf)
+        sboxs_lglc = self.get_legend_location(a_conf)
 
-        sboxs_lglc = self.get_legend_location()
-
+        sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(sboxs_spif, 0, wx.EXPAND | wx.ALL, 3)
         sizer.Add(sboxs_lglc, 0, wx.EXPAND | wx.ALL, 3)
 
         self.SetSizer(sizer)
 
-    def get_spines_figure(self):
+    def get_spines_figure(self, a_conf):
         sbox_spf = wx.StaticBox(self, -1, "Bordes")
         sboxs_spf = wx.StaticBoxSizer(sbox_spf, wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=5)
 
+        # ---- color de bordes
         top_label = wx.StaticText(self, -1, "Top:")
-        clr_top_sp = csel.ColourSelect(self, -1, label="Escoja un color",
-                                           colour=(255, 255, 255),
-                                           size=(120, 30))
+        clr_top_sp = csel.ColourSelect(self, -1, "Escoja un color",
+                                       a_conf.border_top, size=(120, 30))
         self.dialog_ref.clr_top_sp = clr_top_sp
-
         bottom_label = wx.StaticText(self, -1, "Bottom:")
         clr_bottom_sp = csel.ColourSelect(self, -1, "Escoja un color",
-                                              colour=(0, 0, 0),
-                                              size=(120, 30))
+                                          a_conf.border_bottom, size=(120, 30))
         self.dialog_ref.clr_bottom_sp = clr_bottom_sp
-
         left_label = wx.StaticText(self, -1, "Left:")
         clr_left_sp = csel.ColourSelect(self, -1, "Escoja un color",
-                                            colour=(0, 0, 0),
-                                            size=(120, 30))
+                                        a_conf.border_left, size=(120, 30))
         self.dialog_ref.clr_left_sp = clr_left_sp
-
         right_label = wx.StaticText(self, -1, "Right:")
         clr_right_sp = csel.ColourSelect(self, -1, "Escoja un color",
-                                             colour=(255, 255, 255),
-                                             size=(120, 30))
+                                         a_conf.border_right, size=(120, 30))
         self.dialog_ref.clr_right_sp = clr_right_sp
 
-        grid.Add(top_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(top_label, 0, _style, 5)
         grid.Add(clr_top_sp, 0, wx.EXPAND | wx.ALL, 5)
-
         grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
-
-        grid.Add(bottom_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(bottom_label, 0, _style, 5)
         grid.Add(clr_bottom_sp, 0, wx.EXPAND | wx.ALL, 5)
-
-        grid.Add(left_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                     wx.ALL, 5)
+        grid.Add(left_label, 0, _style, 5)
         grid.Add(clr_left_sp, 0, wx.EXPAND | wx.ALL, 5)
-
         grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
-
-        grid.Add(right_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(right_label, 0, _style, 5)
         grid.Add(clr_right_sp, 0, wx.EXPAND | wx.ALL, 5)
 
         sboxs_spf.Add(grid, 0, wx.ALL, 3)
 
         return sboxs_spf
 
-    def get_legend_location(self):
+    def get_legend_location(self, a_conf):
         sbox_lglc = wx.StaticBox(self, -1, "Leyenda")
         sboxs_lglc = wx.StaticBoxSizer(sbox_lglc, wx.VERTICAL)
-
-        grid = wx.FlexGridSizer(cols=2)
 
         chk_show_lg = wx.CheckBox(self, -1, "Mostrar Leyenda",
                                   style=wx.ALIGN_RIGHT)
@@ -373,12 +350,11 @@ class AxesConfigPanel(wx.Panel):
         ch_loc_leg.SetToolTipString("Seleccione una localización")
         self.dialog_ref.ch_loc_leg = ch_loc_leg
 
+        grid = wx.FlexGridSizer(cols=2)
         grid.Add(chk_show_lg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
         grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        grid.Add(loc_label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(loc_label, 0, _style, 5)
         grid.Add(ch_loc_leg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         sboxs_lglc.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
@@ -423,27 +399,38 @@ class AxesConfig():
         '''
         Método de inicializacion de variables
         '''
+        # ---- color de bordes
+        self.border_top = wx.Colour(255, 255, 255)
+        self.border_bottom = wx.Colour(255, 255, 255)
+        self.border_right = wx.Colour(255, 255, 255)
+        self.border_left = wx.Colour(255, 255, 255)
+
+        # ---- legends
+        self.legend_show = True
+        self.legend_loc = 'upper left'
+        self.legend_size = 9
+        self.legend_edge_color = wx.Colour(221, 221, 221)
+
+        # ---------------------------------------
+        # Faltannnnnnnnn Configurar
+
+        # -----------------------------------------
+
         # ---- colores de spines
         self.color_top_spine = "#FFFFFF"
         self.color_bottom_spine = "#FFFFFF"
-        self.color_left_spine = "#DDDDDD"
-        self.color_right_spine = "#DDDDDD"
-
-        # ---- colores de bordes
-        self.border_top = '#FFFFFF'
-        self.border_bottom = '#FFFFFF'
-        self.border_right = '#FFFFFF'
-        self.border_left = '#FFFFFF'
+        self.color_left_spine = wx.Colour(221, 221, 221)
+        self.color_right_spine = wx.Colour(221, 221, 221)
 
         # ---- color labels
-        self.x_color_label = '#606060'
-        self.y_color_label = '#606060'
+        self.x_color_label = wx.Colour(96, 96, 96)
+        self.y_color_label = wx.Colour(96, 96, 96)
 
         # ---- axes
         self.x_axis = True
         self.y_axis = True
         self.x_axis_color = 'w'
-        self.y_axis_color = '#DDDDDD'
+        self.y_axis_color = wx.Colour(221, 221, 221)
 
         # ---- ticks
         self.xticks = None
@@ -451,17 +438,11 @@ class AxesConfig():
 
         # ---- lines
         self.axv_line_width = 1
-        self.axv_line_color = '#DDDDDD'
+        self.axv_line_color = wx.Colour(221, 221, 221)
 
         # ---- grilla
         self.grid_lines = False
         self.grid_lines_style = ':'
-
-        # ---- legends
-        self.legend_show = True
-        self.legend_loc = 'upper left'
-        self.legend_size = 9
-        self.legend_edge_color = '#DDDDDD'
 
 
 class Example(wx.Frame):

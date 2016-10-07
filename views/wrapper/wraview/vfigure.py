@@ -69,12 +69,12 @@ class FigurePanel(wx.Panel):
 
         # ---- toolbar
         sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
-        bitmap = play_fig.GetBitmap()
-        b_play = wx.BitmapButton(self, -1, bitmap, style=wx.NO_BORDER)
+        _bitmap = play_fig.GetBitmap()
+        b_play = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
         sizer_tool.Add(b_play, flag=wx.ALIGN_CENTER_VERTICAL)
         b_play.Bind(wx.EVT_BUTTON, self.on_play)
-        bitmap = settings_fig.GetBitmap()
-        b_setting = wx.BitmapButton(self, -1, bitmap, style=wx.NO_BORDER)
+        _bitmap = settings_fig.GetBitmap()
+        b_setting = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
         sizer_tool.Add(b_setting, flag=wx.ALIGN_CENTER_VERTICAL)
         b_setting.Bind(wx.EVT_BUTTON, self.on_config)
 
