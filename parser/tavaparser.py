@@ -99,7 +99,7 @@ class TavaFileToResult():
                 _ins = []
                 for i_num in range(_it.individual):
                     self.c_line += 1
-                    o, v, d = self.g_individuals(f_tava.readline().strip())
+                    o, _, _ = self.g_individuals(f_tava.readline().strip())
 
                     # atributos
                     _in = Individual()
@@ -229,44 +229,77 @@ class SepFileToResult():
 
     def __init__(self, f_tava):
         self.result = Result()
-        self.c_line = 0
-        self.all_headers = {}
         self.f_tava = f_tava
-        self.size_header = 0
-        pass
 
     def make_parsing(self, m_tit, sep, dlg):
 
         try:
             dlg.UpdatePulse(m_tit + '.')
 
+            # ---- verificar cantidad de iteraciones - creación de blocks
+            # ---- se toman como bloques aquellos valores divididos en
+            # ----  lineas blancas
+            blocks = []
+            with open(self.f_tava, 'r') as f_tava:
+                datas = [l.strip() for l in f_tava.readlines()]
+                if datas.count('') > 0:
+                    while datas != []:
+                        datas = self.clean_init(datas)
+                        if datas.count('') > 0:
+                            index = datas.index('')
+                            blocks.append(datas[0:index])
+                            datas = datas[index:]
+                        elif datas != []:
+                            blocks.append(datas)
+                            datas = []
+                else:
+                    blocks.append(datas)
+
+            # ---- verificar separador
+            # ---- se verifica si contiene el separador apropiado, seleccionado
+            # ---- en la vista como separador actual
+            # ---- verificar catidad de objetivos iguales
+            count_objetives = []
+            for bs in blocks:
+                for ind in bs:
+                    objs = ind.count(sep)
+                    if objs < 1:
+                        # ---- error
+                        mess = "Error de Formato, el separador ' " \
+                            + sep + " ' no es correcto."
+                        self.value_error(mess)
+
+                    if count_objetives != [] and not (objs in count_objetives):
+                        mess = "Error de Formato, cantidad de objetivos " + \
+                            "desiguales."
+                        self.value_error(mess)
+                    count_objetives.append(objs)
+
+            # ----
             # ---- completar atributos de results
             # ----
 
-            self.result.runstore = 1
+            self.result.runstore = len(blocks)
             # self.result.objectives = int(all_headers[OBJECTIVES])
             # self.result.variables = int(all_headers[VARIABLES])
             self.result.name = tava_base_name(self.f_tava)
             self.result.alias = tava_base_name(self.f_tava)
             # self.result.name_variables = all_headers[VARIABLESNAMES]
 
-            # ---- verificar cantidad de iteraciones
-
-            # ---- agregar un bloque
-            dlg.UpdatePulse(m_tit + '..')
+            _its = []
             _mps = '.'
-            with open(self.f_tava, 'r') as f_tava:
+            for bs in blocks:
 
                 # ---- creación de iteraciones
                 _it = Iteration()
                 _it.number = 1
-                _its = []
 
                 # ---- creación de individuos
                 _ins = []
                 _count_objec = 0
-                for i_num, line in enumerate(f_tava.readlines()):
-                    indi = line.strip().split(sep)
+
+                for i_num, line in enumerate(bs):
+                    indi = line.split(sep)
                     _in = Individual()
                     _in.number = i_num + 1
                     _in.objectives = self.g_individuals(indi)
@@ -281,11 +314,11 @@ class SepFileToResult():
                 _it.individuals = _ins
                 _its.append(_it)
 
-                # ---- agregación de resultado
-                self.result.iterations = _its
-                self.result.objectives = _count_objec
-                n_objs = ','.join([str(_i) for _i in range(_count_objec)])
-                self.result.name_objectives = n_objs
+            # ---- agregación de resultado
+            self.result.iterations = _its
+            self.result.objectives = _count_objec
+            n_objs = ','.join([str(_i) for _i in range(_count_objec)])
+            self.result.name_objectives = n_objs
 
         except IOError as ioerror:
             self.value_error("Error IOError: {0}".format(ioerror))
@@ -315,4 +348,9 @@ class SepFileToResult():
         return str_o
 
     def value_error(self, message):
-        raise ParserError(self.f_tava, 'message', self.c_line)
+        raise ParserError(self.f_tava, 'message', 0)
+
+    def clean_init(self, _list):
+        while _list != [] and _list[0] == '':
+            _list.remove('')
+        return _list

@@ -166,42 +166,37 @@ class MainFrameP(object):
                     tfr.make_parsing(m_tit, sep, dlg)
 
                 except ParserError as parseerror:
-                    parse_error.append(parseerror)
+                    print 'Error en el parseo'
+                    print parseerror
+                    #parse_error.append(parseerror)
+                    return []
                 else:
-                    try:
-                        m_lit = '\t' + L('MSG_PRO_SAVE')
-                        m_tit = m_lit + m_num
-                        keepGoing = dlg.UpdatePulse(m_tit)
+                    m_lit = '\t' + L('MSG_PRO_SAVE')
+                    m_tit = m_lit + m_num
+                    keepGoing = dlg.UpdatePulse(m_tit)
 
-                        # agrega a la base de datos
-                        tfr.result.project_id = project.id
-                        _iterations = list(tfr.result.iterations)
-                        result = tfr.result
-                        result.iterations = []
-                        result = ResultModel().add(result)
+                    # agrega a la base de datos
+                    tfr.result.project_id = project.id
+                    _iterations = list(tfr.result.iterations)
+                    result = tfr.result
+                    result.iterations = []
+                    result = ResultModel().add(result)
 
-                        _ite_all = len(_iterations)
-                        for ii, ite in enumerate(_iterations):
-                            m_lit_b = '\n' + L('MSG_PRO_DATA_SAVE')
-                            m_num_b = ': ' + str(ii + 1) + '/' + str(_ite_all)
-                            m_tit_b = m_tit + m_lit_b + m_num_b
-                            keepGoing = dlg.UpdatePulse(m_tit_b)
+                    _ite_all = len(_iterations)
+                    for ii, ite in enumerate(_iterations):
+                        m_lit_b = '\n' + L('MSG_PRO_DATA_SAVE')
+                        m_num_b = ': ' + str(ii + 1) + '/' + str(_ite_all)
+                        m_tit_b = m_tit + m_lit_b + m_num_b
+                        keepGoing = dlg.UpdatePulse(m_tit_b)
 
-                            result.iterations.append(ite)
-                            result = ResultModel().update_init(result)
-                            if not keepGoing:
-                                dlg.UpdatePulse('Aborting')
-                                return results
+                        result.iterations.append(ite)
+                        result = ResultModel().update_init(result)
+                        if not keepGoing:
+                            dlg.UpdatePulse('Aborting')
+                            return results
 
-                    except Exception as e:
-                        p_e = ParserError(tava_file,
-                                          "Error Exception: {0}".format(e),
-                                          None)
-                        print('Error', p_e)
-                        parse_error.append(p_e)
-                    else:
-                        results.append(result)
-                        parse_correct.append(object)
+                    results.append(result)
+                    parse_correct.append(object)
 
         elif 10 == t_format:
 
