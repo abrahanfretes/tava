@@ -28,6 +28,7 @@ from imgs.prin import shortcut, splash
 from languages import topic as T
 from languages.i18n import I18nLocale
 from presenters.pmain import MainFrameP
+from resources.properties_helper import PropertiesHelper
 from views.wrapper.tbody import TTree, CentralPanel
 from views.wrapper.tmenubar import TMenuBar
 from views.wrapper.ttoolbar import TToolBar
@@ -53,6 +54,9 @@ class MainFrame(wx.Frame):
 
         # ---- project
         pub().subscribe(self.unhide_project, T.PREUNHIDE_PROJECT)
+
+        # ---- properties helper
+        self.properties = PropertiesHelper()
 
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
@@ -148,7 +152,7 @@ class MainFrame(wx.Frame):
         self.p_create = False
         self.p_sep = ','
 
-        NewProject(self)
+        NewProject(self, self.properties)
         if self.p_create:
             project = self.ppr.add_project(self.p_name)
 
@@ -159,12 +163,15 @@ class MainFrame(wx.Frame):
                 dlg = PP.PyProgress(self, -1, L('MSG_PRO_HEADER_TITLE'),
                                     "                              :)",
                                     agwStyle=style)
-                self.ppr.add_results_by_project(project,
-                                                self.p_path_files,
-                                                self.p_formate,
-                                                self.p_sep, dlg)
-
+                _, errs = self.ppr.add_res(project, self.p_path_files,
+                                           self.p_formate, self.p_sep, dlg)
+                dlg.Close()
                 dlg.Destroy()
+
+                # ---- informe de archivos con errores
+                if errs != []:
+                    ResultErrors(self, errs)
+
                 wx.SafeYield()
                 wx.GetApp().GetTopWindow().Raise()
 
@@ -177,7 +184,7 @@ class MainFrame(wx.Frame):
         self.p_create = False
         self.p_sep = ','
 
-        NewProject(self, True)
+        NewProject(self, self.properties, True)
         if self.p_create:
 
             style = wx.PD_APP_MODAL
@@ -186,19 +193,19 @@ class MainFrame(wx.Frame):
                                 "                              :)",
                                 agwStyle=style)
 
-            results, errores = self.ppr.add_results_by_project(self.p_project,
-                                                      self.p_path_files,
-                                                      self.p_formate,
-                                                      self.p_sep, dlg)
+            res, errs = self.ppr.add_res(self.p_project, self.p_path_files,
+                                         self.p_formate, self.p_sep, dlg)
+            dlg.Close()
             dlg.Destroy()
-            wx.SafeYield()
-            wx.GetApp().GetTopWindow().Raise()
 
             # ---- informe de archivos con errores
-            if errores != []:
-                ResultErrors(self, errores)
+            if errs != []:
+                ResultErrors(self, errs)
 
-            pub().sendMessage(T.ADD_RESULTS_IN_TREE, results)
+            pub().sendMessage(T.ADD_RESULTS_IN_TREE, res)
+
+            wx.SafeYield()
+            wx.GetApp().GetTopWindow().Raise()
 
     def delete_result(self, message):
 

@@ -64,8 +64,8 @@ class TavaFileToResult():
             self.value_error("Error IndexError: {0}".format(indexerror))
         except ValueError as valueerror:
             self.value_error("Error ValueError: {0}".format(valueerror))
-        except Exception as e:
-            self.value_error("Error Exception: {0}".format(e))
+#         except Exception as e:
+#             self.value_error("Error Exception: {0}".format(e))
 
     def add_iterations(self, m_tit, dlg):
 
@@ -219,7 +219,7 @@ class TavaFileToResult():
             self.result.populationmax = int(all_headers[MAXPOPULATION])
 
     def value_error(self, message):
-        raise ParserError(self.f_tava, 'message', self.c_line)
+        raise ParserError(self.f_tava, message, self.c_line)
 
 
 class SepFileToResult():
@@ -326,8 +326,8 @@ class SepFileToResult():
             self.value_error("Error IndexError: {0}".format(indexerror))
         except ValueError as valueerror:
             self.value_error("Error ValueError: {0}".format(valueerror))
-        except Exception as e:
-            self.value_error("Error Exception: {0}".format(e))
+#         except Exception as e:
+#             self.value_error("Error Exception: {0}".format(e))
 
     def g_individuals(self, indi):
         '''
@@ -348,7 +348,7 @@ class SepFileToResult():
         return str_o
 
     def value_error(self, message):
-        raise ParserError(self.f_tava, 'message', 0)
+        raise ParserError(tava_base_name(self.f_tava), message, 0)
 
     def clean_init(self, _list):
         while _list != [] and _list[0] == '':

@@ -22,12 +22,11 @@ from wx import GetTranslation as L
 import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 from wx.lib.pubsub import Publisher as pub
-import wx.dataview as dv
 
 from imgs.iproject import execute_bit, help32x32_bit, error_bit
 from languages import topic as T
 from models.mproject import ProjectM
-from resources.properties_helper import PropertiesHelper
+import wx.dataview as dv
 
 
 wildcard = "Files results |*"
@@ -39,14 +38,14 @@ SEPARATOR_FILE_VALUE = [',', ';', ' ', '-', '_']
 
 
 class NewProject(wx.Dialog):
-    def __init__(self, parent, add_result=False):
+    def __init__(self, parent, properties, add_result=False):
         wx.Dialog.__init__(self, parent, size=(700, 630))
 
         self.error_name = True
         self.add_result = add_result
         self.parent = parent
 
-        self.properties = PropertiesHelper()
+        self.properties = properties
 
         self.existing_names = []
         self.hidden_names = []
@@ -130,7 +129,8 @@ class NewProject(wx.Dialog):
 
         # ---- selección de formato
 
-        self.radio_von = wx.RadioButton(panel, -1, " Von Tava", style=wx.RB_GROUP)
+        self.radio_von = wx.RadioButton(panel, -1, " Von Tava",
+                                        style=wx.RB_GROUP)
         self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_von, self.radio_von)
         self.radio_sep = wx.RadioButton(panel, -1, "Separador:")
         self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_sep, self.radio_sep)
@@ -145,7 +145,8 @@ class NewProject(wx.Dialog):
         s_sizer = wx.BoxSizer()
         s_sizer.Add(self.radio_von, 0, wx.EXPAND)
         s_sizer.Add(sep_sizer, 0, wx.EXPAND)
-        boxsizer.Add(s_sizer, 1, flag=wx.EXPAND | wx.TOP | wx.BOTTOM, border=10)
+        boxsizer.Add(s_sizer, 1, flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
+                     border=10)
 
         sizer.Add(boxsizer, pos=(4, 0), span=(1, 5), flag=wx.RIGHT |
                   wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, border=10)
@@ -427,7 +428,7 @@ class UnhideProject(wx.Dialog):
         unselect_all.Bind(wx.EVT_BUTTON, self.on_unall)
         hbox2.Add(select_all, 1, wx.ALL, 10)
         hbox2.Add(unselect_all, 1, wx.ALL, 10)
-        static_box.Add(hbox2, 1,  wx.EXPAND | wx.RIGHT, 250)
+        static_box.Add(hbox2, 1, wx.EXPAND | wx.RIGHT, 250)
         sizer.Add(static_box, pos=(4, 0), span=(1, 5), flag=wx.RIGHT |
                   wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, border=10)
 
@@ -489,29 +490,37 @@ class UnhideProject(wx.Dialog):
 
 class ResultErrors(wx.Dialog):
     def __init__(self, parent, errores):
-        wx.Dialog.__init__(self, parent, size=(700, 630))
+        wx.Dialog.__init__(self, parent, size=(400, 300))
 
+        h_sizer = wx.BoxSizer()
+        error_bmp = wx.StaticBitmap(self, -1, error_bit.GetBitmap())
         title = wx.StaticText(self, label='Informe de Errores')
+        pts = title.GetFont().GetPointSize()
+        title.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
+        h_sizer.Add(error_bmp)
+        h_sizer.Add(title)
+
         st_line = wx.StaticLine(self)
 
         self.dvlc = dvlc = dv.DataViewListCtrl(self)
-        dvlc.AppendTextColumn('Error Message', width=40)
-        dvlc.AppendTextColumn('File', width=170)
-#         dvlc.AppendTextColumn('title', width=260)
-#         dvlc.AppendTextColumn('genre', width=80)
+        dvlc.AppendTextColumn('File', width=65)
+        dvlc.AppendTextColumn('Error Message', width=100)
+
         for ers in errores:
-            dvlc.AppendItem([ers.message, ers.filename])
+            dvlc.AppendItem([ers.filename, ers.message])
 
         b_accep = wx.Button(self, label='Aceptar', size=(125, 32))
         b_accep.Bind(wx.EVT_BUTTON, self.on_accept)
 
-        sizer = wx.BoxSizer()
-        sizer.Add(title)
-        sizer.Add(st_line, flag=wx.EXPAND)
-        sizer.Add(dvlc, 1, wx.EXPAND)
-        sizer.Add(b_accep)
-        
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(h_sizer, flag=wx.ALIGN_CENTER_HORIZONTAL | wx.LEFT |
+                  wx.RIGHT | wx.TOP, border=5)
+        sizer.Add(st_line, flag=wx.EXPAND | wx.BOTTOM, border=5)
+        sizer.Add(dvlc, 1, wx.EXPAND | wx.ALL, border=5)
+        sizer.Add(b_accep, 0, wx.ALIGN_RIGHT | wx.BOTTOM | wx.RIGHT, 5)
+
         self.SetSizer(sizer)
+        b_accep.SetFocus()
 
         self.Centre()
         self.ShowModal()

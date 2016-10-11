@@ -74,8 +74,7 @@ class MainFrameP(object):
         ViewM().delete(view)
         return True
 
-    def add_results_by_project(self, project, path_files,
-                               t_format, sep, dlg=None):
+    def add_res(self, project, path_files, t_format, sep, dlg=None):
 
         results = []
         parse_correct = []
