@@ -429,6 +429,7 @@ class FilterClusterDialog(wx.Dialog):
         self.Close()
 
     def on_accept(self, event):
+        self.parent.data_selected.cancel = False
         self.Close()
 
     def get_line(self):
@@ -438,19 +439,32 @@ class FilterClusterDialog(wx.Dialog):
     def set_buttons(self):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        ok_button = wx.Button(self, label='Aceptar')
-        ok_button.SetDefault()
+        self.ok_button = wx.Button(self, label='Aceptar')
+        self.ok_button.Bind(wx.EVT_BUTTON, self.on_accept)
 
-        close_button = wx.Button(self, label='Cancelar')
+        self.close_button = wx.Button(self, label='Cancelar')
+        self.close_button.SetDefault()
+        self.close_button.Bind(wx.EVT_BUTTON, self.on_cancel)
 
-        ok_button.Bind(wx.EVT_BUTTON, self.on_accept)
-
-        close_button.Bind(wx.EVT_BUTTON, self.on_cancel)
-
-        hbox.Add(close_button)
-        hbox.Add(ok_button, flag=wx.RIGHT, border=5)
+        hbox.Add(self.close_button)
+        hbox.Add(self.ok_button, flag=wx.RIGHT, border=5)
 
         return hbox
+
+    def update_button(self):
+        page = self.parent.data_selected.option
+        self.ok_button.Disable()
+
+        if page == 0:
+            _v = self.more_repre.GetValue()+self.less_repre.GetValue()
+            if _v != 0:
+                self.ok_button.Enable()
+                self.ok_button.SetDefault()
+        elif page == 1:
+            _v = len(self.lb1.GetChecked()) + len(self.lb2.GetChecked())
+            if _v != 0:
+                self.ok_button.Enable()
+                self.ok_button.SetDefault()
 
     def set_filter_config(self):
         sbox_fc = wx.StaticBox(self, -1, "Configuración de Filtro")
@@ -459,12 +473,12 @@ class FilterClusterDialog(wx.Dialog):
         p = wx.Panel(self)
         nb = wx.Choicebook(p, -1)
 
-        nb.AddPage(self.get_more_representative(nb), "Clusters más " + \
-                                                            "representativos")
-        nb.AddPage(self.get_less_representative(nb), "Clusters menos " + \
-                                                            "representativos")
-        nb.AddPage(self.get_representative_per_obj(nb), "Clusters " + \
-                                    "representativos respecto a los Objetivos")
+        _label = "Representatividad en Cantidad"
+        nb.AddPage(self.get_more_representative(nb), _label)
+#         _label = "Menor - representatividad respecto a la cantidad"
+#         nb.AddPage(self.get_less_representative(nb), _label)
+        _label = "Representatividad en Valores Objetivos"
+        nb.AddPage(self.get_representative_per_obj(nb), _label)
 
         nb.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.on_page_changed)
 
@@ -484,35 +498,56 @@ class FilterClusterDialog(wx.Dialog):
         if selection == 0:
             self.parent.data_selected.option = 0
             self.parent.data_selected.more_repre = self.more_repre.GetValue()
+            self.parent.data_selected.less_repre = self.less_repre.GetValue()
+            self.update_button()
+
         elif selection == 1:
             self.parent.data_selected.option = 1
-            self.parent.data_selected.less_repre = self.less_repre.GetValue()
-        elif selection == 2:
-            self.parent.data_selected.option = 2
             self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
             self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
+            self.update_button()
+
+#             self.parent.data_selected.option = 1
+#             self.parent.data_selected.less_repre = self.less_repre.GetValue()
+#         elif selection == 2:
+#             self.parent.data_selected.option = 2
+#             self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
+#             self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
 
         e.Skip()
 
     def get_more_representative(self, parent):
         panel = wx.Panel(parent)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        sbox_sf = wx.StaticBox(panel, -1, "Clusters más representativo")
+        sboxs_sf = wx.StaticBoxSizer(sbox_sf, wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=2)
-
         label = wx.StaticText(panel, -1, "Establezca la cantidad:")
-
-        self.more_repre = wx.SpinCtrl(panel, 1, "", (30, 50))
-        self.more_repre.SetRange(1, self.data.count_tendency)
+        self.more_repre = wx.SpinCtrl(panel, 0, "", (30, 50))
+        self.more_repre.SetRange(0, self.data.count_tendency)
         self.more_repre.SetValue(self.data.more_repre)
         self.more_repre.Bind(wx.EVT_SPINCTRL, self.on_more_repre)
-
-        grid.Add(label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        grid.Add(label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         grid.Add(self.more_repre, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        sboxs_sf.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
-        sizer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+        sbox_sf1 = wx.StaticBox(panel, -1, "Clusters menos representativo")
+        sboxs_sf1 = wx.StaticBoxSizer(sbox_sf1, wx.VERTICAL)
+        grid1 = wx.FlexGridSizer(cols=2)
+        label = wx.StaticText(panel, -1, "Establezca la cantidad:")
+        self.less_repre = wx.SpinCtrl(panel, 0, "", (30, 50))
+        self.less_repre.SetRange(0, self.data.count_tendency)
+        self.less_repre.SetValue(self.data.more_repre)
+        self.less_repre.Bind(wx.EVT_SPINCTRL, self.on_less_repre)
+        grid1.Add(label, 1, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        grid1.Add(self.less_repre, 1, wx.ALIGN_LEFT | wx.ALL, 5)
+        sboxs_sf1.Add(grid1, 1, wx.EXPAND | wx.ALL, 10)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+#         sizer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+        sizer.Add(sboxs_sf, 1, wx.EXPAND | wx.ALL, 5)
+        sizer.Add(sboxs_sf1, 1, wx.EXPAND | wx.ALL, 5)
 
         panel.SetSizer(sizer)
 
@@ -520,33 +555,35 @@ class FilterClusterDialog(wx.Dialog):
 
     def on_more_repre(self, event):
         self.parent.data_selected.more_repre = self.more_repre.GetValue()
+        self.update_button()
 
-    def get_less_representative(self, parent):
-        panel = wx.Panel(parent)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        grid = wx.FlexGridSizer(cols=2)
-
-        label = wx.StaticText(panel, -1, "Establezca la cantidad:")
-
-        self.less_repre = wx.SpinCtrl(panel, 1, "", (30, 50))
-        self.less_repre.SetRange(1, self.data.count_tendency)
-        self.less_repre.SetValue(self.data.more_repre)
-        self.less_repre.Bind(wx.EVT_SPINCTRL, self.on_less_repre)
-
-        grid.Add(label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
-        grid.Add(self.less_repre, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
-        sizer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
-
-        panel.SetSizer(sizer)
-
-        return panel
+#     def get_less_representative(self, parent):
+#         panel = wx.Panel(parent)
+# 
+#         sizer = wx.BoxSizer(wx.VERTICAL)
+# 
+#         grid = wx.FlexGridSizer(cols=2)
+# 
+#         label = wx.StaticText(panel, -1, "Establezca la cantidad:")
+# 
+#         self.less_repre = wx.SpinCtrl(panel, 1, "", (30, 50))
+#         self.less_repre.SetRange(1, self.data.count_tendency)
+#         self.less_repre.SetValue(self.data.more_repre)
+#         self.less_repre.Bind(wx.EVT_SPINCTRL, self.on_less_repre)
+# 
+#         grid.Add(label, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
+#                                                                     wx.ALL, 5)
+#         grid.Add(self.less_repre, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+# 
+#         sizer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+# 
+#         panel.SetSizer(sizer)
+# 
+#         return panel
 
     def on_less_repre(self, event):
         self.parent.data_selected.less_repre = self.less_repre.GetValue()
+        self.update_button()
 
     def get_representative_per_obj(self, parent):
         panel = wx.Panel(parent)
@@ -576,12 +613,12 @@ class FilterClusterDialog(wx.Dialog):
         sizer_lb2.Add(lb2_label, flag=wx.ALL, border=2)
         sizer_lb2.Add(self.lb2, flag=wx.ALL | wx.EXPAND, border=5)
 
-        grid.Add(sizer_lb1, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(sizer_lb1, 0, _style, 5)
         grid.Add(wx.StaticLine(panel, wx.ID_ANY, style=wx.LI_VERTICAL), 0,
-                                                        wx.ALL | wx.EXPAND, 5)
-        grid.Add(sizer_lb2, 0, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL |
-                                                                    wx.ALL, 5)
+                 wx.ALL | wx.EXPAND, 5)
+        _style = wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(sizer_lb2, 0, _style, 5)
 
         sizer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
@@ -591,9 +628,11 @@ class FilterClusterDialog(wx.Dialog):
 
     def on_lb1(self, event):
         self.parent.data_selected.max_objetives_use = self.lb1.GetChecked()
+        self.update_button()
 
     def on_lb2(self, event):
         self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
+        self.update_button()
 
 
 class SelectedData():
@@ -612,7 +651,7 @@ class SelectedData():
         self.less_repre = None
 
         # ----  cancelar la selección
-        self.cancel = False
+        self.cancel = True
 
         # ---- valores de objetivos mayores
         self.max_objetives = []

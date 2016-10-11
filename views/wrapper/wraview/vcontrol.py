@@ -312,10 +312,10 @@ class ControlPanel(wx.Panel):
             _data.count_tendency = _shape.clusters_count
 
             # ---- clusters más representativos - en número de individuos
-            _data.more_repre = 1
+            _data.more_repre = 0
 
             # ---- clusters menos representativos - en número de individuos
-            _data.less_repre = 1
+            _data.less_repre = 0
 
             # ---- clusters por valor de objetivos mayores
             _shape.name_objectives
@@ -333,18 +333,32 @@ class ControlPanel(wx.Panel):
         # ---- seleccionar clusters automáticamente
         if self.data_selected.option == 0:
             # ---- seleccionar los mas representativos
+            # ---- seleccionar los menos representativos
             _max = self.data_selected.more_repre
-            self.clusters_seccion.more_representative(_max)
-        if self.data_selected.option == 1:
-            # seleccionar los menos representativos
             _ten = self.data_selected.count_tendency
             _min = self.data_selected.less_repre
-            self.clusters_seccion.less_representative(_ten - _min)
-        if self.data_selected.option == 2:
+
+            self.clusters_seccion.more_representative(_max, _ten - _min)
+
+#             # ---- seleccionar los menos representativos
+#             _ten = self.data_selected.count_tendency
+#             _min = self.data_selected.less_repre
+#             self.clusters_seccion.less_representative(_ten - _min)
+
+        if self.data_selected.option == 1:
             # seleccionar los menos representativos
             _o_max = self.data_selected.max_objetives_use
             _o_min = self.data_selected.min_objetives_use
             self.clusters_seccion.max_min_objective(_o_max, _o_min)
+#             # seleccionar los menos representativos
+#             _ten = self.data_selected.count_tendency
+#             _min = self.data_selected.less_repre
+#             self.clusters_seccion.less_representative(_ten - _min)
+#         if self.data_selected.option == 2:
+#             # seleccionar los menos representativos
+#             _o_max = self.data_selected.max_objetives_use
+#             _o_min = self.data_selected.min_objetives_use
+#             self.clusters_seccion.max_min_objective(_o_max, _o_min)
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters
@@ -473,9 +487,15 @@ class ClusterSeccion(wx.Panel):
 
     # ---- funciones para análisis
 
-    def more_representative(self, repre):
+    def more_representative(self, repre, less_rep):
         self.un_select_all()
+
+        # ---- más representativos
         for index in self.row_index[:repre]:
+            self.list_control.CheckItem(index)
+
+        # ---- menos representativos
+        for index in self.row_index[less_rep:]:
             self.list_control.CheckItem(index)
 
     def less_representative(self, repre):
