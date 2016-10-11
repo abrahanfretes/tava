@@ -24,6 +24,8 @@ from imgs.iview import my_bitmap
 import wx.lib.agw.labelbook as LB
 import wx.lib.colourselect as csel
 
+TYPES_GRID = ['-', '--', '-.', ':']
+
 
 class DataConfig(wx.Dialog):
 
@@ -152,9 +154,17 @@ class FigureConfigDialog(wx.Dialog):
         ax_conf.color_left_spine = left
         ax_conf.color_right_spine = right
 
-#       Localizacion de la leyenda
+        # ---- Localizacion de la leyenda
         ax_conf.legend_show = self.chk_show_lg.GetValue()
         ax_conf.legend_loc = self.ch_loc_leg.GetStringSelection()
+
+        # ---- grilla
+        v, o, w, c, ac = self.ax_panel.g_grid_conf()
+        ax_conf.grid_lines = v
+        ax_conf.grid_lines_style = o
+        ax_conf.grid_linewidth = w
+        ax_conf.grid_color = c
+        ax_conf.grid_color_alpha = ac
 
     def on_close(self, e):
         self.set_figure_parent_values()
@@ -281,10 +291,12 @@ class AxesConfigPanel(wx.Panel):
 
         sboxs_spif = self.get_spines_figure(a_conf)
         sboxs_lglc = self.get_legend_location(a_conf)
+        sboxs_grid = self.get_grid(a_conf)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(sboxs_spif, 0, wx.EXPAND | wx.ALL, 3)
         sizer.Add(sboxs_lglc, 0, wx.EXPAND | wx.ALL, 3)
+        sizer.Add(sboxs_grid, 0, wx.EXPAND | wx.ALL, 3)
 
         self.SetSizer(sizer)
 
@@ -362,12 +374,85 @@ class AxesConfigPanel(wx.Panel):
 
         return sboxs_lglc
 
+    def get_grid(self, conf):
+
+        sbox_grid = wx.StaticBox(self, -1, " Grilla/Malla")
+        sboxs_grid = wx.StaticBoxSizer(sbox_grid, wx.VERTICAL)
+
+        _label = "Mostrar Grilla"
+        self.ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
+        self.ch.SetValue(conf.grid_lines)
+        self.ch.Bind(wx.EVT_CHECKBOX, self.on_checked_grid)
+
+        cho_label = wx.StaticText(self, -1, "tipo:")
+        self.cho = wx.Choice(self, -1, choices=TYPES_GRID)
+        self.cho.SetSelection(TYPES_GRID.index(conf.grid_lines_style))
+        self.cho.SetToolTipString("Seleccione tipo de Grilla")
+
+        g_linewidth_label = wx.StaticText(self, -1, "Ancho:")
+        self.g_linewidth = wx.SpinCtrlDouble(self, -1, "")
+        self.g_linewidth.SetDigits(1)
+        self.g_linewidth.SetRange(0.1, 1.0)
+        self.g_linewidth.SetValue(conf.grid_linewidth)
+
+        g_color_label = wx.StaticText(self, -1, "Color:")
+        _c = wx.NamedColour(conf.grid_color)
+        self.g_color = csel.ColourSelect(self, colour=_c)
+
+        g_color_alpha_label = wx.StaticText(self, -1, "Color Alpha:")
+        self.g_color_alpha = wx.SpinCtrlDouble(self, -1, "")
+        self.g_color_alpha.SetDigits(1)
+        self.g_color_alpha.SetRange(0.1, 1.0)
+        self.g_color_alpha.SetValue(conf.grid_color_alpha)
+
+        grid = wx.FlexGridSizer(cols=2)
+
+        grid.Add(self.ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(cho_label, 0, _style, 5)
+        grid.Add(self.cho, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(g_linewidth_label, 0, _style, 5)
+        grid.Add(self.g_linewidth, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(g_color_label, 0, _style, 5)
+        grid.Add(self.g_color, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(g_color_alpha_label, 0, _style, 5)
+        grid.Add(self.g_color_alpha, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        sboxs_grid.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+
+        self.checked_grid(conf.grid_lines)
+
+        return sboxs_grid
+
+    def on_checked_grid(self, event):
+        cb = event.GetEventObject()
+        self.checked_grid(cb.Get3StateValue())
+
+    def checked_grid(self, value):
+        self.cho.Enable(value)
+        self.g_linewidth.Enable(value)
+        self.g_color.Enable(value)
+        self.g_color_alpha.Enable(value)
+
     def g_spines_colors(self):
         top = c_color(self.clr_top_sp.GetValue())
         bottom = c_color(self.clr_bottom_sp.GetValue())
         left = c_color(self.clr_left_sp.GetValue())
         right = c_color(self.clr_right_sp.GetValue())
         return top, bottom, right, left
+
+    def g_grid_conf(self):
+        v = self.ch.GetValue()
+        o = TYPES_GRID[self.cho.GetSelection()]
+        w = self.g_linewidth.GetValue()
+        c = c_color(self.g_color.GetValue())
+        ac = self.g_color_alpha.GetValue()
+        return v, o, w, c, ac
 
 
 class FigureConfig():

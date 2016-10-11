@@ -158,6 +158,7 @@ def k_cp(frame, ax, ax_conf, class_column, **kwds):
 
     # ---- configuración de grid
     if ax_conf.grid_lines:
+        print ax_conf.grid_lines_style
         ax.grid(color=ax_conf.grid_color, linestyle=ax_conf.grid_lines_style,
                 linewidth=ax_conf.grid_linewidth,
                 alpha=ax_conf.grid_color_alpha)
