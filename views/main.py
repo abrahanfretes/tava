@@ -31,7 +31,8 @@ from presenters.pmain import MainFrameP
 from views.wrapper.tbody import TTree, CentralPanel
 from views.wrapper.tmenubar import TMenuBar
 from views.wrapper.ttoolbar import TToolBar
-from views.wrapper.vdialog.vproject import NewProject, UnhideProject
+from views.wrapper.vdialog.vproject import NewProject, UnhideProject, \
+    ResultErrors
 from views.wrapper.vdialog.vview import ViewsTava
 
 
@@ -185,13 +186,17 @@ class MainFrame(wx.Frame):
                                 "                              :)",
                                 agwStyle=style)
 
-            results = self.ppr.add_results_by_project(self.p_project,
+            results, errores = self.ppr.add_results_by_project(self.p_project,
                                                       self.p_path_files,
                                                       self.p_formate,
                                                       self.p_sep, dlg)
             dlg.Destroy()
             wx.SafeYield()
             wx.GetApp().GetTopWindow().Raise()
+
+            # ---- informe de archivos con errores
+            if errores != []:
+                ResultErrors(self, errores)
 
             pub().sendMessage(T.ADD_RESULTS_IN_TREE, results)
 

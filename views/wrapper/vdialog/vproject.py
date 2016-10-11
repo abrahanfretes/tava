@@ -22,6 +22,7 @@ from wx import GetTranslation as L
 import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 from wx.lib.pubsub import Publisher as pub
+import wx.dataview as dv
 
 from imgs.iproject import execute_bit, help32x32_bit, error_bit
 from languages import topic as T
@@ -122,7 +123,6 @@ class NewProject(wx.Dialog):
         boxsizer.Add(browse, flag=wx.ALIGN_LEFT | wx.TOP | wx.BOTTOM, border=5)
 
         # grilla de archivos (2)
-        import wx.dataview as dv
         self.dvlc = dv.DataViewListCtrl(panel, size=(400, 298))
         self.dvlc.AppendTextColumn(L('FILE_LABEL_COL_NAME'), width=250)
         self.dvlc.AppendTextColumn(L('FILE__COL_DIRECTORY'), width=150)
@@ -485,3 +485,36 @@ class UnhideProject(wx.Dialog):
     def on_unall(self, event):
         for i in range(self.dvlc.GetItemCount()):
             self.dvlc.CheckItem(i, False)
+
+
+class ResultErrors(wx.Dialog):
+    def __init__(self, parent, errores):
+        wx.Dialog.__init__(self, parent, size=(700, 630))
+
+        title = wx.StaticText(self, label='Informe de Errores')
+        st_line = wx.StaticLine(self)
+
+        self.dvlc = dvlc = dv.DataViewListCtrl(self)
+        dvlc.AppendTextColumn('Error Message', width=40)
+        dvlc.AppendTextColumn('File', width=170)
+#         dvlc.AppendTextColumn('title', width=260)
+#         dvlc.AppendTextColumn('genre', width=80)
+        for ers in errores:
+            dvlc.AppendItem([ers.message, ers.filename])
+
+        b_accep = wx.Button(self, label='Aceptar', size=(125, 32))
+        b_accep.Bind(wx.EVT_BUTTON, self.on_accept)
+
+        sizer = wx.BoxSizer()
+        sizer.Add(title)
+        sizer.Add(st_line, flag=wx.EXPAND)
+        sizer.Add(dvlc, 1, wx.EXPAND)
+        sizer.Add(b_accep)
+        
+        self.SetSizer(sizer)
+
+        self.Centre()
+        self.ShowModal()
+
+    def on_accept(self, event):
+        self.Close()

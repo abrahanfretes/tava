@@ -146,7 +146,6 @@ class MainFrameP(object):
                         p_e = ParserError(tava_file,
                                           "Error Exception: {0}".format(e),
                                           None)
-                        print('Error', p_e)
                         parse_error.append(p_e)
                     else:
                         results.append(result)
@@ -166,10 +165,7 @@ class MainFrameP(object):
                     tfr.make_parsing(m_tit, sep, dlg)
 
                 except ParserError as parseerror:
-                    print 'Error en el parseo'
-                    print parseerror
-                    #parse_error.append(parseerror)
-                    return []
+                    parse_error.append(parseerror)
                 else:
                     m_lit = '\t' + L('MSG_PRO_SAVE')
                     m_tit = m_lit + m_num
@@ -206,8 +202,7 @@ class MainFrameP(object):
                     tfr = TavaFileToResult(tava_file)
                     tfr.make_parsing()
                 except ParserError as parseerror:
-                    print('Error', parseerror)
-                    parse_error[tava_file] = parseerror
+                    parse_error.append(parseerror)
                 else:
                     try:
                         # agrega a la base de datos
@@ -217,13 +212,12 @@ class MainFrameP(object):
                         p_e = ParserError(tava_file,
                                           "Error Exception: {0}".format(e),
                                           None)
-                        print('Error', p_e)
-                        parse_error[tava_file] = p_e
+                        parse_error.append(p_e)
                     else:
                         results.append(result)
                         parse_correct.append(object)
 
-        return results
+        return results, parse_error
 
     def contain_view(self, result_id):
         return ViewResultM().use_in_viste(result_id)
