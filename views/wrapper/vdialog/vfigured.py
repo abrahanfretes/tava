@@ -103,7 +103,7 @@ class FigureConfigDialog(wx.Dialog):
     Dialog de configuración de la Figura.
     '''
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, size=(600, 500),
+        wx.Dialog.__init__(self, parent, size=(600, 600),
                            title='Configuración de Gráfico')
 
         # ---- variable de configuración de Figura
@@ -165,6 +165,13 @@ class FigureConfigDialog(wx.Dialog):
         ax_conf.grid_linewidth = w
         ax_conf.grid_color = c
         ax_conf.grid_color_alpha = ac
+
+        # ---- labels - axes
+        x, y, xc, yc = self.ax_panel.g_axes_labels()
+        ax_conf.x_axis_show = x
+        ax_conf.y_axis_show = y
+        ax_conf.x_axis_color = xc
+        ax_conf.y_axis_color = yc
 
     def on_close(self, e):
         self.set_figure_parent_values()
@@ -292,11 +299,13 @@ class AxesConfigPanel(wx.Panel):
         sboxs_spif = self.get_spines_figure(a_conf)
         sboxs_lglc = self.get_legend_location(a_conf)
         sboxs_grid = self.get_grid(a_conf)
+        sboxs_axes_labels = self.get_xy_label(a_conf)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(sboxs_spif, 0, wx.EXPAND | wx.ALL, 3)
         sizer.Add(sboxs_lglc, 0, wx.EXPAND | wx.ALL, 3)
         sizer.Add(sboxs_grid, 0, wx.EXPAND | wx.ALL, 3)
+        sizer.Add(sboxs_axes_labels, 0, wx.EXPAND | wx.ALL, 3)
 
         self.SetSizer(sizer)
 
@@ -405,10 +414,7 @@ class AxesConfigPanel(wx.Panel):
         self.g_color_alpha.SetRange(0.1, 1.0)
         self.g_color_alpha.SetValue(conf.grid_color_alpha)
 
-        grid = wx.FlexGridSizer(cols=2)
-
-        grid.Add(self.ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid = wx.FlexGridSizer(cols=4)
 
         _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
         grid.Add(cho_label, 0, _style, 5)
@@ -423,9 +429,54 @@ class AxesConfigPanel(wx.Panel):
         grid.Add(g_color_alpha_label, 0, _style, 5)
         grid.Add(self.g_color_alpha, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
+        sboxs_grid.Add(self.ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         sboxs_grid.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
         self.checked_grid(conf.grid_lines)
+
+        return sboxs_grid
+
+    def get_xy_label(self, conf):
+
+        sbox_grid = wx.StaticBox(self, -1, "Valores de Ejes")
+        sboxs_grid = wx.StaticBoxSizer(sbox_grid, wx.VERTICAL)
+
+        _label = "En X"
+        self.x_ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
+        self.x_ch.SetValue(conf.x_axis_show)
+        self.x_ch.Bind(wx.EVT_CHECKBOX, self.on_checked_x_axes_label)
+
+        x_label_color = wx.StaticText(self, -1, "Coloren X:")
+        _c = wx.NamedColour(conf.x_axis_color)
+        self.x_label_color_cs = csel.ColourSelect(self, colour=_c)
+        self.x_label_color_cs.Enable(conf.x_axis_show)
+
+        _label = "En Y"
+        self.y_ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
+        self.y_ch.SetValue(conf.y_axis_show)
+        self.y_ch.Bind(wx.EVT_CHECKBOX, self.on_checked_y_axes_label)
+
+        y_label_color = wx.StaticText(self, -1, "Color en Y:")
+        _c = wx.NamedColour(conf.y_axis_color)
+        self.y_label_color_cs = csel.ColourSelect(self, colour=_c)
+        self.y_label_color_cs.Enable(conf.y_axis_show)
+
+        grid = wx.FlexGridSizer(cols=2)
+
+        grid.Add(self.x_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(x_label_color, 0, _style, 5)
+        grid.Add(self.x_label_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(self.y_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(y_label_color, 0, _style, 5)
+        grid.Add(self.y_label_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        sboxs_grid.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
         return sboxs_grid
 
@@ -438,6 +489,14 @@ class AxesConfigPanel(wx.Panel):
         self.g_linewidth.Enable(value)
         self.g_color.Enable(value)
         self.g_color_alpha.Enable(value)
+
+    def on_checked_x_axes_label(self, event):
+        cb = event.GetEventObject()
+        self.x_label_color_cs.Enable(cb.Get3StateValue())
+
+    def on_checked_y_axes_label(self, event):
+        cb = event.GetEventObject()
+        self.y_label_color_cs.Enable(cb.Get3StateValue())
 
     def g_spines_colors(self):
         top = c_color(self.clr_top_sp.GetValue())
@@ -453,6 +512,13 @@ class AxesConfigPanel(wx.Panel):
         c = c_color(self.g_color.GetValue())
         ac = self.g_color_alpha.GetValue()
         return v, o, w, c, ac
+
+    def g_axes_labels(self):
+        x = self.x_ch.GetValue()
+        xc = c_color(self.x_label_color_cs.GetValue())
+        y = self.y_ch.GetValue()
+        yc = c_color(self.y_label_color_cs.GetValue())
+        return x, y, xc, yc
 
 
 class FigureConfig():
@@ -503,11 +569,11 @@ class AxesConfig():
         # ---- axis value and label
         self.x_axis_show = True
         self.y_axis_show = True
-        self.x_axis_color = c_color(wx.Colour(221, 221, 221))
-        self.y_axis_color = c_color(wx.Colour(221, 221, 221))
+        self.x_axis_color = c_color(wx.Colour(0, 0, 0))
+        self.y_axis_color = c_color(wx.Colour(0, 0, 0))
 
-        self.x_axis_label = 'X'
-        self.y_axis_label = 'Y'
+        self.x_axis_label = ''
+        self.y_axis_label = ''
         self.x_color_label = c_color(wx.Colour(96, 96, 96))
         self.y_color_label = c_color(wx.Colour(96, 96, 96))
 
