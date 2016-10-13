@@ -16,10 +16,14 @@
 # ##############################################################
 '''
 
-import wx
-import wx.wizard as wizmod
 from wx import GetTranslation as L
+import wx
+from wx.lib.itemspicker import IP_REMOVE_FROM_CHOICES, EVT_IP_SELECTION_CHANGED
+from wx.lib.itemspicker import ItemsPicker, IP_SORT_CHOICES, IP_SORT_SELECTED
+
 from imgs.iproject import execute_bit, error_bit
+import wx.dataview as dv
+import wx.wizard as wizmod
 
 
 class ViewsTava(wizmod.Wizard):
@@ -36,6 +40,7 @@ class ViewsTava(wizmod.Wizard):
         self.SetPageSize((600, 500))
         self.project = project
         self.pages = []
+        self.result_nro_objetives = {}
 
         # create page for select results
         page_results = WizardPage(self)
@@ -99,6 +104,7 @@ class ViewsTava(wizmod.Wizard):
         results_names = []
         for r in self.project.results:
             results_names.append(r.name)
+            self.result_nro_objetives[r.name] = r.objectives
         return results_names
 
     def views_names(self):
@@ -137,12 +143,12 @@ class WizardPage(wizmod.PyWizardPage):
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
-        title = wx.StaticText(self, -1, L('VIEW_NEW_TITLE') + ' "' +
+        title = wx.StaticText(self, -1, L('VIEW_NEW_TITLE') + ' "' + 
                               parent.project.name + '"')
         title.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
 
         self.sizer.AddWindow(title, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-        self.sizer.AddWindow(wx.StaticLine(self, -1), 0, wx.EXPAND |
+        self.sizer.AddWindow(wx.StaticLine(self, -1), 0, wx.EXPAND | 
                              wx.ALL, 5)
 
         self.SetSizer(self.sizer)
@@ -166,10 +172,6 @@ class WizardPage(wizmod.PyWizardPage):
     def GetPrev(self):
         '''Return the previous page'''
         return self.prev
-
-
-from wx.lib.itemspicker import ItemsPicker, IP_SORT_CHOICES, IP_SORT_SELECTED
-from wx.lib.itemspicker import IP_REMOVE_FROM_CHOICES, EVT_IP_SELECTION_CHANGED
 
 
 class PanelFirstPage(wx.Panel):
@@ -196,7 +198,7 @@ class PanelFirstPage(wx.Panel):
         static_result = wx.StaticLine(self, -1)
 
         ip = ItemsPicker(self, -1, results, L('VIEW_OPTION_RESULTS'),
-                         L('VIEW_RESULTS_SELECTED'), ipStyle=IP_SORT_CHOICES |
+                         L('VIEW_RESULTS_SELECTED'), ipStyle=IP_SORT_CHOICES | 
                          IP_SORT_SELECTED | IP_REMOVE_FROM_CHOICES)
         ip._source.SetMinSize((50, 100))
         parent.ip = ip
@@ -225,9 +227,8 @@ class PanelFirstPage(wx.Panel):
         self._disable()
 
     def on_selected(self, e):
-        print e.GetItems()
         if e.GetItems():
-            self.error_result = False
+            self.error_result = self.nro_objetives_verifict(e.GetItems())
         else:
             self.error_result = True
         self._disable()
@@ -285,8 +286,13 @@ class PanelFirstPage(wx.Panel):
         else:
             self.parent.GetParent().enable_next()
 
-
-import wx.dataview as dv
+    def nro_objetives_verifict(self, selecteds):
+        _l = []
+        for name in selecteds:
+            _l.append(self.parent.GetParent().result_nro_objetives[name])
+        if len(_l) == _l.count(_l[0]):
+            return False
+        return True
 
 
 class PanelSecondtPage(wx.Panel):
@@ -308,7 +314,7 @@ class PanelSecondtPage(wx.Panel):
 
         self.Sizer.Add(b_sizer, 0, wx.EXPAND)
 
-        self.dvc.Bind(dv.EVT_DATAVIEW_ITEM_VALUE_CHANGED,  self.on_select)
+        self.dvc.Bind(dv.EVT_DATAVIEW_ITEM_VALUE_CHANGED, self.on_select)
         b_all.Bind(wx.EVT_BUTTON, self.on_all_selected)
         b_unall.Bind(wx.EVT_BUTTON, self.on_unall_selected)
 
@@ -362,16 +368,16 @@ class PanelSecondtPage(wx.Panel):
         self.tr = tr = dv.DataViewTextRenderer()
         tr.EnableEllipsize()
         tr.SetAlignment(0)
-        c0 = dv.DataViewColumn(L('VIEW_OPTION_RESULTS'),   # title
-                               tr,        # renderer
-                               0,         # data model column
+        c0 = dv.DataViewColumn(L('VIEW_OPTION_RESULTS'),  # title
+                               tr,  # renderer
+                               0,  # data model column
                                width=200)
         self.dvc.AppendColumn(c0)
 
-        c1 = self.dvc.AppendTextColumn(L('VIEW_ITERATION_F_R'),   1, width=200)
+        c1 = self.dvc.AppendTextColumn(L('VIEW_ITERATION_F_R'), 1, width=200)
         c1.Alignment = wx.ALIGN_CENTRE
 
-        self.dvc.AppendToggleColumn(L('VIEW_ITERATION_OPTION'),   2, width=20,
+        self.dvc.AppendToggleColumn(L('VIEW_ITERATION_OPTION'), 2, width=20,
                                     mode=dv.DATAVIEW_CELL_ACTIVATABLE)
 
         # Set some additional attributes for all the columns
