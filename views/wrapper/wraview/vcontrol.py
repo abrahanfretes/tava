@@ -98,7 +98,7 @@ class ControlPanel(wx.Panel):
         self.legends_summary = [True, False, False, False]
         self.clus_one_axe = True
         self.summ_one_axe = True
-        self.clus_summ_axs = [True, False, False]
+        self.clus_summ_axs = [True, False, False, False]
 
         # ---- Lista de Datos
         self.data_seccion = DataSeccion(self, ksub_blocks)
