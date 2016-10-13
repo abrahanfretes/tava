@@ -284,6 +284,29 @@ class Shape():
 
             return _clusters
 
+        if clus_summ_axs[3]:
+            _datas = []
+            _resumes = []
+            for c in s_clusters:
+                # data
+                _df_c = c.df_value.copy()
+                _leg = c.g_legend(_legends, legends_cluster)
+                _legends.append(_leg)
+                _df_c[self.column_name] = [_leg] * c.count
+                _datas.append(_df_c)
+
+                # resume
+                _df_s = c.df_resume.copy()
+                _leg = c.g_legend(_legends, legends_summary)
+                _legends.append(_leg)
+                _df_s[self.column_name] = [_leg]
+                _resumes.append(_df_s)
+
+            _clusters.append(pd.concat(_datas))
+            _clusters.append(pd.concat(_resumes))
+
+            return _clusters
+
         for c in s_clusters:
             # data
             _df = c.df_value.copy()

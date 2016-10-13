@@ -129,6 +129,7 @@ class ClusterConfig(wx.Dialog):
         self.GetParent().clus_summ_axs.append(self.clus_summ_ax_rd1.GetValue())
         self.GetParent().clus_summ_axs.append(self.clus_summ_ax_rd2.GetValue())
         self.GetParent().clus_summ_axs.append(self.clus_summ_ax_rd3.GetValue())
+        self.GetParent().clus_summ_axs.append(self.clus_summ_ax_rd4.GetValue())
 
     def on_close(self, e):
         self.set_axes_parent_values()
@@ -267,20 +268,24 @@ class ClusterSummaryPage(wx.Panel):
         sbox_ax = wx.StaticBox(self, -1, "Visualizar Seleccionados")
         sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, "En una Figura",
+        radio1 = wx.RadioButton(self, -1, "Todos en misma Figura",
                                 style=wx.RB_GROUP)
         radio1.SetValue(False)
         dialog_ref.clus_summ_ax_rd1 = radio1
 
-        radio2 = wx.RadioButton(self, -1, "En diferentes Figuras")
+        radio2 = wx.RadioButton(self, -1, "Todos en diferentes Figuras")
         dialog_ref.clus_summ_ax_rd2 = radio2
 
-        radio3 = wx.RadioButton(self, -1, "Cada uno en una Figura")
+        radio3 = wx.RadioButton(self, -1, "Una Figura por cada Cluster y Resumen")
         dialog_ref.clus_summ_ax_rd3 = radio3
+
+        radio4 = wx.RadioButton(self, -1, "Clusters en una Figura y Resumenes en otra")
+        dialog_ref.clus_summ_ax_rd4 = radio4
 
         sboxs_ax.Add(radio1, 0, wx.ALL, 5)
         sboxs_ax.Add(radio2, 0, wx.ALL, 5)
         sboxs_ax.Add(radio3, 0, wx.ALL, 5)
+        sboxs_ax.Add(radio4, 0, wx.ALL, 5)
 
         return sboxs_ax
 
