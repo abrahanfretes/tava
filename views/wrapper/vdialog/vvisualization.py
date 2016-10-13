@@ -16,9 +16,9 @@
 '''
 import wx
 
-V_M_CLUSTER = 0
-V_M_SUMMARY = 1
-V_M_CLUSTER_SUMMARY = 2
+V_M_CLUSTER = 1
+V_M_SUMMARY = 2
+V_M_CLUSTER_SUMMARY = 0
 
 
 class ClusterConfig(wx.Dialog):
@@ -60,9 +60,9 @@ class ClusterConfig(wx.Dialog):
         nb = wx.Choicebook(p, -1)
 
         # add the pages to the notebook with the label to show on the tab
-        nb.AddPage(ClusterPage(nb, self), "Cluster")
-        nb.AddPage(SummaryPage(nb, self), "Resumen")
-        nb.AddPage(ClusterSummaryPage(nb, self), "Ambos")
+        nb.AddPage(ClusterSummaryPage(nb, self), "clusters y Resúmenes")
+        nb.AddPage(ClusterPage(nb, self), "Clusters")
+        nb.AddPage(SummaryPage(nb, self), "Resumenes")
 
         nb.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.on_page_changed)
 
@@ -76,6 +76,7 @@ class ClusterConfig(wx.Dialog):
         return sboxs_mv
 
     def on_page_changed(self, e):
+        print e.GetSelection()
         selection = e.GetSelection()
         self.GetParent().visualization_mode = selection
         e.Skip()
@@ -150,15 +151,15 @@ class ClusterPage(wx.Panel):
         self.SetSizer(sizer)
 
     def get_axes(self, dialog_ref):
-        sbox_ax = wx.StaticBox(self, -1, "Ejes")
+        sbox_ax = wx.StaticBox(self, -1, "Visualizar Seleccionados")
         sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, "Mostrar en un solo eje",
+        radio1 = wx.RadioButton(self, -1, "En una Figura",
                                 style=wx.RB_GROUP)
         radio1.SetValue(False)
         dialog_ref.clus_ax_rd1 = radio1
 
-        radio2 = wx.RadioButton(self, -1, "Mostrar en varios ejes")
+        radio2 = wx.RadioButton(self, -1, "En diferentes Figuras")
         dialog_ref.clus_ax_rd2 = radio2
 
         sboxs_ax.Add(radio1, 0, wx.ALL, 5)
@@ -167,20 +168,19 @@ class ClusterPage(wx.Panel):
         return sboxs_ax
 
     def get_legends(self, dialog_ref):
-        sbox_lg = wx.StaticBox(self, -1, "Leyenda")
+        sbox_lg = wx.StaticBox(self, -1, "Visualizar como Leyenda")
         sboxs_lg = wx.StaticBoxSizer(sbox_lg, wx.VERTICAL)
 
-        checkbox1 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
-                                                            "observaciones")
+        checkbox1 = wx.CheckBox(self, -1, "Porcentaje de Observaciones")
         dialog_ref.clus_lg_check1 = checkbox1
 
-        checkbox2 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
+        checkbox2 = wx.CheckBox(self, -1, "Cantidad de Observaciones")
         dialog_ref.clus_lg_check2 = checkbox2
 
-        checkbox3 = wx.CheckBox(self, -1, "Mostrar nombre")
+        checkbox3 = wx.CheckBox(self, -1, "Nombre")
         dialog_ref.clus_lg_check3 = checkbox3
 
-        checkbox4 = wx.CheckBox(self, -1, "Mostrar shapes")
+        checkbox4 = wx.CheckBox(self, -1, "Shapes")
         checkbox4.SetValue(True)
         dialog_ref.clus_lg_check4 = checkbox4
 
@@ -208,15 +208,15 @@ class SummaryPage(wx.Panel):
 
     def get_axes(self, dialog_ref):
 
-        sbox_ax = wx.StaticBox(self, -1, "Ejes")
+        sbox_ax = wx.StaticBox(self, -1, "Visualizar Seleccionados")
         sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, "Mostrar en un solo eje",
+        radio1 = wx.RadioButton(self, -1, "En una Figura",
                                 style=wx.RB_GROUP)
         radio1.SetValue(False)
         dialog_ref.summ_ax_rd1 = radio1
 
-        radio2 = wx.RadioButton(self, -1, "Mostrar en varios ejes")
+        radio2 = wx.RadioButton(self, -1, "En diferentes Figuras")
         dialog_ref.summ_ax_rd2 = radio2
 
         sboxs_ax.Add(radio1, 0, wx.ALL, 5)
@@ -225,21 +225,20 @@ class SummaryPage(wx.Panel):
         return sboxs_ax
 
     def get_legends(self, dialog_ref):
-        sbox_lg = wx.StaticBox(self, -1, "Leyenda")
+        sbox_lg = wx.StaticBox(self, -1, "Visualizar como Leyenda")
         sboxs_lg = wx.StaticBoxSizer(sbox_lg, wx.VERTICAL)
 
-        checkbox1 = wx.CheckBox(self, -1, "Mostrar porcentaje de " + \
-                                                            "observaciones")
+        checkbox1 = wx.CheckBox(self, -1, "Porcentaje de Observaciones")
         checkbox1.SetValue(True)
         dialog_ref.summ_lg_check1 = checkbox1
 
-        checkbox2 = wx.CheckBox(self, -1, "Mostrar cantidad de observaciones")
+        checkbox2 = wx.CheckBox(self, -1, "Cantidad de Observaciones")
         dialog_ref.summ_lg_check2 = checkbox2
 
-        checkbox3 = wx.CheckBox(self, -1, "Mostrar nombre")
+        checkbox3 = wx.CheckBox(self, -1, "Nombre")
         dialog_ref.summ_lg_check3 = checkbox3
 
-        checkbox4 = wx.CheckBox(self, -1, "Mostrar shapes")
+        checkbox4 = wx.CheckBox(self, -1, "Shapes")
         dialog_ref.summ_lg_check4 = checkbox4
 
         sboxs_lg.Add(checkbox1, 0, wx.ALL, 5)
@@ -265,18 +264,18 @@ class ClusterSummaryPage(wx.Panel):
         self.SetSizer(sizer)
 
     def get_axes(self, dialog_ref):
-        sbox_ax = wx.StaticBox(self, -1, "Ejes")
+        sbox_ax = wx.StaticBox(self, -1, "Visualizar Seleccionados")
         sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, "Mostrar todos en un eje",
+        radio1 = wx.RadioButton(self, -1, "En una Figura",
                                 style=wx.RB_GROUP)
         radio1.SetValue(False)
         dialog_ref.clus_summ_ax_rd1 = radio1
 
-        radio2 = wx.RadioButton(self, -1, "Mostrar cada uno en un eje")
+        radio2 = wx.RadioButton(self, -1, "En diferentes Figuras")
         dialog_ref.clus_summ_ax_rd2 = radio2
 
-        radio3 = wx.RadioButton(self, -1, "Mostrar ambos en un eje")
+        radio3 = wx.RadioButton(self, -1, "Cada uno en una Figura")
         dialog_ref.clus_summ_ax_rd3 = radio3
 
         sboxs_ax.Add(radio1, 0, wx.ALL, 5)
