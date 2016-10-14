@@ -280,3 +280,5 @@ msgstr "Restore"
 
 msgid "UNHIDE_CANCEL"
 msgstr "Cancel"
+
+# ------------------------------- vcontrol ----------------------------------

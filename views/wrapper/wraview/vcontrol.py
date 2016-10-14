@@ -35,6 +35,7 @@ from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMSG_GENERATE_CLUSTER
 import wx.lib.agw.aui as aui
 
+from wx import GetTranslation as L
 
 K_MANY_PAGE = 0
 K_3D_PAGE = 1
@@ -410,6 +411,21 @@ class ControlPanel(wx.Panel):
             label = mitem.GetItemLabel()
             self.tbtn0.SetLabel(label)
             self.normalization = NORMA_METO.index(label)
+
+    def g_label_nor(self, id_nor):
+        if id_nor == 0:
+            return L('EXIT_TAVA')
+        L('EXIT_TAVA')
+
+    def g_label_data(self, id_nor):
+        if id_nor == 0:
+            return L('EXIT_TAVA')
+        L('EXIT_TAVA')
+
+    def g_label_analisis(self, id_nor):
+        if id_nor == 0:
+            return L('EXIT_TAVA')
+        L('EXIT_TAVA')
 
 
 # -------------------                                  ------------------------

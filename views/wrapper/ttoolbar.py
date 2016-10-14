@@ -50,6 +50,7 @@ class TToolBar(aui.AuiToolBar):
         self.Bind(wx.EVT_TOOL, self.on_open_project, id=self.ID_OPEN_PRO)
         self.Bind(wx.EVT_TOOL, self.on_hide_project, id=self.ID_HIDE_PRO)
         self.Bind(wx.EVT_TOOL, self.on_unhide_project, id=self.ID_UNHIDE_PRO)
+        self.Bind(wx.EVT_TOOL, self.on_delete_project, id=self.ID_DEL_PRO)
 
         # Establecemos los labels
         self.SetLabelsLanguges()
@@ -117,3 +118,6 @@ class TToolBar(aui.AuiToolBar):
 
     def on_unhide_project(self, event):
         pub().sendMessage(T.PREUNHIDE_PROJECT)
+
+    def on_delete_project(self, event):
+        pub.sendMessage(T.DELETE_PROJECT)

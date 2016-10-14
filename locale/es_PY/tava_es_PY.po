@@ -276,3 +276,5 @@ msgstr "Restaurar"
 
 msgid "UNHIDE_CANCEL"
 msgstr "Cancelar"
+
+# ------------------------------- vcontrol ----------------------------------

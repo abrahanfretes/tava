@@ -37,6 +37,7 @@ class TTreeP(object):
         pub().subscribe(self.pre_open, T.OPEN_PROJECT)
         pub().subscribe(self.pre_hide, T.HIDE_PROJECT)
         pub().subscribe(self.pre_unhide, T.UNHIDE_PROJECT)
+        pub.subscribe(self.pre_delete, T.DELETE_PROJECT)
 
         # ---- vistas
         pub().subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
@@ -190,7 +191,20 @@ class TTreeP(object):
 
     def pos_unhide(self):
         self.init_vars()
-        pub().sendMessage(T.TYPE_CHANGED_SELECTED_PROJECT, 4)
+        pub().sendMessage(T.TYPE_CHANGED_UNSELECTED_PROJECT)
+
+    # --- delete project ---------------------------------------------
+    def pre_delete(self, message):
+        if self.iview.pre_delete_project(self.iview.c_data[0].name):
+            self.do_delete(self.iview.c_data[0])
+
+    def do_delete(self, project):
+        pm().delete(project)
+        self.iview.Delete(self.iview.c_item)
+        self.pos_delete()
+
+    def pos_delete(self):
+        pub.sendMessage(T.TYPE_CHANGED_UNSELECTED_PROJECT)
 
     # --- exit app ---------------------------------------------
     def do_exit(self):

@@ -234,6 +234,15 @@ class TTree(CT.CustomTreeCtrl):
         data = event.GetItem().GetData()
         data[1] = False
 
+    def pre_delete_project(self, name):
+        result = wx.MessageBox(L('DELETE_PROJECT_BOX') + '\n\t\t\t\t" ' +
+                               name + ' "', L('DELETE_PROJECT_TITLE'),
+                               style=wx.CENTER | wx.ICON_WARNING |
+                               wx.YES_NO | wx.NO_DEFAULT)
+        if result == wx.YES:
+            return True
+        return False
+
     # ------------------------------------------------------------------
     # --------------- metodos privados ---------------------------------
     # ------------------------------------------------------------------
