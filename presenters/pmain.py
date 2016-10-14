@@ -79,6 +79,18 @@ class MainFrameP(object):
         results = []
         parse_correct = []
         parse_error = []
+        result_names = []
+
+        for r in project.results:
+            result_names.append(r.name)
+
+        # ---- verificar nombres repetidos
+
+        for _p in path_files:
+            if _p[1] in result_names:
+                _l = 'El proyecto ya contiene mismo nombre de archivos'
+                ParserError(_p[1], _l, 0)
+                path_files.remove(_p)
 
         if FORMAT_TAVA == t_format:
 

@@ -198,7 +198,7 @@ class PanelFirstPage(wx.Panel):
         static_result = wx.StaticLine(self, -1)
 
         ip = ItemsPicker(self, -1, results, L('VIEW_OPTION_RESULTS'),
-                         L('VIEW_RESULTS_SELECTED'), ipStyle=IP_SORT_CHOICES | 
+                         L('VIEW_RESULTS_SELECTED'), ipStyle=IP_SORT_CHOICES |
                          IP_SORT_SELECTED | IP_REMOVE_FROM_CHOICES)
         ip._source.SetMinSize((50, 100))
         parent.ip = ip

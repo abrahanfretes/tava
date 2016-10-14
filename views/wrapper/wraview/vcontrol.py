@@ -258,8 +258,25 @@ class ControlPanel(wx.Panel):
                                                   self.clus_summ_axs)
             _v = dcr
 
+        # ---- normalización de datos
+        _s = []
+        if self.normalization == 0:
+            for df in _v:
+                _s.append(self.rangecero_nor(df))
+        else:
+            _s = _v
+
         # ---- update figure
-        self.kfigure.kdraw(_v)
+        self.kfigure.kdraw(_s)
+
+    def rangecero_nor(self, df):
+        for cols in df.columns[:-1]:
+            vals = df[cols]
+            _min = vals.min()
+            _max = vals.max()
+            _vnor = [(x - _min) / (_max - _min) for x in vals]
+            df[cols] = _vnor
+        return df
 
     def on_refresh(self, event):
         DataConfig(self)

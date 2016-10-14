@@ -53,7 +53,8 @@ class Shape():
 
         # ---- normalizar los datos
         if nor == 0:
-            df_population = self.rangecero_nor(df_population)
+#             df_population = self.rangecero_nor(df_population)
+            pass
 
         # ---- calculo de shape para cada elemento
         new_columns = df_population.columns.tolist()
@@ -226,11 +227,15 @@ class Shape():
         return df_resumes
 
     def g_data_for_fig(self, s_clusters, legends_cluster, one_axe):
+
+        # ---- si no contiene clusters
         if s_clusters == []:
             return pd.DataFrame()
+
         _clusters = []
         _legends = []
 
+        # ---- clsuters seleccionados y creción de legendas
         for c in s_clusters:
             _df = c.df_value.copy()
             _leg = c.g_legend(_legends, legends_cluster)
@@ -240,6 +245,7 @@ class Shape():
 
         if one_axe:
             return [pd.concat(_clusters)]
+
         return _clusters
 
     def g_resume_for_fig(self, s_clusters, legends_summary, one_axe):
