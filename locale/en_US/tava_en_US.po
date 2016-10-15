@@ -282,3 +282,91 @@ msgid "UNHIDE_CANCEL"
 msgstr "Cancel"
 
 # ------------------------------- vcontrol ----------------------------------
+
+# ------------------------------- vfigured ----------------------------------
+msgid "GRAPHIC_CONFIG"
+msgstr "Graphic Configuration"
+
+msgid "FIGURE"
+msgstr "Figure"
+
+msgid "AXES"
+msgstr "Axes"
+
+msgid "SIZE"
+msgstr "Size"
+
+msgid "FIGURE_WIDTH"
+msgstr "Figure Width"
+
+msgid "FIGURE_HEIGHT"
+msgstr "Figure Heigth"
+
+msgid "SPACING"
+msgstr "Spacing"
+
+msgid "TOP"
+msgstr "Top"
+
+msgid "BOTTOM"
+msgstr "Bottom"
+
+msgid "LEFT"
+msgstr "Left"
+
+msgid "RIGHT"
+msgstr "Right"
+
+msgid "EDGES"
+msgstr "Edges"
+
+msgid "CHOOSE_A_COLOR"
+msgstr "Choose a color"
+
+msgid "LEGEND"
+msgstr "Legend"
+
+msgid "SHOW_LEGEND"
+msgstr "Show Legend"
+
+msgid "LOCATION"
+msgstr "Location"
+
+msgid "SELECT_A_LOCATION"
+msgstr "Select a Location"
+
+msgid "GRID"
+msgstr "Grid"
+
+msgid "SHOW_GRID"
+msgstr "Show Grid"
+
+msgid "TYPE"
+msgstr "Type"
+
+msgid "SELECT_TYPE_OF_GRID"
+msgstr "Select type of Grid"
+
+msgid "WIDTH"
+msgstr "Width"
+
+msgid "COLOR"
+msgstr "Color"
+
+msgid "COLOR_ALPHA"
+msgstr "Color Alpha"
+
+msgid "AXES_VALUES"
+msgstr "Axes values"
+
+msgid "IN_X"
+msgstr "In X"
+
+msgid "COLOR_X"
+msgstr "Color X"
+
+msgid "IN_Y"
+msgstr "In Y"
+
+msgid "COLOR_Y"
+msgstr "Colors Y"

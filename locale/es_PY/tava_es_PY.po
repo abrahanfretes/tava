@@ -278,3 +278,91 @@ msgid "UNHIDE_CANCEL"
 msgstr "Cancelar"
 
 # ------------------------------- vcontrol ----------------------------------
+
+# ------------------------------- vfigured ----------------------------------
+msgid "GRAPHIC_CONFIG"
+msgstr "Configuración de Gráfico"
+
+msgid "FIGURE"
+msgstr "Figura"
+
+msgid "AXES"
+msgstr "Ejes"
+
+msgid "SIZE"
+msgstr "Tamaño"
+
+msgid "FIGURE_WIDTH"
+msgstr "Ancho de Figura"
+
+msgid "FIGURE_HEIGHT"
+msgstr "Alto de Figura"
+
+msgid "SPACING"
+msgstr "Espaciado"
+
+msgid "TOP"
+msgstr "Parte superior"
+
+msgid "BOTTOM"
+msgstr "Fondo"
+
+msgid "LEFT"
+msgstr "Izquierda"
+
+msgid "RIGHT"
+msgstr "Derecha"
+
+msgid "EDGES"
+msgstr "Bordes"
+
+msgid "CHOOSE_A_COLOR"
+msgstr "Escoja un color"
+
+msgid "LEGEND"
+msgstr "Leyenda"
+
+msgid "SHOW_LEGEND"
+msgstr "Mostrar Leyenda"
+
+msgid "LOCATION"
+msgstr "Ubicación"
+
+msgid "SELECT_A_LOCATION"
+msgstr "Seleccione una Ubicación"
+
+msgid "GRID"
+msgstr "Grilla"
+
+msgid "SHOW_GRID"
+msgstr "Mostrar Grilla"
+
+msgid "TYPE"
+msgstr "Tipo"
+
+msgid "SELECT_TYPE_OF_GRID"
+msgstr "Seleccione un tipo de Grilla"
+
+msgid "WIDTH"
+msgstr "Ancho"
+
+msgid "COLOR"
+msgstr "Color"
+
+msgid "COLOR_ALPHA"
+msgstr "Color Alpha"
+
+msgid "AXES_VALUES"
+msgstr "Valores de Ejes"
+
+msgid "IN_X"
+msgstr "En X"
+
+msgid "COLOR_X"
+msgstr "Color en X"
+
+msgid "IN_Y"
+msgstr "En Y"
+
+msgid "COLOR_Y"
+msgstr "Color en Y"

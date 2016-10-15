@@ -23,6 +23,7 @@ from wx.lib.masked.ctrl import NUMBER
 from imgs.iview import my_bitmap
 import wx.lib.agw.labelbook as LB
 import wx.lib.colourselect as csel
+from wx import GetTranslation as L
 
 TYPES_GRID = ['-', '--', '-.', ':']
 
@@ -31,7 +32,7 @@ class DataConfig(wx.Dialog):
 
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, size=(600, 500),
-                           title='Configuracion de Grafico')
+                           title=L('GRAPHIC_CONFIG'))
 
         self.parent = parent
 
@@ -104,7 +105,7 @@ class FigureConfigDialog(wx.Dialog):
     '''
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, size=(600, 600),
-                           title='Configuración de Gráfico')
+                           title=L('GRAPHIC_CONFIG'))
 
         # ---- variable de configuración de Figura
         conf = parent.fig_config
@@ -123,9 +124,9 @@ class FigureConfigDialog(wx.Dialog):
         notebook.AssignImageList(imagelist)
 
         notebook.AddPage(FigureConfigPanel(notebook, self, conf),
-                         "Figura", 1, 0)
+                         L('FIGURE'), 1, 0)
         self.ax_panel = AxesConfigPanel(notebook, self, a_conf)
-        notebook.AddPage(self.ax_panel, "Ejes", 0, 0)
+        notebook.AddPage(self.ax_panel, L('AXES'), 0, 0)
         self.nb = notebook
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
@@ -217,17 +218,17 @@ class FigureConfigPanel(wx.Panel):
 
     def get_size_figure(self, conf):
 
-        sbox_sf = wx.StaticBox(self, -1, "Tamaño")
+        sbox_sf = wx.StaticBox(self, -1, L('SIZE'))
         sboxs_sf = wx.StaticBoxSizer(sbox_sf, wx.VERTICAL)
         grid = wx.FlexGridSizer(cols=4)
 
-        width_label = wx.StaticText(self, -1, "Figure width:")
+        width_label = wx.StaticText(self, -1, L('FIGURE_WIDTH'))
         figure_width = Ctrl(self, value=conf.width, integerWidth=5,
                             fractionWidth=2, controlType=NUMBER)
 
         self.dialog_ref.figure_width = figure_width
 
-        height_label = wx.StaticText(self, -1, "Figure height:")
+        height_label = wx.StaticText(self, -1, L('FIGURE_HEIGHT'))
         figure_height = Ctrl(self, value=conf.height, integerWidth=5,
                              fractionWidth=2, controlType=NUMBER)
 
@@ -243,26 +244,26 @@ class FigureConfigPanel(wx.Panel):
         return sboxs_sf
 
     def get_spacing_figure(self, conf):
-        sbox_spf = wx.StaticBox(self, -1, "Espaciado")
+        sbox_spf = wx.StaticBox(self, -1, L('SPACING'))
         sboxs_spf = wx.StaticBoxSizer(sbox_spf, wx.VERTICAL)
         grid = wx.FlexGridSizer(cols=4)
 
-        top_label = wx.StaticText(self, -1, "Top:")
+        top_label = wx.StaticText(self, -1, L('TOP'))
         top_spacing = Ctrl(self, value=conf.subplot_top, integerWidth=5,
                            fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.top_spacing = top_spacing
 
-        bottom_label = wx.StaticText(self, -1, "Bottom:")
+        bottom_label = wx.StaticText(self, -1, L('BOTTOM'))
         bottom_spacing = Ctrl(self, value=conf.subplot_bottom, integerWidth=5,
                               fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.bottom_spacing = bottom_spacing
 
-        left_label = wx.StaticText(self, -1, "Left:")
+        left_label = wx.StaticText(self, -1, L('LEFT'))
         left_spacing = Ctrl(self, value=conf.subplot_left, integerWidth=5,
                             fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.left_spacing = left_spacing
 
-        right_label = wx.StaticText(self, -1, "Right:")
+        right_label = wx.StaticText(self, -1, L('RIGHT'))
         right_spacing = Ctrl(self, value=conf.subplot_right, integerWidth=5,
                              fractionWidth=2, controlType=NUMBER)
         self.dialog_ref.right_spacing = right_spacing
@@ -310,30 +311,30 @@ class AxesConfigPanel(wx.Panel):
         self.SetSizer(sizer)
 
     def get_spines_figure(self, a_conf):
-        sbox_spf = wx.StaticBox(self, -1, "Bordes")
+        sbox_spf = wx.StaticBox(self, -1, L('EDGES'))
         sboxs_spf = wx.StaticBoxSizer(sbox_spf, wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=5)
 
         # ---- color de bordes
-        top_label = wx.StaticText(self, -1, "Top:")
+        top_label = wx.StaticText(self, -1, L('TOP'))
         _c = wx.NamedColour(a_conf.color_top_spine)
-        self.clr_top_sp = csel.ColourSelect(self, -1, "Escoja un color",
+        self.clr_top_sp = csel.ColourSelect(self, -1, L('CHOOSE_A_COLOR'),
                                             _c, size=(120, 30))
 
-        bottom_label = wx.StaticText(self, -1, "Bottom:")
+        bottom_label = wx.StaticText(self, -1, L('BOTTOM'))
         _c = wx.NamedColour(a_conf.color_bottom_spine)
-        self.clr_bottom_sp = csel.ColourSelect(self, -1, "Escoja un color",
+        self.clr_bottom_sp = csel.ColourSelect(self, -1, L('CHOOSE_A_COLOR'),
                                                _c, size=(120, 30))
 
-        left_label = wx.StaticText(self, -1, "Left:")
+        left_label = wx.StaticText(self, -1, L('LEFT'))
         _c = wx.NamedColour(a_conf.color_left_spine)
-        self.clr_left_sp = csel.ColourSelect(self, -1, "Escoja un color",
+        self.clr_left_sp = csel.ColourSelect(self, -1, L('CHOOSE_A_COLOR'),
                                              _c, size=(120, 30))
 
-        right_label = wx.StaticText(self, -1, "Right:")
+        right_label = wx.StaticText(self, -1, L('RIGHT'))
         _c = wx.NamedColour(a_conf.color_right_spine)
-        _l = "Escoja un color"
+        _l = L('CHOOSE_A_COLOR')
         self.clr_right_sp = csel.ColourSelect(self, -1, _l, _c, size=(120, 30))
 
         _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
@@ -353,15 +354,15 @@ class AxesConfigPanel(wx.Panel):
         return sboxs_spf
 
     def get_legend_location(self, a_conf):
-        sbox_lglc = wx.StaticBox(self, -1, "Leyenda")
+        sbox_lglc = wx.StaticBox(self, -1, L('LEGEND'))
         sboxs_lglc = wx.StaticBoxSizer(sbox_lglc, wx.VERTICAL)
 
-        chk_show_lg = wx.CheckBox(self, -1, "Mostrar Leyenda",
+        chk_show_lg = wx.CheckBox(self, -1, L('SHOW_LEGEND'),
                                   style=wx.ALIGN_RIGHT)
         chk_show_lg.SetValue(True)
         self.dialog_ref.chk_show_lg = chk_show_lg
 
-        loc_label = wx.StaticText(self, -1, "localizacion:")
+        loc_label = wx.StaticText(self, -1, L('LOCATION'))
 
         locations = ['upper left', 'center', 'upper center', 'lower left',
                      'lower right', 'center left', 'upper right', 'right',
@@ -369,7 +370,7 @@ class AxesConfigPanel(wx.Panel):
 
         ch_loc_leg = wx.Choice(self, -1, choices=locations)
         ch_loc_leg.SetSelection(0)
-        ch_loc_leg.SetToolTipString("Seleccione una localización")
+        ch_loc_leg.SetToolTipString(L('SELECT_A_LOCATION'))
         self.dialog_ref.ch_loc_leg = ch_loc_leg
 
         grid = wx.FlexGridSizer(cols=2)
@@ -385,30 +386,30 @@ class AxesConfigPanel(wx.Panel):
 
     def get_grid(self, conf):
 
-        sbox_grid = wx.StaticBox(self, -1, " Grilla/Malla")
+        sbox_grid = wx.StaticBox(self, -1, L('GRID'))
         sboxs_grid = wx.StaticBoxSizer(sbox_grid, wx.VERTICAL)
 
-        _label = "Mostrar Grilla"
+        _label = L('SHOW_GRID')
         self.ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
         self.ch.SetValue(conf.grid_lines)
         self.ch.Bind(wx.EVT_CHECKBOX, self.on_checked_grid)
 
-        cho_label = wx.StaticText(self, -1, "tipo:")
+        cho_label = wx.StaticText(self, -1, L('TYPE'))
         self.cho = wx.Choice(self, -1, choices=TYPES_GRID)
         self.cho.SetSelection(TYPES_GRID.index(conf.grid_lines_style))
-        self.cho.SetToolTipString("Seleccione tipo de Grilla")
+        self.cho.SetToolTipString(L('SELECT_TYPE_OF_GRID'))
 
-        g_linewidth_label = wx.StaticText(self, -1, "Ancho:")
+        g_linewidth_label = wx.StaticText(self, -1, L('WIDTH'))
         self.g_linewidth = wx.SpinCtrlDouble(self, -1, "")
         self.g_linewidth.SetDigits(1)
         self.g_linewidth.SetRange(0.1, 1.0)
         self.g_linewidth.SetValue(conf.grid_linewidth)
 
-        g_color_label = wx.StaticText(self, -1, "Color:")
+        g_color_label = wx.StaticText(self, -1, L('COLOR'))
         _c = wx.NamedColour(conf.grid_color)
         self.g_color = csel.ColourSelect(self, colour=_c)
 
-        g_color_alpha_label = wx.StaticText(self, -1, "Color Alpha:")
+        g_color_alpha_label = wx.StaticText(self, -1, L('COLOR_ALPHA'))
         self.g_color_alpha = wx.SpinCtrlDouble(self, -1, "")
         self.g_color_alpha.SetDigits(1)
         self.g_color_alpha.SetRange(0.1, 1.0)
@@ -438,25 +439,25 @@ class AxesConfigPanel(wx.Panel):
 
     def get_xy_label(self, conf):
 
-        sbox_grid = wx.StaticBox(self, -1, "Valores de Ejes")
+        sbox_grid = wx.StaticBox(self, -1, L('AXES_VALUES'))
         sboxs_grid = wx.StaticBoxSizer(sbox_grid, wx.VERTICAL)
 
-        _label = "En X"
+        _label = L('IN_X')
         self.x_ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
         self.x_ch.SetValue(conf.x_axis_show)
         self.x_ch.Bind(wx.EVT_CHECKBOX, self.on_checked_x_axes_label)
 
-        x_label_color = wx.StaticText(self, -1, "Coloren X:")
+        x_label_color = wx.StaticText(self, -1, L('COLOR_X'))
         _c = wx.NamedColour(conf.x_axis_color)
         self.x_label_color_cs = csel.ColourSelect(self, colour=_c)
         self.x_label_color_cs.Enable(conf.x_axis_show)
 
-        _label = "En Y"
+        _label = L('IN_Y')
         self.y_ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
         self.y_ch.SetValue(conf.y_axis_show)
         self.y_ch.Bind(wx.EVT_CHECKBOX, self.on_checked_y_axes_label)
 
-        y_label_color = wx.StaticText(self, -1, "Color en Y:")
+        y_label_color = wx.StaticText(self, -1, L('COLOR_Y'))
         _c = wx.NamedColour(conf.y_axis_color)
         self.y_label_color_cs = csel.ColourSelect(self, colour=_c)
         self.y_label_color_cs.Enable(conf.y_axis_show)
