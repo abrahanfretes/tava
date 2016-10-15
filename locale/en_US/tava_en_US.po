@@ -282,7 +282,14 @@ msgid "UNHIDE_CANCEL"
 msgstr "Cancel"
 
 # ------------------------------- vcontrol ----------------------------------
+msgid "NAME"
+msgstr "Name"
 
+msgid "SELECT_ALL"
+msgstr "Select All"
+
+msgid "BLOCK"
+msgstr "Block"
 # ------------------------------- vfigured ----------------------------------
 msgid "GRAPHIC_CONFIG"
 msgstr "Graphic Configuration"

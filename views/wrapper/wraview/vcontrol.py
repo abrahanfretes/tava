@@ -25,7 +25,6 @@ from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
 import numpy as np
 import pandas as pd
-from views.wrapper.vdialog.vfigured import DataConfig
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
 from views.wrapper.wraview.cluster.shape import Shape
@@ -279,9 +278,6 @@ class ControlPanel(wx.Panel):
             df[cols] = _vnor
         return df
 
-    def on_refresh(self, event):
-        DataConfig(self)
-
     def delete_duplicate(self, blocks):
         _blocks = []
         for df in blocks:
@@ -442,9 +438,9 @@ class ClusterSeccion(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.list_control = CheckListCtrl(self)
-        self.list_control.InsertColumn(0, "Nombre")
+        self.list_control.InsertColumn(0, L('NAME'))
 
-        _checked_all = wx.CheckBox(self, -1, "Seleccionar Todo")
+        _checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
         _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
         sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
@@ -555,7 +551,7 @@ class DataSeccion(wx.Panel):
         self.list_control = CheckListCtrl(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        _checked_all = wx.CheckBox(self, -1, "Seleccionar Todo")
+        _checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
         _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
         sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
@@ -565,7 +561,7 @@ class DataSeccion(wx.Panel):
         self.init()
 
     def init(self):
-        self.list_control.InsertColumn(0, "Bloque")
+        self.list_control.InsertColumn(0, L('BLOCK'))
 
         for key, data in self.kblocks.iteritems():
             index = self.list_control.InsertStringItem(sys.maxint, data[0])

@@ -28,83 +28,12 @@ from wx import GetTranslation as L
 TYPES_GRID = ['-', '--', '-.', ':']
 
 
-class DataConfig(wx.Dialog):
-
-    def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, size=(600, 500),
-                           title=L('GRAPHIC_CONFIG'))
-
-        self.parent = parent
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        _nor = wx.CheckBox(self, -1, "Datos Normalizados")
-        _nor.SetValue(self.parent.normalized)
-        _nor.Bind(wx.EVT_CHECKBOX, self.on_normalized)
-        sizer.Add(_nor, flag=wx.ALIGN_CENTER_VERTICAL)
-
-        _dup = wx.RadioBox(self, label='Allow Duplicates?',
-                           choices=['True', 'False', 'Only'])
-        _dup.SetSelection(self.parent.duplicate_true)
-        _dup.Bind(wx.EVT_RADIOBOX, self.on_duplicate)
-        sizer.Add(_dup, flag=wx.ALIGN_CENTER_VERTICAL)
-
-        sl1 = wx.StaticLine(self, -1, style=wx.LI_HORIZONTAL)
-        sizer.Add(sl1, flag=wx.EXPAND)
-
-        _kplot = wx.RadioBox(self, label='Plots',
-                             choices=['One', 'Block'])
-        _kplot.SetSelection(self.parent.k_plot)
-        _kplot.Bind(wx.EVT_RADIOBOX, self.on_k_plot)
-        sizer.Add(_kplot, flag=wx.ALIGN_CENTER_VERTICAL)
-
-        # buttons confirmar, cancelar
-        sizer_button = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_cancel = wx.BoxSizer()
-        self.cancel = wx.Button(self, -1, 'Cancelar')
-        self.cancel.SetDefault()
-        sizer_cancel.Add(self.cancel)
-        sizer_apply = wx.BoxSizer()
-        self.apply = wx.Button(self, -1, 'Aceptar')
-        sizer_apply.Add(self.apply, 0, wx.ALIGN_RIGHT)
-
-        sizer_button.Add(sizer_cancel, 0, wx.ALL, 5)
-        sizer_button.Add(sizer_apply, 0, wx.ALL, 5)
-        sizer.Add(sizer_button, 0, wx.EXPAND | wx.LEFT, 100)
-
-        self.Bind(wx.EVT_BUTTON, self.on_button_apply, self.apply)
-        self.Bind(wx.EVT_BUTTON, self.on_button_cancel, self.cancel)
-
-        self.SetSizer(sizer)
-        self.CenterOnScreen()
-        self.ShowModal()
-
-    def on_button_cancel(self, event):
-        self.Close()
-
-    def on_button_apply(self, event):
-        self.Close()
-
-    def on_key_escape(self, event):
-        if event.GetKeyCode() == wx.WXK_ESCAPE:
-            self.Close()
-
-    def on_duplicate(self, event):
-        self.parent.duplicate_true = event.GetSelection()
-
-    def on_normalized(self, event):
-        self.parent.normalized = event.IsChecked()
-
-    def on_k_plot(self, event):
-        self.parent.k_plot = event.GetSelection()
-
-
 class FigureConfigDialog(wx.Dialog):
     '''
     Dialog de configuración de la Figura.
     '''
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, size=(600, 600),
+        wx.Dialog.__init__(self, parent, size=(600, 585),
                            title=L('GRAPHIC_CONFIG'))
 
         # ---- variable de configuración de Figura
@@ -129,10 +58,35 @@ class FigureConfigDialog(wx.Dialog):
         notebook.AddPage(self.ax_panel, L('AXES'), 0, 0)
         self.nb = notebook
 
+        sbuttons = self.set_buttons()
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.nb, 1, wx.EXPAND | wx.ALL, 2)
+        sizer.Add(sbuttons, flag=wx.ALIGN_RIGHT | wx.TOP | wx.BOTTOM,
+                  border=10)
+        self.SetSizer(sizer)
+
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
         self.CenterOnScreen()
         self.ShowModal()
+
+    def set_buttons(self):
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        ok_button = wx.Button(self, label='Aceptar')
+        ok_button.SetDefault()
+
+        close_button = wx.Button(self, label='Cancelar')
+
+        ok_button.Bind(wx.EVT_BUTTON, self.on_close)
+
+        close_button.Bind(wx.EVT_BUTTON, self.on_close)
+
+        hbox.Add(close_button)
+        hbox.Add(ok_button, flag=wx.RIGHT, border=5)
+
+        return hbox
 
     def set_figure_parent_values(self):
         fig_config = self.GetParent().fig_config
@@ -462,17 +416,21 @@ class AxesConfigPanel(wx.Panel):
         self.y_label_color_cs = csel.ColourSelect(self, colour=_c)
         self.y_label_color_cs.Enable(conf.y_axis_show)
 
-        grid = wx.FlexGridSizer(cols=2)
+        grid = wx.FlexGridSizer(cols=5)
 
         grid.Add(self.x_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
+
+        grid.Add(self.y_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
         grid.Add(x_label_color, 0, _style, 5)
         grid.Add(self.x_label_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
-        grid.Add(self.y_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
 
         grid.Add(y_label_color, 0, _style, 5)
         grid.Add(self.y_label_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
