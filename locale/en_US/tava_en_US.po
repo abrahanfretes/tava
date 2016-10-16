@@ -54,8 +54,6 @@ msgstr "Properties"
 msgid "MENU_BAR_EXIT"
 msgstr "Exit"
 
-
-
 msgid "MENU_BAR_LANGUAGE"
 msgstr "Language"
 
@@ -64,7 +62,6 @@ msgstr "English"
 
 msgid "MENU_BAR_ES_PY_LANGUAGE"
 msgstr "Spanish"
-
 
 msgid "MENU_BAR_HELP"
 msgstr "Help"
@@ -93,7 +90,6 @@ msgstr "Unhide Project"
 
 msgid "EXIT"
 msgstr "Salir"
-
 
 # ------------------------------- vproject -> NewProject ----------------------------------
 msgid "NEW_PROJECT_TITLE"
@@ -290,6 +286,29 @@ msgstr "Select All"
 
 msgid "BLOCK"
 msgstr "Block"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "CANCEL"
+msgstr "Cancel"
+
+msgid "NORMALIZED"
+msgstr "Normalized"
+
+msgid "DATA"
+msgstr "Data"
+
+msgid "GENERATE"
+msgstr "Generate"
+
+msgid "SELECT"
+msgstr "Select"
+
+msgid "VISUALIZE"
+msgstr "Visualize"
+
+
 # ------------------------------- vfigured ----------------------------------
 msgid "GRAPHIC_CONFIG"
 msgstr "Graphic Configuration"
@@ -377,3 +396,91 @@ msgstr "In Y"
 
 msgid "COLOR_Y"
 msgstr "Colors Y"
+
+# ------------------------------- vvisualization -----------------------------
+msgid "CLUSTER_CONFIG"
+msgstr "Cluster Config"
+
+msgid "DISPLAY_MODE"
+msgstr "Display Mode"
+
+msgid "CLUSTERS_AND_SUMMARIES"
+msgstr "Clusters and Summaries"
+
+msgid "SUMMARIES"
+msgstr "Summaries"
+
+msgid "DISPLAY_SELECTED"
+msgstr "Display Selected"
+
+msgid "IN_A_FIGURE"
+msgstr "In a Figure"
+
+msgid "IN_DIFFERENT_FIGURES"
+msgstr "In differents Figures"
+
+msgid "LEGEND_CONTENT"
+msgstr "Legend Content"
+
+msgid "PERCENTAGE_OF_OBSERVATIONS"
+msgstr "Amount of Observations"
+
+msgid "AMOUNT_OF_OBSERVATIONS"
+msgstr "Amount of Observations"
+
+msgid "SHAPES"
+msgstr "Shapes"
+
+msgid "ALL_IN_SAME_FIGURE"
+msgstr "All in same Figure"
+
+msgid "ALL_IN_DIFFERENT_FIGURES"
+msgstr "All in different Figures"
+
+msgid "A_FIGURE_FOR_EACH_CLUSTER_AND_SUMMARY"
+msgstr "A figure for each Cluster and Summary"
+
+msgid "CLUSTERS_IN_A_FIGURE_AND_SUMMARIES_IN_ANOTHER"
+msgstr "Clusters in a Figure and Summaries in another"
+
+msgid "SUMMARY"
+msgstr "Summary"
+
+msgid "SHOW_PERCENTAGE_OF_OBSERVATIONS"
+msgstr "Show percentage of observations"
+
+msgid "SHOW_AMOUNT_OF_OBSERVATIONS"
+msgstr "Show amount of observations"
+
+msgid "SHOW_NAME"
+msgstr "Show name"
+
+msgid "SHOW_SHAPES"
+msgstr "Show shapes"
+
+msgid "CLUSTER_FILTER"
+msgstr "Cluster Filter"
+
+msgid "FILTER_CONFIG"
+msgstr "Filter Config"
+
+msgid "REPRESENTATIVITY_IN_QUANTITY"
+msgstr "Representativity in Quantity"
+
+msgid "REPRESENTATIVITY_VALUES_OBJECTIVES"
+msgstr "Representativity values objectives"
+
+msgid "MORE_REPRESENTATIVE_CLUSTER"
+msgstr "More representative Clusters"
+
+msgid "SET_THE_AMOUNT"
+msgstr "Set the amount"
+
+msgid "LESS_REPRESENTATIVE_CLUSTER"
+msgstr "Less representative Cluster"
+
+msgid "HIGHER_VALUES"
+msgstr "Higher values"
+
+msgid "SMALLER_VALUES"
+msgstr "Smaller values"

@@ -74,10 +74,10 @@ class FigureConfigDialog(wx.Dialog):
     def set_buttons(self):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        ok_button = wx.Button(self, label='Aceptar')
+        ok_button = wx.Button(self, label=L('OK'))
         ok_button.SetDefault()
 
-        close_button = wx.Button(self, label='Cancelar')
+        close_button = wx.Button(self, label=L('CANCEL'))
 
         ok_button.Bind(wx.EVT_BUTTON, self.on_close)
 

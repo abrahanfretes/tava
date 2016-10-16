@@ -287,6 +287,27 @@ msgstr "Seleccionar Todo"
 msgid "BLOCK"
 msgstr "Bloque"
 
+msgid "OK"
+msgstr "Aceptar"
+
+msgid "CANCEL"
+msgstr "Cancelar"
+
+msgid "NORMALIZED"
+msgstr "Normalizado"
+
+msgid "DATA"
+msgstr "Datos"
+
+msgid "GENERATE"
+msgstr "Generar"
+
+msgid "SELECT"
+msgstr "Seleccionar"
+
+msgid "VISUALIZE"
+msgstr "Visualizar"
+
 # ------------------------------- vfigured ----------------------------------
 msgid "GRAPHIC_CONFIG"
 msgstr "Configuración de Gráfico"
@@ -374,3 +395,91 @@ msgstr "En Y"
 
 msgid "COLOR_Y"
 msgstr "Color en Y"
+
+# ------------------------------- vvisualization -----------------------------
+msgid "CLUSTER_CONFIG"
+msgstr "Configuración de Cluster"
+
+msgid "DISPLAY_MODE"
+msgstr "Modo de Visualización"
+
+msgid "CLUSTERS_AND_SUMMARIES"
+msgstr "Clusters y Resúmenes"
+
+msgid "SUMMARIES"
+msgstr "Resúmenes"
+
+msgid "DISPLAY_SELECTED"
+msgstr "Visualizar Seleccionados"
+
+msgid "IN_A_FIGURE"
+msgstr "En una Figura"
+
+msgid "IN_DIFFERENT_FIGURES"
+msgstr "En diferentes Figuras"
+
+msgid "LEGEND_CONTENT"
+msgstr "Contenido de Leyenda"
+
+msgid "PERCENTAGE_OF_OBSERVATIONS"
+msgstr "Porcentaje de observaciones"
+
+msgid "AMOUNT_OF_OBSERVATIONS"
+msgstr "Cantidad de observaciones"
+
+msgid "SHAPES"
+msgstr "Formas"
+
+msgid "ALL_IN_SAME_FIGURE"
+msgstr "Todos en una misma Figura"
+
+msgid "ALL_IN_DIFFERENT_FIGURES"
+msgstr "Todos en diferentes Figuras"
+
+msgid "A_FIGURE_FOR_EACH_CLUSTER_AND_SUMMARY"
+msgstr "Una Figura por cada Cluster y Resumen"
+
+msgid "CLUSTERS_IN_A_FIGURE_AND_SUMMARIES_IN_ANOTHER"
+msgstr "Clusters en una Figura y Resumenes en otra"
+
+msgid "SUMMARY"
+msgstr "Resumen"
+
+msgid "SHOW_PERCENTAGE_OF_OBSERVATIONS"
+msgstr "Mostrar porcentaje de observaciones"
+
+msgid "SHOW_AMOUNT_OF_OBSERVATIONS"
+msgstr "Mostrar cantidad de observaciones"
+
+msgid "SHOW_NAME"
+msgstr "Mostrar nombre"
+
+msgid "SHOW_SHAPES"
+msgstr "Mostrar formas"
+
+msgid "CLUSTER_FILTER"
+msgstr "Filtro de Cluster"
+
+msgid "FILTER_CONFIG"
+msgstr "Configuración de Filtro"
+
+msgid "REPRESENTATIVITY_IN_QUANTITY"
+msgstr "Representatividad en Cantidad"
+
+msgid "REPRESENTATIVITY_VALUES_OBJECTIVES"
+msgstr "Representatividad en Valores Objetivos"
+
+msgid "MORE_REPRESENTATIVE_CLUSTER"
+msgstr "Clusters más representativos"
+
+msgid "SET_THE_AMOUNT"
+msgstr "Establezca la cantidad"
+
+msgid "LESS_REPRESENTATIVE_CLUSTER"
+msgstr "Clusters menos representativos"
+
+msgid "HIGHER_VALUES"
+msgstr "Valores mayores"
+
+msgid "SMALLER_VALUES"
+msgstr "Valores menores"

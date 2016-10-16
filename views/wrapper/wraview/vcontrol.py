@@ -70,10 +70,6 @@ K_COLOR_BLOCK = 1
 K_COLOR_SUB_BLOCK = 2
 K_COLOR_VALUE = 3
 
-NORMA_METO = ['Normalizado', 'Natural']
-DATA_SELEC = ['Cluster', 'Datos']
-ANALISIS_LABEL = [' Generar ', 'Seleccionar', ' Visualizar ']
-
 
 class ControlPanel(wx.Panel):
 
@@ -83,6 +79,10 @@ class ControlPanel(wx.Panel):
         self.mainpanel = mainpanel
         self.kfigure = kfigure
         self.SetBackgroundColour("#3B598D")
+
+        self.NORMA_METO = [L('NORMALIZED'), 'Natural']
+        self.DATA_SELEC = ['Cluster', L('DATA')]
+        self.ANALISIS_LABEL = [L('GENERATE'), L('SELECT'), L('VISUALIZE')]
 
         self.data_selected = None
         self.normalization = 0
@@ -107,23 +107,24 @@ class ControlPanel(wx.Panel):
 
         grid = wx.FlexGridSizer(cols=2)
         self.tbtn = platebtn.PlateButton(self, -1,
-                                         DATA_SELEC[self.cluster_or_date],
+                                         self.DATA_SELEC[self.cluster_or_date],
                                          None,
                                          style=platebtn.PB_STYLE_SQUARE |
                                          platebtn.PB_STYLE_NOBG)
         tmenu = wx.Menu()
-        tmenu.Append(wx.NewId(), DATA_SELEC[0])
-        tmenu.Append(wx.NewId(), DATA_SELEC[1])
+        tmenu.Append(wx.NewId(), self.DATA_SELEC[0])
+        tmenu.Append(wx.NewId(), self.DATA_SELEC[1])
         self.tbtn.SetMenu(tmenu)
         self.tbtn.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtn.Bind(wx.EVT_MENU, self.on_select_menu)
         self.tbtn0 = platebtn.PlateButton(self, -1,
-                                          NORMA_METO[self.normalization], None,
+                                          self.NORMA_METO[self.normalization],
+                                          None,
                                           style=platebtn.PB_STYLE_SQUARE |
                                           platebtn.PB_STYLE_NOBG)
         menu = wx.Menu()
-        menu.Append(wx.NewId(), NORMA_METO[0])
-        menu.Append(wx.NewId(), NORMA_METO[1])
+        menu.Append(wx.NewId(), self.NORMA_METO[0])
+        menu.Append(wx.NewId(), self.NORMA_METO[1])
         self.tbtn0.SetMenu(menu)
         self.tbtn0.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
@@ -135,7 +136,7 @@ class ControlPanel(wx.Panel):
         self.sc_count_clusters = wx.SpinCtrl(self, -1, "", size=(80, 30))
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
-        tbtn = platebtn.PlateButton(self, -1, ANALISIS_LABEL[0], None,
+        tbtn = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[0], None,
                                     style=platebtn.PB_STYLE_DEFAULT |
                                     platebtn.PB_STYLE_NOBG)
         tbtn.SetPressColor(wx.Colour(255, 165, 0))
@@ -148,14 +149,14 @@ class ControlPanel(wx.Panel):
 
         # ---- seleccionar - analizar
         a_sizer = wx.BoxSizer()
-        tbtn1 = platebtn.PlateButton(self, -1, ANALISIS_LABEL[1], None,
+        tbtn1 = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[1], None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
         tbtn1.SetPressColor(wx.Colour(165, 42, 42))
         tbtn1.SetLabelColor(wx.Colour(0, 0, 255))
         tbtn1.Bind(wx.EVT_BUTTON, self.on_filter)
 
-        tbtn2 = platebtn.PlateButton(self, -1, ANALISIS_LABEL[2], None,
+        tbtn2 = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[2], None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
         tbtn2.SetPressColor(wx.Colour(165, 42, 42))
@@ -396,7 +397,7 @@ class ControlPanel(wx.Panel):
         if mitem != wx.NOT_FOUND:
             label = mitem.GetItemLabel()
             self.tbtn.SetLabel(label)
-            self.cluster_or_date = DATA_SELEC.index(label)
+            self.cluster_or_date = self.DATA_SELEC.index(label)
 
     def on_nor_menu(self, evt):
         """Events from button menus"""
@@ -406,7 +407,7 @@ class ControlPanel(wx.Panel):
         if mitem != wx.NOT_FOUND:
             label = mitem.GetItemLabel()
             self.tbtn0.SetLabel(label)
-            self.normalization = NORMA_METO.index(label)
+            self.normalization = self.NORMA_METO.index(label)
 
     def g_label_nor(self, id_nor):
         if id_nor == 0:
