@@ -29,7 +29,7 @@ from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
-    KMessage, KMSG_EMPTY_DUPLICATE_DATA, KMSG_EMPTY_CLUSTER_SELECTED, \
+    KMessage, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
     KMSG_GENERATE_CLUSTER
 import wx.lib.agw.aui as aui
@@ -203,30 +203,17 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_SELECTED).kshow()
             return
 
-        # se verifica datos duplicados
-        blocks_1 = []
-        if self.duplicate_true == K_DATE_DUPLICATE_TRUE:
-            blocks_1 = blocks
-        elif self.duplicate_true == K_DATE_DUPLICATE_FALSE:
-            blocks_1 = self.delete_duplicate(blocks)
+        df = pd.concat(blocks)
+
+        # ---- normalización de datos
+        _s = []
+        if self.normalization == 0:
+            _s.append(self.rangecero_nor(df))
         else:
-            # self.duplicate_true == K_DATE_DUPLICATE_ONLY
-            blocks_1 = self.only_duplicate(blocks)
-            if blocks_1 == []:
-                KMessage(self.mainpanel, KMSG_EMPTY_DUPLICATE_DATA).kshow()
-                return
-
-        # se debería verificar la cantidad de plot y de acuerdo a eso
-        # crear los dataframe
-
-        blocks_2 = []
-        if self.k_plot == K_PLOT_ALL_IN_ONE:
-            blocks_2 = [pd.concat(blocks_1)]
-        elif self.k_plot == K_PLOT_BLOCK:
-            blocks_2 = blocks_1
+            _s.append(df)
 
         # update figure
-        self.kfigure.kdraw(blocks_2)
+        self.kfigure.kdraw(_s)
 
     def v_clusters(self):
 
@@ -278,22 +265,6 @@ class ControlPanel(wx.Panel):
             _vnor = [(x - _min) / (_max - _min) for x in vals]
             df[cols] = _vnor
         return df
-
-    def delete_duplicate(self, blocks):
-        _blocks = []
-        for df in blocks:
-            _blocks.append(df.drop_duplicates())
-        return _blocks
-
-    def only_duplicate(self, blocks):
-        _blocks = []
-        for df in blocks:
-            col_aux = df.duplicated().tolist()
-            if True in col_aux:
-                c_d = 'duplicate_true'
-                df[c_d] = col_aux
-                _blocks.append(df[df[c_d] == True].drop(c_d, axis=1))
-        return _blocks
 
     def on_generate(self, event):
         self.data_selected = None
