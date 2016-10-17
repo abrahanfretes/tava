@@ -82,7 +82,7 @@ class MainFrame(wx.Frame):
         self.Destroy()
 
     def v_setting(self):
-        self.SetTitle("FPUNA: Tavai")
+        self.SetTitle("FPUNA: Tava")
         self.SetSize(wx.Size(1030, 700))
         self.SetBackgroundColour("#F5D0A9")
         self.SetMinSize((660, 480))
@@ -140,8 +140,8 @@ class MainFrame(wx.Frame):
     def update_language(self):
         self._mgr.GetPaneByName("tree_pane").Caption(L('PROJECT_EXPLORER'))
         self._mgr.RefreshCaptions()
-        self.menu_bar.SetLabelsLanguges()
-        self.ttoolbar.SetLabelsLanguges()
+        self.menu_bar.SetLabelsLanguages()
+        self.ttoolbar.SetLabelsLanguages()
 
     # ------------- funciones logicas ---------------------
 

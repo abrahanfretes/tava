@@ -308,6 +308,12 @@ msgstr "Select"
 msgid "VISUALIZE"
 msgstr "Visualize"
 
+# ------------------------------- vfigure ----------------------------------
+msgid "PARALLEL_COORDINATES"
+msgstr "Parallel Coordinates"
+
+msgid "SELECT_A_GRAPHIC"
+msgstr "Select a graphic"
 
 # ------------------------------- vfigured ----------------------------------
 msgid "GRAPHIC_CONFIG"

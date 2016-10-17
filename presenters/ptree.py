@@ -38,6 +38,7 @@ class TTreeP(object):
         pub().subscribe(self.pre_hide, T.HIDE_PROJECT)
         pub().subscribe(self.pre_unhide, T.UNHIDE_PROJECT)
         pub.subscribe(self.pre_delete, T.DELETE_PROJECT)
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         # ---- vistas
         pub().subscribe(self.add_view_in_tree, T.ADD_VIEW_IN_TREE)
@@ -223,6 +224,23 @@ class TTreeP(object):
                     p.pack_file = pf
                     p.pack_view = pv
                     pm().update(p)
+
+    def update_language(self, message):
+        '''
+        Actualiza nombres de módulos y paquetes del tree principal cuando se
+        cambia el lenguaje.
+
+        :param Message: Mensaje conteniendo el topic.
+        '''
+        for item_p in self.iview.root.GetChildren():
+            for item_module in item_p.GetChildren():
+                m_data = item_module.GetData()
+                if isinstance(m_data[0], PackageFile):
+                    item_module.SetText(self.iview._package_file_name())
+                else:
+                    item_module.SetText(self.iview._package_view_name())
+                self.iview.RefreshSubtree(item_module)
+            self.iview.RefreshSubtree(item_p)
 
 
 class PackageFile():

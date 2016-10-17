@@ -35,6 +35,8 @@ from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
 import wx.lib.agw.aui as aui
 
 from wx import GetTranslation as L
+from wx.lib.pubsub import Publisher as pub
+from languages import topic as T
 
 K_MANY_PAGE = 0
 K_3D_PAGE = 1
@@ -75,14 +77,15 @@ class ControlPanel(wx.Panel):
 
     def __init__(self, parent, kfigure, ksub_blocks, mainpanel):
         wx.Panel.__init__(self, parent)
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
         self.parent = parent
         self.mainpanel = mainpanel
         self.kfigure = kfigure
         self.SetBackgroundColour("#3B598D")
 
-        self.NORMA_METO = [L('NORMALIZED'), 'Natural']
-        self.DATA_SELEC = ['Cluster', L('DATA')]
-        self.ANALISIS_LABEL = [L('GENERATE'), L('SELECT'), L('VISUALIZE')]
+        self.init_arrays()
 
         self.data_selected = None
         self.normalization = 0
@@ -112,19 +115,20 @@ class ControlPanel(wx.Panel):
                                          style=platebtn.PB_STYLE_SQUARE |
                                          platebtn.PB_STYLE_NOBG)
         tmenu = wx.Menu()
-        tmenu.Append(wx.NewId(), self.DATA_SELEC[0])
-        tmenu.Append(wx.NewId(), self.DATA_SELEC[1])
+        tmenu.Append(0, self.DATA_SELEC[0])
+        tmenu.Append(1, self.DATA_SELEC[1])
         self.tbtn.SetMenu(tmenu)
         self.tbtn.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtn.Bind(wx.EVT_MENU, self.on_select_menu)
+
         self.tbtn0 = platebtn.PlateButton(self, -1,
                                           self.NORMA_METO[self.normalization],
                                           None,
                                           style=platebtn.PB_STYLE_SQUARE |
                                           platebtn.PB_STYLE_NOBG)
         menu = wx.Menu()
-        menu.Append(wx.NewId(), self.NORMA_METO[0])
-        menu.Append(wx.NewId(), self.NORMA_METO[1])
+        menu.Append(0, self.NORMA_METO[0])
+        menu.Append(1, self.NORMA_METO[1])
         self.tbtn0.SetMenu(menu)
         self.tbtn0.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
@@ -136,35 +140,38 @@ class ControlPanel(wx.Panel):
         self.sc_count_clusters = wx.SpinCtrl(self, -1, "", size=(80, 30))
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
-        tbtn = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[0], None,
+        tbtna = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[0], None,
                                     style=platebtn.PB_STYLE_DEFAULT |
                                     platebtn.PB_STYLE_NOBG)
-        tbtn.SetPressColor(wx.Colour(255, 165, 0))
-        tbtn.SetLabelColor(wx.Colour(0, 0, 255))
-        tbtn.Bind(wx.EVT_BUTTON, self.on_generate)
+        tbtna.SetPressColor(wx.Colour(255, 165, 0))
+        tbtna.SetLabelColor(wx.Colour(0, 0, 255))
+        tbtna.Bind(wx.EVT_BUTTON, self.on_generate)
+        self.tbtna = tbtna
         c_sizer.Add(self.sc_count_clusters, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                     wx.ALIGN_CENTER_HORIZONTAL, 5)
-        c_sizer.Add(tbtn, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+        c_sizer.Add(tbtna, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                     wx.ALIGN_CENTER_VERTICAL, 5)
 
         # ---- seleccionar - analizar
         a_sizer = wx.BoxSizer()
-        tbtn1 = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[1], None,
+        tbtnb = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[1], None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
-        tbtn1.SetPressColor(wx.Colour(165, 42, 42))
-        tbtn1.SetLabelColor(wx.Colour(0, 0, 255))
-        tbtn1.Bind(wx.EVT_BUTTON, self.on_filter)
+        tbtnb.SetPressColor(wx.Colour(165, 42, 42))
+        tbtnb.SetLabelColor(wx.Colour(0, 0, 255))
+        tbtnb.Bind(wx.EVT_BUTTON, self.on_filter)
+        self.tbtnb = tbtnb
 
-        tbtn2 = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[2], None,
+        tbtnc = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[2], None,
                                      style=platebtn.PB_STYLE_DEFAULT |
                                      platebtn.PB_STYLE_NOBG)
-        tbtn2.SetPressColor(wx.Colour(165, 42, 42))
-        tbtn2.SetLabelColor(wx.Colour(0, 0, 255))
-        tbtn2.Bind(wx.EVT_BUTTON, self.on_config)
+        tbtnc.SetPressColor(wx.Colour(165, 42, 42))
+        tbtnc.SetLabelColor(wx.Colour(0, 0, 255))
+        tbtnc.Bind(wx.EVT_BUTTON, self.on_config)
+        self.tbtnc = tbtnc
 
-        a_sizer.Add(tbtn1, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
-        a_sizer.Add(tbtn2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+        a_sizer.Add(tbtnb, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+        a_sizer.Add(tbtnc, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
         # ---- Lista de Clusters
         self.clusters_seccion = ClusterSeccion(self)
@@ -182,6 +189,30 @@ class ControlPanel(wx.Panel):
 
         self.SetSizer(self.sizer)
         self.Fit()
+
+    def update_language(self, msg):
+        self.init_arrays()
+        self.tbtn.SetLabel(self.DATA_SELEC[self.cluster_or_date])
+        self.tbtn.GetMenu().SetLabel(0, self.DATA_SELEC[0])
+        self.tbtn.GetMenu().SetLabel(1, self.DATA_SELEC[1])
+        self.tbtn.Refresh()
+
+        self.tbtn0.SetLabel(self.NORMA_METO[self.normalization])
+        self.tbtn0.GetMenu().SetLabel(0, self.NORMA_METO[0])
+        self.tbtn0.GetMenu().SetLabel(1, self.NORMA_METO[1])
+        self.tbtn0.Refresh()
+
+        self.tbtna.SetLabel(self.ANALISIS_LABEL[0])
+        self.tbtna.Refresh()
+        self.tbtnb.SetLabel(self.ANALISIS_LABEL[1])
+        self.tbtnb.Refresh()
+        self.tbtnc.SetLabel(self.ANALISIS_LABEL[2])
+        self.tbtnc.Refresh()
+
+    def init_arrays(self):
+        self.NORMA_METO = [L('NORMALIZED'), 'Natural']
+        self.DATA_SELEC = ['Cluster', L('DATA')]
+        self.ANALISIS_LABEL = [L('GENERATE'), L('SELECT'), L('VISUALIZE')]
 
     def run_fig(self):
 
@@ -403,6 +434,8 @@ class ClusterSeccion(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, -1)
 
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
         self.SetBackgroundColour('#FFFFFF')
         self.parent = parent
         self.shape = None
@@ -412,10 +445,10 @@ class ClusterSeccion(wx.Panel):
         self.list_control = CheckListCtrl(self)
         self.list_control.InsertColumn(0, L('NAME'))
 
-        _checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
-        _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
+        self._checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
+        self._checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
-        sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(self.list_control, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
@@ -509,6 +542,9 @@ class ClusterSeccion(wx.Panel):
         for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
             self.list_control.CheckItem(index)
 
+    def update_language(self, msg):
+        self._checked_all.SetLabel(L('SELECT_ALL'))
+
 
 # -------------------                                  ------------------------
 # -------------------                                  ------------------------
@@ -516,6 +552,9 @@ class DataSeccion(wx.Panel):
 
     def __init__(self, parent, kblocks):
         wx.Panel.__init__(self, parent, -1)
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
         self.SetBackgroundColour('#FFFFFF')
         self.kblocks = kblocks
         self.row_index = []
@@ -523,10 +562,10 @@ class DataSeccion(wx.Panel):
         self.list_control = CheckListCtrl(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        _checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
-        _checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
+        self._checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
+        self._checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
-        sizer.Add(_checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(self.list_control, 1, wx.EXPAND)
 
         self.SetSizer(sizer)
@@ -577,6 +616,9 @@ class DataSeccion(wx.Panel):
             if self.list_control.IsChecked(index):
                 return True
         return False
+
+    def update_language(self, msg):
+        self._checked_all.SetLabel(L('SELECT_ALL'))
 
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):

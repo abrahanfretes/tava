@@ -62,9 +62,9 @@ class TMenuBar(wx.MenuBar):
         self.Append(language_menu, ' ')
         self.Append(help_menu, ' ')
 
-        self.SetLabelsLanguges()
+        self.SetLabelsLanguages()
 
-    def SetLabelsLanguges(self):
+    def SetLabelsLanguages(self):
         # ---- Menu File ---------------------
         self.SetMenuLabel(0, L('MENU_BAR_FILE'))
         self.exit.SetText('&' + L('MENU_BAR_EXIT') + '\tCtrl+Q')

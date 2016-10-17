@@ -53,7 +53,7 @@ class TToolBar(aui.AuiToolBar):
         self.Bind(wx.EVT_TOOL, self.on_delete_project, id=self.ID_DEL_PRO)
 
         # Establecemos los labels
-        self.SetLabelsLanguges()
+        self.SetLabelsLanguages()
         self.init_disable()
 
         # ---- actualización de los botones
@@ -68,7 +68,7 @@ class TToolBar(aui.AuiToolBar):
         self.ID_HIDE_PRO = wx.NewId()
         self.ID_UNHIDE_PRO = wx.NewId()
 
-    def SetLabelsLanguges(self):
+    def SetLabelsLanguages(self):
         self.SetToolShortHelp(self.ID_NEW_PRO, L('NEW_PROJECT'))
         self.SetToolShortHelp(self.ID_OPEN_PRO, L('OPEN_PROJECT'))
         self.SetToolShortHelp(self.ID_CLOSE_PRO, L('CLOSE_PROJECT'))

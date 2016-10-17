@@ -16,6 +16,8 @@
 '''
 import wx
 from wx import GetTranslation as L
+from wx.lib.pubsub import Publisher as pub
+from languages import topic as T
 
 V_M_CLUSTER = 1
 V_M_SUMMARY = 2
@@ -29,8 +31,10 @@ class ClusterConfig(wx.Dialog):
 
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, title=L('CLUSTER_CONFIG'),
-                                                    size=(400, 530))
+                                                    size=(400, 560))
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         sboxs_vm = self.set_visualization_mode()
 
@@ -53,8 +57,8 @@ class ClusterConfig(wx.Dialog):
         self.Show()
 
     def set_visualization_mode(self):
-        sbox_mv = wx.StaticBox(self, -1, L('DISPLAY_MODE'))
-        sboxs_mv = wx.StaticBoxSizer(sbox_mv, wx.HORIZONTAL)
+        self.sbox_mv = wx.StaticBox(self, -1, L('DISPLAY_MODE'))
+        sboxs_mv = wx.StaticBoxSizer(self.sbox_mv, wx.HORIZONTAL)
 
         # Here we create a panel and a notebook on the panel
         p = wx.Panel(self)
@@ -66,6 +70,7 @@ class ClusterConfig(wx.Dialog):
         nb.AddPage(SummaryPage(nb, self), L('SUMMARIES'))
 
         nb.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.on_page_changed)
+        self.nb = nb
 
         # finally, put the notebook in a sizer for the panel to manage
         # the layout
@@ -87,14 +92,16 @@ class ClusterConfig(wx.Dialog):
 
         ok_button = wx.Button(self, label=L('OK'))
         ok_button.SetDefault()
+        self.ok_button = ok_button
 
-        close_button = wx.Button(self, label=L('CANCEL'))
+        cancel_button = wx.Button(self, label=L('CANCEL'))
+        self.cancel_button = cancel_button
 
         ok_button.Bind(wx.EVT_BUTTON, self.on_close)
 
-        close_button.Bind(wx.EVT_BUTTON, self.on_close)
+        cancel_button.Bind(wx.EVT_BUTTON, self.on_close)
 
-        hbox.Add(close_button)
+        hbox.Add(cancel_button)
         hbox.Add(ok_button, flag=wx.RIGHT, border=5)
 
         return hbox
@@ -132,6 +139,14 @@ class ClusterConfig(wx.Dialog):
         self.GetParent().clus_summ_axs.append(self.clus_summ_ax_rd3.GetValue())
         self.GetParent().clus_summ_axs.append(self.clus_summ_ax_rd4.GetValue())
 
+    def update_language(self, message):
+        self.SetTitle(L('CLUSTER_CONFIG'))
+        self.sbox_mv.SetLabel(L('DISPLAY_MODE'))
+        self.nb.SetPageText(0, L('CLUSTERS_AND_SUMMARIES'))
+        self.nb.SetPageText(2, L('SUMMARIES'))
+        self.ok_button.SetLabel(L('OK'))
+        self.cancel_button.SetLabel(L('CANCEL'))
+
     def on_close(self, e):
         self.set_axes_parent_values()
         self.set_legends_parent_values()
@@ -142,6 +157,8 @@ class ClusterPage(wx.Panel):
     def __init__(self, parent, dialog_ref):
         wx.Panel.__init__(self, parent)
 
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         sboxs_ax = self.get_axes(dialog_ref)
@@ -153,51 +170,64 @@ class ClusterPage(wx.Panel):
         self.SetSizer(sizer)
 
     def get_axes(self, dialog_ref):
-        sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
-        sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
+        self.sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
+        sboxs_ax = wx.StaticBoxSizer(self.sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, L('IN_A_FIGURE'),
+        self.radio1 = wx.RadioButton(self, -1, L('IN_A_FIGURE'),
                                 style=wx.RB_GROUP)
-        radio1.SetValue(False)
-        dialog_ref.clus_ax_rd1 = radio1
+        self.radio1.SetValue(False)
+        dialog_ref.clus_ax_rd1 = self.radio1
 
-        radio2 = wx.RadioButton(self, -1, L('IN_DIFFERENT_FIGURES'))
-        dialog_ref.clus_ax_rd2 = radio2
+        self.radio2 = wx.RadioButton(self, -1, L('IN_DIFFERENT_FIGURES'))
+        dialog_ref.clus_ax_rd2 = self.radio2
 
-        sboxs_ax.Add(radio1, 0, wx.ALL, 5)
-        sboxs_ax.Add(radio2, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio1, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio2, 0, wx.ALL, 5)
 
         return sboxs_ax
 
     def get_legends(self, dialog_ref):
-        sbox_lg = wx.StaticBox(self, -1, L('LEGEND_CONTENT'))
-        sboxs_lg = wx.StaticBoxSizer(sbox_lg, wx.VERTICAL)
+        self.sbox_lg = wx.StaticBox(self, -1, L('LEGEND_CONTENT'))
+        sboxs_lg = wx.StaticBoxSizer(self.sbox_lg, wx.VERTICAL)
 
-        checkbox1 = wx.CheckBox(self, -1, L('PERCENTAGE_OF_OBSERVATIONS'))
-        dialog_ref.clus_lg_check1 = checkbox1
+        self.checkbox1 = wx.CheckBox(self, -1, L('PERCENTAGE_OF_OBSERVATIONS'))
+        dialog_ref.clus_lg_check1 = self.checkbox1
 
-        checkbox2 = wx.CheckBox(self, -1, L('AMOUNT_OF_OBSERVATIONS'))
-        dialog_ref.clus_lg_check2 = checkbox2
+        self.checkbox2 = wx.CheckBox(self, -1, L('AMOUNT_OF_OBSERVATIONS'))
+        dialog_ref.clus_lg_check2 = self.checkbox2
 
-        checkbox3 = wx.CheckBox(self, -1, L('NAME'))
-        dialog_ref.clus_lg_check3 = checkbox3
+        self.checkbox3 = wx.CheckBox(self, -1, L('NAME'))
+        dialog_ref.clus_lg_check3 = self.checkbox3
 
-        checkbox4 = wx.CheckBox(self, -1, L('SHAPES'))
-        checkbox4.SetValue(True)
-        dialog_ref.clus_lg_check4 = checkbox4
+        self.checkbox4 = wx.CheckBox(self, -1, L('SHAPES'))
+        self.checkbox4.SetValue(True)
+        dialog_ref.clus_lg_check4 = self.checkbox4
 
-        sboxs_lg.Add(checkbox1, 0, wx.ALL, 5)
-        sboxs_lg.Add(checkbox2, 0, wx.ALL, 5)
-        sboxs_lg.Add(checkbox3, 0, wx.ALL, 5)
-        sboxs_lg.Add(checkbox4, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox1, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox2, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox3, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox4, 0, wx.ALL, 5)
 
         return sboxs_lg
+
+    def update_language(self, message):
+        self.sbox_ax.SetLabel(L('DISPLAY_SELECTED'))
+        self.radio1.SetLabel(L('IN_A_FIGURE'))
+        self.radio2.SetLabel(L('IN_DIFFERENT_FIGURES'))
+
+        self.sbox_lg.SetLabel(L('LEGEND_CONTENT'))
+        self.checkbox1.SetLabel(L('PERCENTAGE_OF_OBSERVATIONS'))
+        self.checkbox2.SetLabel(L('AMOUNT_OF_OBSERVATIONS'))
+        self.checkbox3.SetLabel(L('NAME'))
+        self.checkbox4.SetLabel(L('SHAPES'))
 
 
 class SummaryPage(wx.Panel):
     def __init__(self, parent, dialog_ref):
         wx.Panel.__init__(self, parent)
 
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         sboxs_ax = self.get_axes(dialog_ref)
@@ -210,51 +240,64 @@ class SummaryPage(wx.Panel):
 
     def get_axes(self, dialog_ref):
 
-        sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
-        sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
+        self.sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
+        sboxs_ax = wx.StaticBoxSizer(self.sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, L('IN_A_FIGURE'),
+        self.radio1 = wx.RadioButton(self, -1, L('IN_A_FIGURE'),
                                 style=wx.RB_GROUP)
-        radio1.SetValue(False)
-        dialog_ref.summ_ax_rd1 = radio1
+        self.radio1.SetValue(False)
+        dialog_ref.summ_ax_rd1 = self.radio1
 
-        radio2 = wx.RadioButton(self, -1, L('IN_DIFFERENT_FIGURES'))
-        dialog_ref.summ_ax_rd2 = radio2
+        self.radio2 = wx.RadioButton(self, -1, L('IN_DIFFERENT_FIGURES'))
+        dialog_ref.summ_ax_rd2 = self.radio2
 
-        sboxs_ax.Add(radio1, 0, wx.ALL, 5)
-        sboxs_ax.Add(radio2, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio1, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio2, 0, wx.ALL, 5)
 
         return sboxs_ax
 
     def get_legends(self, dialog_ref):
-        sbox_lg = wx.StaticBox(self, -1, L('LEGEND_CONTENT'))
-        sboxs_lg = wx.StaticBoxSizer(sbox_lg, wx.VERTICAL)
+        self.sbox_lg = wx.StaticBox(self, -1, L('LEGEND_CONTENT'))
+        sboxs_lg = wx.StaticBoxSizer(self.sbox_lg, wx.VERTICAL)
 
-        checkbox1 = wx.CheckBox(self, -1, L('PERCENTAGE_OF_OBSERVATIONS'))
-        checkbox1.SetValue(True)
-        dialog_ref.summ_lg_check1 = checkbox1
+        self.checkbox1 = wx.CheckBox(self, -1, L('PERCENTAGE_OF_OBSERVATIONS'))
+        self.checkbox1.SetValue(True)
+        dialog_ref.summ_lg_check1 = self.checkbox1
 
-        checkbox2 = wx.CheckBox(self, -1, L('AMOUNT_OF_OBSERVATIONS'))
-        dialog_ref.summ_lg_check2 = checkbox2
+        self.checkbox2 = wx.CheckBox(self, -1, L('AMOUNT_OF_OBSERVATIONS'))
+        dialog_ref.summ_lg_check2 = self.checkbox2
 
-        checkbox3 = wx.CheckBox(self, -1, L('NAME'))
-        dialog_ref.summ_lg_check3 = checkbox3
+        self.checkbox3 = wx.CheckBox(self, -1, L('NAME'))
+        dialog_ref.summ_lg_check3 = self.checkbox3
 
-        checkbox4 = wx.CheckBox(self, -1, L('SHAPES'))
-        dialog_ref.summ_lg_check4 = checkbox4
+        self.checkbox4 = wx.CheckBox(self, -1, L('SHAPES'))
+        dialog_ref.summ_lg_check4 = self.checkbox4
 
-        sboxs_lg.Add(checkbox1, 0, wx.ALL, 5)
-        sboxs_lg.Add(checkbox2, 0, wx.ALL, 5)
-        sboxs_lg.Add(checkbox3, 0, wx.ALL, 5)
-        sboxs_lg.Add(checkbox4, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox1, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox2, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox3, 0, wx.ALL, 5)
+        sboxs_lg.Add(self.checkbox4, 0, wx.ALL, 5)
 
         return sboxs_lg
+
+    def update_language(self, message):
+        self.sbox_ax.SetLabel(L('DISPLAY_SELECTED'))
+        self.radio1.SetLabel(L('IN_A_FIGURE'))
+        self.radio2.SetLabel(L('IN_DIFFERENT_FIGURES'))
+
+        self.sbox_lg.SetLabel(L('LEGEND_CONTENT'))
+        self.checkbox1.SetLabel(L('PERCENTAGE_OF_OBSERVATIONS'))
+        self.checkbox2.SetLabel(L('AMOUNT_OF_OBSERVATIONS'))
+        self.checkbox3.SetLabel(L('NAME'))
+        self.checkbox4.SetLabel(L('SHAPES'))
 
 
 class ClusterSummaryPage(wx.Panel):
     def __init__(self, parent, dialog_ref):
         wx.Panel.__init__(self, parent)
 
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         sboxs_ax = self.get_axes(dialog_ref)
@@ -266,35 +309,35 @@ class ClusterSummaryPage(wx.Panel):
         self.SetSizer(sizer)
 
     def get_axes(self, dialog_ref):
-        sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
-        sboxs_ax = wx.StaticBoxSizer(sbox_ax, wx.VERTICAL)
+        self.sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
+        sboxs_ax = wx.StaticBoxSizer(self.sbox_ax, wx.VERTICAL)
 
-        radio1 = wx.RadioButton(self, -1, L('ALL_IN_SAME_FIGURE'),
+        self.radio1 = wx.RadioButton(self, -1, L('ALL_IN_SAME_FIGURE'),
                                 style=wx.RB_GROUP)
-        radio1.SetValue(False)
-        dialog_ref.clus_summ_ax_rd1 = radio1
+        self.radio1.SetValue(False)
+        dialog_ref.clus_summ_ax_rd1 = self.radio1
 
-        radio2 = wx.RadioButton(self, -1, L('ALL_IN_DIFFERENT_FIGURES'))
-        dialog_ref.clus_summ_ax_rd2 = radio2
+        self.radio2 = wx.RadioButton(self, -1, L('ALL_IN_DIFFERENT_FIGURES'))
+        dialog_ref.clus_summ_ax_rd2 = self.radio2
 
-        radio3 = wx.RadioButton(self, -1,
+        self.radio3 = wx.RadioButton(self, -1,
                                 L('A_FIGURE_FOR_EACH_CLUSTER_AND_SUMMARY'))
-        dialog_ref.clus_summ_ax_rd3 = radio3
+        dialog_ref.clus_summ_ax_rd3 = self.radio3
 
-        radio4 = wx.RadioButton(self, -1,
+        self.r4 = wx.RadioButton(self, -1,
                             L('CLUSTERS_IN_A_FIGURE_AND_SUMMARIES_IN_ANOTHER'))
-        dialog_ref.clus_summ_ax_rd4 = radio4
+        dialog_ref.clus_summ_ax_rd4 = self.r4
 
-        sboxs_ax.Add(radio1, 0, wx.ALL, 5)
-        sboxs_ax.Add(radio2, 0, wx.ALL, 5)
-        sboxs_ax.Add(radio3, 0, wx.ALL, 5)
-        sboxs_ax.Add(radio4, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio1, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio2, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.radio3, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.r4, 0, wx.ALL, 5)
 
         return sboxs_ax
 
     def get_legends(self, dialog_ref):
-        sbox_lg = wx.StaticBox(self, -1, L('LEGEND'))
-        sboxs_lg = wx.StaticBoxSizer(sbox_lg, wx.VERTICAL)
+        self.sbox_lg = wx.StaticBox(self, -1, L('LEGEND'))
+        sboxs_lg = wx.StaticBoxSizer(self.sbox_lg, wx.VERTICAL)
 
         p = wx.Panel(self)
         nb = wx.Notebook(p)
@@ -302,6 +345,7 @@ class ClusterSummaryPage(wx.Panel):
         # add the pages to the notebook with the label to show on the tab
         nb.AddPage(self.get_cluster_legend(nb, dialog_ref), "Cluster")
         nb.AddPage(self.get_summary_legend(nb, dialog_ref), L('SUMMARY'))
+        self.nb = nb
 
         # finally, put the notebook in a sizer for the panel to manage
         # the layout
@@ -317,24 +361,25 @@ class ClusterSummaryPage(wx.Panel):
         panel = wx.Panel(parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        checkbox1 = wx.CheckBox(panel, -1,
+        self.checkbox1 = wx.CheckBox(panel, -1,
                                 L('SHOW_PERCENTAGE_OF_OBSERVATIONS'))
-        dialog_ref.clus_lg_check1 = checkbox1
+        dialog_ref.clus_lg_check1 = self.checkbox1
 
-        checkbox2 = wx.CheckBox(panel, -1, L('SHOW_AMOUNT_OF_OBSERVATIONS'))
-        dialog_ref.clus_lg_check2 = checkbox2
+        self.checkbox2 = wx.CheckBox(panel, -1,
+                                     L('SHOW_AMOUNT_OF_OBSERVATIONS'))
+        dialog_ref.clus_lg_check2 = self.checkbox2
 
-        checkbox3 = wx.CheckBox(panel, -1, L('SHOW_NAME'))
-        dialog_ref.clus_lg_check3 = checkbox3
+        self.checkbox3 = wx.CheckBox(panel, -1, L('SHOW_NAME'))
+        dialog_ref.clus_lg_check3 = self.checkbox3
 
-        checkbox4 = wx.CheckBox(panel, -1, L('SHOW_SHAPES'))
-        checkbox4.SetValue(True)
-        dialog_ref.clus_lg_check4 = checkbox4
+        self.checkbox4 = wx.CheckBox(panel, -1, L('SHOW_SHAPES'))
+        self.checkbox4.SetValue(True)
+        dialog_ref.clus_lg_check4 = self.checkbox4
 
-        sizer.Add(checkbox1, 0, wx.ALL, 5)
-        sizer.Add(checkbox2, 0, wx.ALL, 5)
-        sizer.Add(checkbox3, 0, wx.ALL, 5)
-        sizer.Add(checkbox4, 0, wx.ALL, 5)
+        sizer.Add(self.checkbox1, 0, wx.ALL, 5)
+        sizer.Add(self.checkbox2, 0, wx.ALL, 5)
+        sizer.Add(self.checkbox3, 0, wx.ALL, 5)
+        sizer.Add(self.checkbox4, 0, wx.ALL, 5)
 
         panel.SetSizer(sizer)
 
@@ -349,15 +394,19 @@ class ClusterSummaryPage(wx.Panel):
                                 L('SHOW_PERCENTAGE_OF_OBSERVATIONS'))
         checkbox1.SetValue(True)
         dialog_ref.summ_lg_check1 = checkbox1
+        self.chkbox1 = checkbox1
 
         checkbox2 = wx.CheckBox(panel, -1, L('SHOW_AMOUNT_OF_OBSERVATIONS'))
         dialog_ref.summ_lg_check2 = checkbox2
+        self.chkbox2 = checkbox2
 
         checkbox3 = wx.CheckBox(panel, -1, L('SHOW_NAME'))
         dialog_ref.summ_lg_check3 = checkbox3
+        self.chkbox3 = checkbox3
 
         checkbox4 = wx.CheckBox(panel, -1, L('SHOW_SHAPES'))
         dialog_ref.summ_lg_check4 = checkbox4
+        self.chkbox4 = checkbox4
 
         sizer.Add(checkbox1, 0, wx.ALL, 5)
         sizer.Add(checkbox2, 0, wx.ALL, 5)
@@ -368,12 +417,34 @@ class ClusterSummaryPage(wx.Panel):
 
         return panel
 
+    def update_language(self, message):
+        self.sbox_ax.SetLabel(L('DISPLAY_SELECTED'))
+        self.radio1.SetLabel(L('ALL_IN_SAME_FIGURE'))
+        self.radio2.SetLabel(L('ALL_IN_DIFFERENT_FIGURES'))
+        self.radio3.SetLabel(L('A_FIGURE_FOR_EACH_CLUSTER_AND_SUMMARY'))
+        self.r4.SetLabel(L('CLUSTERS_IN_A_FIGURE_AND_SUMMARIES_IN_ANOTHER'))
+
+        self.sbox_lg.SetLabel(L('DISPLAY_SELECTED'))
+        self.nb.SetPageText(1, L('SUMMARY'))
+
+        self.checkbox1.SetLabel(L('SHOW_PERCENTAGE_OF_OBSERVATIONS'))
+        self.checkbox2.SetLabel(L('SHOW_AMOUNT_OF_OBSERVATIONS'))
+        self.checkbox3.SetLabel(L('SHOW_NAME'))
+        self.checkbox4.SetLabel(L('SHOW_SHAPES'))
+
+        self.chkbox1.SetLabel(L('SHOW_PERCENTAGE_OF_OBSERVATIONS'))
+        self.chkbox2.SetLabel(L('SHOW_AMOUNT_OF_OBSERVATIONS'))
+        self.chkbox3.SetLabel(L('SHOW_NAME'))
+        self.chkbox4.SetLabel(L('SHOW_SHAPES'))
+
 
 class FilterClusterDialog(wx.Dialog):
     def __init__(self, parent, data):
         wx.Dialog.__init__(self, parent, title=L('CLUSTER_FILTER'),
                            size=(400, 390))
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         self.parent = parent
         self.data = data
@@ -431,11 +502,11 @@ class FilterClusterDialog(wx.Dialog):
         self.ok_button = wx.Button(self, label=L('OK'))
         self.ok_button.Bind(wx.EVT_BUTTON, self.on_accept)
 
-        self.close_button = wx.Button(self, label=L('CANCEL'))
-        self.close_button.SetDefault()
-        self.close_button.Bind(wx.EVT_BUTTON, self.on_cancel)
+        self.cancel_button = wx.Button(self, label=L('CANCEL'))
+        self.cancel_button.SetDefault()
+        self.cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
 
-        hbox.Add(self.close_button)
+        hbox.Add(self.cancel_button)
         hbox.Add(self.ok_button, flag=wx.RIGHT, border=5)
 
         return hbox
@@ -456,8 +527,8 @@ class FilterClusterDialog(wx.Dialog):
                 self.ok_button.SetDefault()
 
     def set_filter_config(self):
-        sbox_fc = wx.StaticBox(self, -1, L('FILTER_CONFIG'))
-        sboxs_fc = wx.StaticBoxSizer(sbox_fc, wx.HORIZONTAL)
+        self.sbox_fc = wx.StaticBox(self, -1, L('FILTER_CONFIG'))
+        sboxs_fc = wx.StaticBoxSizer(self.sbox_fc, wx.HORIZONTAL)
 
         p = wx.Panel(self)
         nb = wx.Choicebook(p, -1)
@@ -469,6 +540,8 @@ class FilterClusterDialog(wx.Dialog):
         nb.AddPage(self.get_representative_per_obj(nb), _label)
 
         nb.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.on_page_changed)
+
+        self.nb = nb
 
         sizer = wx.BoxSizer()
         sizer.Add(nb, 1, wx.EXPAND | wx.EXPAND, 5)
@@ -500,8 +573,9 @@ class FilterClusterDialog(wx.Dialog):
     def get_more_representative(self, parent):
         panel = wx.Panel(parent)
 
-        sbox_sf = wx.StaticBox(panel, -1, L('MORE_REPRESENTATIVE_CLUSTER'))
-        sboxs_sf = wx.StaticBoxSizer(sbox_sf, wx.VERTICAL)
+        self.sbox_sf = wx.StaticBox(panel, -1,
+                                    L('MORE_REPRESENTATIVE_CLUSTER'))
+        sboxs_sf = wx.StaticBoxSizer(self.sbox_sf, wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=2)
         lbl = wx.StaticText(panel, -1, L('SET_THE_AMOUNT'))
@@ -513,20 +587,22 @@ class FilterClusterDialog(wx.Dialog):
         grid.Add(self.more_repre, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         sboxs_sf.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
-        sbox_sf1 = wx.StaticBox(panel, -1, L('LESS_REPRESENTATIVE_CLUSTER'))
-        sboxs_sf1 = wx.StaticBoxSizer(sbox_sf1, wx.VERTICAL)
+        self.sbox_sf1 = wx.StaticBox(panel, -1,
+                                     L('LESS_REPRESENTATIVE_CLUSTER'))
+        sboxs_sf1 = wx.StaticBoxSizer(self.sbox_sf1, wx.VERTICAL)
         grid1 = wx.FlexGridSizer(cols=2)
         lbl = wx.StaticText(panel, -1, L('SET_THE_AMOUNT'))
         self.less_repre = wx.SpinCtrl(panel, 0, "", (30, 50))
         self.less_repre.SetRange(0, self.data.count_tendency)
         self.less_repre.SetValue(self.data.more_repre)
         self.less_repre.Bind(wx.EVT_SPINCTRL, self.on_less_repre)
+
+        self.lbl = lbl
         grid1.Add(lbl, 1, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         grid1.Add(self.less_repre, 1, wx.ALIGN_LEFT | wx.ALL, 5)
         sboxs_sf1.Add(grid1, 1, wx.EXPAND | wx.ALL, 10)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-#         sizer.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
         sizer.Add(sboxs_sf, 1, wx.EXPAND | wx.ALL, 5)
         sizer.Add(sboxs_sf1, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -553,6 +629,7 @@ class FilterClusterDialog(wx.Dialog):
         lb1_label = wx.StaticText(panel, -1, L('HIGHER_VALUES'))
         pts = lb1_label.GetFont().GetPointSize()
         lb1_label.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
+        self.lb1_label = lb1_label
         self.lb1 = wx.CheckListBox(panel, choices=self.data.max_objetives,
                                    size=(100, 160))
         self.lb1.Bind(wx.EVT_CHECKLISTBOX, self.on_lb1)
@@ -564,6 +641,7 @@ class FilterClusterDialog(wx.Dialog):
         lb2_label = wx.StaticText(panel, -1, L('SMALLER_VALUES'))
         pts = lb2_label.GetFont().GetPointSize()
         lb2_label.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
+        self.lb2_label = lb2_label
         self.lb2 = wx.CheckListBox(panel, choices=self.data.max_objetives,
                                    size=(100, 160))
         self.lb2.Bind(wx.EVT_CHECKLISTBOX, self.on_lb2)
@@ -590,6 +668,22 @@ class FilterClusterDialog(wx.Dialog):
     def on_lb2(self, event):
         self.parent.data_selected.min_objetives_use = self.lb2.GetChecked()
         self.update_button()
+
+    def update_language(self, message):
+        self.SetTitle(L('CLUSTER_FILTER'))
+        self.ok_button.SetLabel(L('OK'))
+        self.cancel_button.SetLabel(L('CANCEL'))
+
+        self.sbox_fc.SetLabel(L('FILTER_CONFIG'))
+        self.nb.SetPageText(0, L('REPRESENTATIVITY_IN_QUANTITY'))
+        self.nb.SetPageText(1, L('REPRESENTATIVITY_VALUES_OBJECTIVES'))
+
+        self.sbox_sf.SetLabel(L('MORE_REPRESENTATIVE_CLUSTER'))
+        self.lbl.SetLabel(L('SET_THE_AMOUNT'))
+        self.sbox_sf1.SetLabel(L('LESS_REPRESENTATIVE_CLUSTER'))
+
+        self.lb1_label.SetLabel(L('HIGHER_VALUES'))
+        self.lb2_label.SetLabel(L('SMALLER_VALUES'))
 
 
 class SelectedData():

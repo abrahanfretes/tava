@@ -21,6 +21,9 @@ from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 import wx
+from wx import GetTranslation as L
+from wx.lib.pubsub import Publisher as pub
+from languages import topic as T
 
 import numpy as np
 from views.wrapper.wraview.vgraphic.acurves import k_andrews_curves
@@ -47,6 +50,8 @@ class FigurePanel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         self.SetBackgroundColour('#DCE5EE')
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         self.control_panel = None
         self.dframes = []
@@ -210,12 +215,21 @@ class FigurePanel(wx.Panel):
 
     def get_choice_grafic(self):
         grid = wx.FlexGridSizer(cols=2)
-        sampleList = ['Coordenadas Paralelas', 'Radar Chart', 'Radvis']
+        sampleList = self.get_item_list()
 
         self.ch_graph = wx.Choice(self, -1, choices=sampleList)
         self.ch_graph.SetSelection(0)
-        self.ch_graph.SetToolTipString("Seleccione un grafico")
+        self.ch_graph.SetToolTipString(L('SELECT_A_GRAPHIC'))
 
         grid.Add(self.ch_graph, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         return grid
+
+    def get_item_list(self):
+        return [L('PARALLEL_COORDINATES'), 'Radar Chart', 'Radvis']
+
+    def update_language(self, msg):
+        s = self.ch_graph.GetSelection()
+        self.ch_graph.SetItems(self.get_item_list())
+        self.ch_graph.SetSelection(s)
+        self.ch_graph.SetToolTipString(L('SELECT_A_GRAPHIC'))
