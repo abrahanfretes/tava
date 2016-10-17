@@ -10,7 +10,7 @@
 #           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
 #           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
 #                                                            ###
-# Creado:  1/9/2016                                        ###
+# Creado:  1/9/2016                                          ###
 #                                                            ###
 # ##############################################################
 '''
@@ -18,6 +18,7 @@
 import wx
 from wx.lib.agw.genericmessagedialog import GenericMessageDialog
 from wx.lib.agw.genericmessagedialog import GMD_USE_GRADIENTBUTTONS
+
 
 KMSG_EMPTY_DATA_SELECTED = 0
 H_EMPTY_DATA_SELECTED = 'Selección Vacío de Datos'

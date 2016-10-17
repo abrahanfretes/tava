@@ -300,7 +300,7 @@ msgid "DATA"
 msgstr "Datos"
 
 msgid "GENERATE"
-msgstr "Generar"
+msgstr " Generar "
 
 msgid "SELECT"
 msgstr "Seleccionar"
@@ -490,3 +490,13 @@ msgstr "Valores mayores"
 
 msgid "SMALLER_VALUES"
 msgstr "Valores menores"
+
+# ------------------------------- vcontrolm ----------------------------------
+msgid "EMPTY_DATA_SELECTION"
+msgstr "Selección Vacía de Datos"
+
+msgid "SELECTION_OF_DATA_TO_DISPLAY"
+msgstr "Selección de datos para Visualizar"
+
+msgid "YOU_HAVE_NOT_SELECTED_ANY_OPTION"
+msgstr "No has seleccionado ninguna opción de"

@@ -310,7 +310,7 @@ msgstr "Visualize"
 
 # ------------------------------- vfigure ----------------------------------
 msgid "PARALLEL_COORDINATES"
-msgstr "Parallel Coordinates"
+msgstr "Parallel Coordinates    "
 
 msgid "SELECT_A_GRAPHIC"
 msgstr "Select a graphic"
@@ -401,7 +401,7 @@ msgid "IN_Y"
 msgstr "In Y"
 
 msgid "COLOR_Y"
-msgstr "Colors Y"
+msgstr "Color Y"
 
 # ------------------------------- vvisualization -----------------------------
 msgid "CLUSTER_CONFIG"
@@ -490,3 +490,14 @@ msgstr "Higher values"
 
 msgid "SMALLER_VALUES"
 msgstr "Smaller values"
+
+# ------------------------------- vcontrolm ----------------------------------
+msgid "EMPTY_DATA_SELECTION"
+msgstr "Empty data selection"
+
+msgid "SELECTION_OF_DATA_TO_DISPLAY"
+msgstr "Selection of data to display"
+
+msgid "YOU_HAVE_NOT_SELECTED_ANY_OPTION"
+msgstr "You have not selected any option of"
+
