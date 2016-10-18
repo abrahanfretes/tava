@@ -28,15 +28,6 @@ EMPTY_DATA_SELECTED = "Selección de datos para Visualizar.\n\n" + \
     "las casillas disponibles en la parte\n" + \
     'superior derecha "Datas" o "Clusters".\n\n' + \
     "            TAVA-TOOL  "
-# KMSG_EMPTY_DUPLICATE_DATA = 1
-# H_EMPTY_DUPLICATE_DATA = 'Datos duplicados'
-# EMPTY_DUPLICATE_DATA = "Los Datos no están duplicados.\n\n" + \
-#     "Los items seleccionados no contienes datos\n" + \
-#     "duplicados, seleccione otros items o cambie el\n" + \
-#     'modo de visualización a "True" o "False"\n' + \
-#     'en la opción "Allow Duplicates?".\n\n' + \
-#     "            TAVA-TOOL  "
-
 
 KMSG_EMPTY_CLUSTER_DATA = 3
 H_EMPTY_CLUSTER_DATA = 'Visualización de Clusters'
@@ -88,6 +79,9 @@ K_YES_DEFAULT = wx.YES_DEFAULT
 K_NO_DEFAULT = wx.NO_DEFAULT
 
 
+from wx import GetTranslation as L
+
+
 class KMessage():
 
     def __init__(self, parent, key_message, key_ico=K_ICON_INFORMATION,
@@ -100,14 +94,9 @@ class KMessage():
             self.m_msg = EMPTY_DATA_SELECTED
             self.k_ico = key_ico
             self.k_but = key_button
-#         elif key_message == KMSG_EMPTY_DUPLICATE_DATA:
-#             self.h_msg = H_EMPTY_DUPLICATE_DATA
-#             self.m_msg = EMPTY_DUPLICATE_DATA
-#             self.k_ico = key_ico
-#             self.k_but = key_button
         elif key_message == KMSG_EMPTY_CLUSTER_DATA:
-            self.h_msg = H_EMPTY_CLUSTER_DATA
-            self.m_msg = EMPTY_CLUSTER_DATA
+            self.h_msg = L('H_EMPTY_CLUSTER_DATA') # H_EMPTY_CLUSTER_DATA
+            self.m_msg = L('EMPTY_CLUSTER_DATA')
             self.k_ico = key_ico
             self.k_but = key_button
         elif key_message == KMSG_EMPTY_CLUSTER_SELECTED:
