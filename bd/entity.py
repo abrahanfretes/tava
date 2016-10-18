@@ -165,7 +165,7 @@ class View(Base):
 
     __tablename__ = 'view'
     id = Column(Integer, primary_key=True, nullable=False, unique=True)
-    name = Column(String(100), nullable=False, unique=True)
+    name = Column(String(100), nullable=False)
     description = Column(Text(2000), nullable=True)
     creation = Column(Date(), nullable=False)
     update = Column(Date())
