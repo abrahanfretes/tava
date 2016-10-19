@@ -315,6 +315,12 @@ msgstr "Parallel Coordinates    "
 msgid "SELECT_A_GRAPHIC"
 msgstr "Select a graphic"
 
+msgid "FIGURE_CONF"
+msgstr "Figures configuration"
+
+msgid "VISUALIZE_DATE_CLUSTER"
+msgstr "Show Data/Clusters Selected"
+
 # ------------------------------- vfigured ----------------------------------
 msgid "GRAPHIC_CONFIG"
 msgstr "Graphic Configuration"
