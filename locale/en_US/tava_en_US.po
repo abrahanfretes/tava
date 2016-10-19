@@ -494,10 +494,10 @@ msgstr "Smaller values"
 # ------------------------------- vcontrolm ----------------------------------
 
 msgid "H_EMPTY_CLUSTER_DATA"
-msgstr "Viewing Clusters"
+msgstr "Display Clusters"
 
 msgid "EMPTY_CLUSTER_DATA"
-msgstr "Generate lack Clusters\n\nMust generate the corresponding clusters then view them:\n1. Select at least one data.\n2. Establesca cantidad de clusters.\n 3. Press button generate cluster.\n\n            TAVA-TOOL  "
+msgstr "It is required generate Clusters\n\nYou must generate the corresponding groups to watch them:\n1. Select at least one data.\n2. Set number of clusters.\n 3. Press button to generate cluster.\n\n            TAVA-TOOL  "
 
 msgid "EMPTY_DATA_SELECTION"
 msgstr "Empty data selection"
