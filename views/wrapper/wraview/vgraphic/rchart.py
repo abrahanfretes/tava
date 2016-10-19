@@ -156,7 +156,6 @@ def k_radar_chart(dframes, class_column, fig, ax_conf, rc_config):
 
         # --- creación de radar chart
         spoke_labels = df.columns
-        print rc_config.edgecolor
         theta = radar_factory(len(spoke_labels), rc_config.type)
 
         # ---- creación de ejes

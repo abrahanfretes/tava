@@ -29,7 +29,6 @@ from languages import topic as T
 import numpy as np
 from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig, \
                                            FigureConfig, RadarChadConfig
-from views.wrapper.wraview.vgraphic.acurves import k_andrews_curves
 from views.wrapper.wraview.vgraphic.cparallel import k_parallel_coordinates
 from views.wrapper.wraview.vgraphic.fuse import g_color
 from views.wrapper.wraview.vgraphic.rchart import k_radar_chart
@@ -137,22 +136,12 @@ class FigurePanel(wx.Panel):
         if key_figure == K_PARALLEL_COORDENATE:
             self.fig = k_parallel_coordinates(dframes, 'Name', self.fig,
                                               self.ax_conf, self.fig_config)
-        elif key_figure == K_ANDREWS_CURVES:
-            self.fig = k_andrews_curves(dframes, 'Name', self.fig)
-        elif key_figure == K_RADVIZ:
-            self.fig = k_radviz(dframes, 'Name', self.fig)
-        elif key_figure == K_RADAR_CHART_CIRCLE:
-            self.fig = k_radar_chart(dframes, 'Name', fig=self.fig)
         elif key_figure == K_RADAR_CHART_POLYGON:
             self.fig = k_radar_chart(dframes, 'Name', self.fig,
                                      self.ax_conf, self.radar_chard_con)
-        elif key_figure == K_SCATTER_MATRIX:
-            print 'scatter_matrix selected'
-            # scatter_matrix(dframes.drop('Name', 1), ax=axe, diagonal='kde')
-        elif key_figure == K_SOM:
-            print 'SOM selected'
-        elif key_figure == K_HITMAP:
-            print 'HITMAT selected'
+        elif key_figure == K_RADVIZ:
+            self.fig = k_radviz(dframes, 'Name', self.fig)
+
         self.canvas.draw()
 
     def kdraw_one(self, list_df, key_figure=1):
