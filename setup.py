@@ -23,7 +23,7 @@ opts = {'packages': ['wx.lib.pubsub', 'scipy', 'matplotlib'],
         }
 
 executables = [
-    Executable('tavai.py', base=base)
+    Executable('tava.py', base=base)
 ]
 
 setup(name='hello',

@@ -19,7 +19,7 @@
 # -- motor, que la Sesión utilizará para la conexión recursos
 from sqlalchemy import create_engine
 import os
-_db_path = os.path.join(os.getcwd(), 'tavai.db')
+_db_path = os.path.join(os.getcwd(), 'tava.db')
 engine = create_engine('sqlite:///' + _db_path, echo=True)
 
 # ------------------------------------------------------------
