@@ -36,7 +36,10 @@ msgid "RESULT_NOT_DELETE_HEADER"
 msgstr "Eliminar Archivos Resultado!"
 
 msgid "EXIT_TAVA"
-msgstr "Salir de TAVA!"
+msgstr "Salir de TAVA?"
+
+msgid "EXIT_TAVA_HEADER"
+msgstr "Pregunta"
 
 # ------------------------------- TavaMenuBar ---------------------------------
 msgid "MENU_BAR_FILE"
@@ -408,6 +411,18 @@ msgstr "En Y"
 
 msgid "COLOR_Y"
 msgstr "Color en Y"
+
+msgid "RC_CONF1_HEADER"
+msgstr "Configuración de Gráfico"
+
+msgid "RC_CONF1_STYLE_G"
+msgstr "Estilo de Gráfico"
+
+msgid "RC_CONF1_STYLE_GTS"
+msgstr "Estilos de Gráficos a ser Mostrado"
+
+msgid "RC_CONF1_FILL"
+msgstr "Rellenar Figura"
 
 # ------------------------------- vvisualization -----------------------------
 msgid "CLUSTER_CONFIG"

@@ -18,7 +18,6 @@
 
 from matplotlib import patches as mpatches
 from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
 from matplotlib.path import Path
 from matplotlib.projections import register_projection
 from matplotlib.projections.polar import PolarAxes
@@ -41,7 +40,7 @@ def unit_poly_verts(theta):
     return verts
 
 
-def radar_factory(num_vars, frame='circle'):
+def radar_factory(num_vars, frame):
     """Create a radar chart with `num_vars` axes.
 
     This function creates a RadarAxes projection and registers it.
@@ -125,21 +124,20 @@ def radar_factory(num_vars, frame='circle'):
     return theta
 
 
-def k_radar_chart(dframes, class_column, fig=None, frame='circle',
-                  subplot=False, grayscale=False, fill=False,
-                  alpha=0.15, legend=True, one_d=False):
+# def k_radar_chart(dframes, class_column, fig, frame='circle',
+#                   subplot=False, grayscale=False, fill=False,
+#                   alpha=0.15, legend=True, one_d=False):
 
-    # figures
-    if fig is None:
-        fig = Figure()
-    fig.subplots_adjust(left=0.05, bottom=0.08, right=0.95, top=0.88,
-                        wspace=0.05, hspace=0.20)
+def k_radar_chart(dframes, class_column, fig, ax_conf, rc_config):
+
+    grayscale = False
+    alpha = 0.15
 
     _classes_colors = []
-    _draw_legends = False
     _colors = 0
 
-    s_row, s_col = square_plot(len(dframes))
+    s_row, s_col = square_plot(len(dframes), False)
+
     for i in range(len(dframes)):
         ax = fig.add_subplot(s_row, s_col, i + 1)
 
@@ -148,22 +146,30 @@ def k_radar_chart(dframes, class_column, fig=None, frame='circle',
         n = len(dframe)
         classes = dframe[class_column].drop_duplicates()
         class_col = dframe[class_column]
+
         df = dframe.drop(class_column, axis=1)
         color_values = g_color((_colors + len(classes)), grayscale)[_colors:]
+
         _colors += len(classes)
         classes_colors = zip(classes, color_values)
         colors = dict(classes_colors)
-        spoke_labels = df.columns
-        theta = radar_factory(len(spoke_labels), frame)
 
+        # --- creación de radar chart
+        spoke_labels = df.columns
+        print rc_config.edgecolor
+        theta = radar_factory(len(spoke_labels), rc_config.type)
+
+        # ---- creación de ejes
         ax = fig.add_subplot(s_row, s_col, i + 1, projection='radar')
         ax.set_varlabels(spoke_labels)
 
+        # --- configuración de colores
         if grayscale:
             color_values = ['gray'] * len(color_values)
             colors = dict(zip(classes, color_values))
 
-        if fill:
+        # ---- configuración de relleno
+        if rc_config.fill:
             for ii in range(n):
                 d = df.iloc[ii].values
                 kls = class_col.iat[ii]
@@ -175,22 +181,26 @@ def k_radar_chart(dframes, class_column, fig=None, frame='circle',
                 kls = class_col.iat[ii]
                 ax.plot(theta, d, color=colors[kls])
 
-        if legend:
-            if len(classes) == 1:
-                ax.set_title(classes.tolist()[0], weight='bold', size='medium',
-                             position=(0.5, 1.1),
-                             horizontalalignment='center',
-                             verticalalignment='center')
-            else:
-                _draw_legends = True
-                _classes_colors.append(classes_colors)
+        # ---- configuración de leyenda
+        if ax_conf.legend_show:
 
-    if _draw_legends:
-        r_patch = []
-        classes = []
-        for classes_colors in _classes_colors:
-            for _classes, color in classes_colors:
-                r_patch.append(mpatches.Patch(color=color))
-                classes.append(_classes)
-        fig.legend(r_patch, classes)
+            _classes_colors.append(classes_colors)
+            r_patch = []
+            classes = []
+            for classes_colors in _classes_colors:
+                for _classes, color in classes_colors:
+                    r_patch.append(mpatches.Patch(color=color))
+                    classes.append(_classes)
+            fig.legend(r_patch, classes)
+
+        # ---- configuración de grid
+        if ax_conf.grid_lines:
+            ax.grid(True)
+            ax.grid(color=ax_conf.grid_color,
+                    linestyle=ax_conf.grid_lines_style,
+                    linewidth=ax_conf.grid_linewidth,
+                    alpha=ax_conf.grid_color_alpha)
+        else:
+            ax.grid(False)
+
     return fig

@@ -28,6 +28,7 @@ from wx.lib.pubsub import Publisher as pub
 from languages import topic as T
 
 TYPES_GRID = ['-', '--', '-.', ':']
+TYPE_RADAR_CHARD = ['polygon', 'circle']
 
 
 class FigureConfigDialog(wx.Dialog):
@@ -43,6 +44,7 @@ class FigureConfigDialog(wx.Dialog):
         # ---- variable de configuración de Figura
         conf = parent.fig_config
         a_conf = parent.ax_conf
+        rd_config = parent.radar_chard_con
 
         ag_st = LB.INB_FIT_LABELTEXT | LB.INB_LEFT | LB.INB_DRAW_SHADOW
         ag_st = ag_st | LB.INB_GRADIENT_BACKGROUND | LB.INB_SHOW_ONLY_TEXT
@@ -56,10 +58,18 @@ class FigureConfigDialog(wx.Dialog):
         imagelist.Add(my_bitmap.GetBitmap())
         notebook.AssignImageList(imagelist)
 
+        # ---- Panel de Figuras
         notebook.AddPage(FigureConfigPanel(notebook, self, conf),
                          L('FIGURE'), 1, 0)
+
+        # ---- Panel de Ejes
         self.ax_panel = AxesConfigPanel(notebook, self, a_conf)
         notebook.AddPage(self.ax_panel, L('AXES'), 0, 0)
+
+        # ---- Panel de Radar Chart
+        self.rc_panel = RadarChartConfigPanel(notebook, self, rd_config)
+        notebook.AddPage(self.rc_panel, 'RadarChard', 1, 0)
+
         self.nb = notebook
 
         sbuttons = self.set_buttons()
@@ -132,9 +142,16 @@ class FigureConfigDialog(wx.Dialog):
         ax_conf.x_axis_color = xc
         ax_conf.y_axis_color = yc
 
+    def set_radarchard_parent_values(self):
+        rc_conf = self.GetParent().radar_chard_con
+        t, f = self.rc_panel.g_values_conf()
+        rc_conf.type = t
+        rc_conf.fill = f
+
     def on_close(self, e):
         self.set_figure_parent_values()
         self.set_axes_parent_values()
+        self.set_radarchard_parent_values()
         self.Hide()
 
     def update_language(self, msg):
@@ -541,6 +558,74 @@ class AxesConfigPanel(wx.Panel):
         self.y_label_color.SetLabel(L('COLOR_Y'))
 
 
+class RadarChartConfigPanel(wx.Panel):
+    '''
+    Panel de configuracion de la figura.
+    '''
+
+    def __init__(self, parent, dialog_ref, conf):
+        '''
+        '''
+        wx.Panel.__init__(self, parent, style=0)
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
+
+        self.dialog_ref = dialog_ref
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+
+        msizer = self.get_config_sample(conf)
+
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(msizer, 1, wx.EXPAND | wx.ALL, 3)
+
+        self.SetSizer(sizer)
+
+    def update_language(self, msg):
+        self.sbox_rc.SetLabel(L('RC_CONF1_HEADER'))
+        self.t_label.SetLabel(L('RC_CONF1_STYLE_G'))
+        self.ch_type.SetToolTipString(L('RC_CONF1_STYLE_GTS'))
+        self.chk_fill.SetLabel(L('RC_CONF1_FILL'))
+
+    def get_config_sample(self, conf):
+
+        self.sbox_rc = wx.StaticBox(self, -1, L('RC_CONF1_HEADER'))
+        sboxs_lglc = wx.StaticBoxSizer(self.sbox_rc, wx.VERTICAL)
+
+        # ---- tipo de gráfico
+        self.t_label = wx.StaticText(self, -1, L('RC_CONF1_STYLE_G'))
+        self.ch_type = wx.Choice(self, -1, choices=TYPE_RADAR_CHARD)
+        self.ch_type.SetSelection(0)
+        self.ch_type.SetToolTipString(L('RC_CONF1_STYLE_GTS'))
+
+        # ---- relleno
+        self.chk_fill = wx.CheckBox(self, -1, L('RC_CONF1_FILL'),
+                                    style=wx.ALIGN_RIGHT)
+        self.chk_fill.SetValue(conf.fill)
+
+#         # ---- color de Borde
+#         self.edge_color_label = wx.StaticText(self, -1, 'color del borde')
+#         _c = wx.NamedColour(conf.edgecolor)
+#         self.edge_color = csel.ColourSelect(self, colour=_c)
+
+        # ---- grilla
+        grid = wx.FlexGridSizer(cols=2)
+        _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(self.t_label, 0, _style, 5)
+        grid.Add(self.ch_type, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        grid.Add(self.chk_fill, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, ''), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+        sboxs_lglc.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
+
+        return sboxs_lglc
+
+    def g_values_conf(self):
+        t = TYPE_RADAR_CHARD[self.ch_type.GetSelection()]
+        f = self.chk_fill.GetValue()
+        return t, f
+
+
 class FigureConfig():
     '''
     Clase que contendrá las configuraciones de la Figura o contenedor
@@ -622,6 +707,18 @@ class AxesConfig():
         # ---- lista de columnas - nombres de variables
         self.cols = None
         self.color = None
+
+
+class RadarChadConfig():
+    '''
+    '''
+    def __init__(self):
+        '''
+        Método de inicializacion de variables
+        '''
+        self.fill = False
+        self.type = 'polygon'
+        self.edgecolor = c_color(wx.Colour(0, 0, 0))
 
 
 def c_color(wx_color):

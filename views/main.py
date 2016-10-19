@@ -69,7 +69,7 @@ class MainFrame(wx.Frame):
 
     def on_close_tava(self, event):
 
-        result = wx.MessageBox(L('EXIT_TAVA'),
+        result = wx.MessageBox(L('EXIT_TAVA'), L('EXIT_TAVA_HEADER'),
                                style=wx.CENTER | wx.ICON_QUESTION |
                                wx.YES_NO | wx.NO_DEFAULT)
         if result == wx.YES:

@@ -20,20 +20,20 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
-import wx
 from wx import GetTranslation as L
+import wx
 from wx.lib.pubsub import Publisher as pub
-from languages import topic as T
 
+from imgs.ifigure import settings_fig, play_fig
+from languages import topic as T
 import numpy as np
+from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig, \
+                                           FigureConfig, RadarChadConfig
 from views.wrapper.wraview.vgraphic.acurves import k_andrews_curves
 from views.wrapper.wraview.vgraphic.cparallel import k_parallel_coordinates
 from views.wrapper.wraview.vgraphic.fuse import g_color
 from views.wrapper.wraview.vgraphic.rchart import k_radar_chart
 from views.wrapper.wraview.vgraphic.rviz import k_radviz
-from imgs.ifigure import settings_fig, play_fig
-from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig,\
-                                           FigureConfig
 
 
 K_PARALLEL_COORDENATE = 0
@@ -71,6 +71,9 @@ class FigurePanel(wx.Panel):
 
         # ---- configuración de axe
         self.ax_conf = AxesConfig()
+
+        # ---- radar chard config
+        self.radar_chard_con = RadarChadConfig()
 
         # ---- toolbar
         sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
@@ -141,8 +144,8 @@ class FigurePanel(wx.Panel):
         elif key_figure == K_RADAR_CHART_CIRCLE:
             self.fig = k_radar_chart(dframes, 'Name', fig=self.fig)
         elif key_figure == K_RADAR_CHART_POLYGON:
-            self.fig = k_radar_chart(dframes, 'Name', fig=self.fig,
-                                     frame='polygon')
+            self.fig = k_radar_chart(dframes, 'Name', self.fig,
+                                     self.ax_conf, self.radar_chard_con)
         elif key_figure == K_SCATTER_MATRIX:
             print 'scatter_matrix selected'
             # scatter_matrix(dframes.drop('Name', 1), ax=axe, diagonal='kde')
