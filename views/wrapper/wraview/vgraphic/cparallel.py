@@ -16,61 +16,12 @@
 # ##############################################################
 '''
 
-from matplotlib.figure import Figure
 from pandas.compat import lrange
 from pandas.core import common as com
 from pandas.tools.plotting import _get_standard_colors
-from views.wrapper.vdialog.vfigured import AxesConfig, FigureConfig
 
 import numpy as np
 from views.wrapper.wraview.vgraphic.fuse import square_plot
-
-
-#     Parameters
-#     ----------
-#     frame: DataFrame
-#     class_column: str
-#         Column name containing class names
-#     cols: list, optional
-#         A list of column names to use
-#     ax: matplotlib.axis, optional
-#         matplotlib axis object
-#     color: list or tuple, optional
-#         Colors to use for the different classes
-#     use_columns: bool, optional
-#         If true, columns will be used as xticks
-#     xticks: list or tuple, optional
-#         A list of values to use for xticks
-#     colormap: str or matplotlib colormap, default None
-#         Colormap to use for line colors.
-#     axvlines: bool, optional
-#         If true, vertical lines will be added at each xtick
-#     kwds: keywords
-#         Options to pass to matplotlib plotting method
-# 
-#     Returns
-#     -------
-#     ax: matplotlib axis object
-# 
-#     Examples
-#     --------
-#     >>> from pandas import read_csv
-#     >>> from pandas.tools.plotting import parallel_coordinates
-#     >>> from matplotlib import pyplot as plt
-#     >>> df = read_csv('https://raw.github.com/
-#     >>> pydata/pandas/master/pandas/tests/data/iris.csv')
-#     >>> parallel_coordinates(df, 'Name',
-#     >>> color=('#556270', '#4ECDC4', '#C7F464'))
-#     >>> plt.show()
-
-
-# #######################################################################
-#        GRÁFICO - COORDENADAS PARALELAS
-# #######################################################################
-# def k_cp(frame, class_column, cols=None, ax=None, color=None,
-#          use_columns=False, xticks=None, colormap=None, axvlines=True,
-#          u_legend=True, u_grid=True, _xaxis=True, _yaxis=True, one_color=False,
-#          klinewidth=1, klinecolor='black', _loc='upper right', **kwds):
 
 
 def k_cp(frame, ax, ax_conf, class_column, **kwds):
@@ -217,10 +168,6 @@ def set_figure_config(fig, fig_config):
 
 def k_parallel_coordinates(dframes, class_column, fig, ax_conf, fg_conf):
 
-    # set_figure_config(fig, fig_config)
-
-#     legend = ax_conf.legend_show
-
     # ---- cantidad de subplot necesarias - filas y columnas.
     # ---- busca el cuadrado de los dos
     s_row, s_col = square_plot(len(dframes), False)
@@ -228,17 +175,5 @@ def k_parallel_coordinates(dframes, class_column, fig, ax_conf, fg_conf):
     for i, df in enumerate(dframes):
         ax = fig.add_subplot(s_row, s_col, i + 1)
         k_cp(df, ax, ax_conf, class_column)
-
-#         k_cp(dframes[i], class_column, ax=ax, axvlines=False,
-#              u_legend=legend, u_grid=u_grid, _xaxis=_xaxis, _yaxis=_yaxis)
-# 
-#         k_cp(dframes[i], class_column, ax=ax, u_legend=legend, u_grid=False,
-#              _xaxis=False, one_color=False, _loc='upper left',
-#              _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
-# 
-#         ax = set_axes_config(ax, ax_conf)
-#         if legend:
-#             ax.legend(prop={'size': 9}, loc=ax_conf.legend_loc).get_frame() \
-#                                     .set_edgecolor('#DDDDDD')
 
     return fig
