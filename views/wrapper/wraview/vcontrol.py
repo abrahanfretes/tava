@@ -239,7 +239,7 @@ class ControlPanel(wx.Panel):
         # ---- normalización de datos
         _s = []
         if self.normalization == 0:
-            _s.append(self.rangecero_nor(df))
+            _s.append(self._nor(df))
         else:
             _s.append(df)
 
@@ -281,7 +281,7 @@ class ControlPanel(wx.Panel):
         _s = []
         if self.normalization == 0:
             for df in _v:
-                _s.append(self.rangecero_nor(df))
+                _s.append(self._nor(df))
         else:
             _s = _v
 
@@ -295,6 +295,17 @@ class ControlPanel(wx.Panel):
             _max = vals.max()
             _vnor = [(x - _min) / (_max - _min) for x in vals]
             df[cols] = _vnor
+        return df
+
+    def _nor(self, df):
+        def normalize(series):
+            a = min(series)
+            b = max(series)
+            return (series - a) / (b - a)
+        class_column = df.columns[-1]
+        class_col = df[class_column]
+        df = df.drop(class_column, axis=1).apply(normalize)
+        df[class_column] = class_col
         return df
 
     def on_generate(self, event):
