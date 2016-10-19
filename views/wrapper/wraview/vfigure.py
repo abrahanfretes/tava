@@ -140,7 +140,7 @@ class FigurePanel(wx.Panel):
             self.fig = k_radar_chart(dframes, 'Name', self.fig,
                                      self.ax_conf, self.radar_chard_con)
         elif key_figure == K_RADVIZ:
-            self.fig = k_radviz(dframes, 'Name', self.fig)
+            self.fig = k_radviz(dframes, 'Name', self.fig, self.ax_conf)
 
         self.canvas.draw()
 

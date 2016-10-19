@@ -15,27 +15,44 @@
 #                                                            ###
 # ##############################################################
 '''
-from matplotlib.figure import Figure
-from pandas.tools.plotting import radviz
 
+from pandas.tools.plotting import radviz
 from views.wrapper.wraview.vgraphic.fuse import square_plot
 
 
 # #######################################################################
 #        GRÁFICO - RadViz
 # #######################################################################
-def k_radviz(dframes, class_column='Name', fig=None,
-             subplot=False, grayscale=False, fill=False,
-             alpha=0.15, legend=True, one_d=False):
-
-    # figures
-    if fig is None:
-        fig = Figure()
+def k_radviz(dframes, class_column, fig, ax_conf):
 
     s_row, s_col = square_plot(len(dframes))
-
     for i in range(len(dframes)):
         ax = fig.add_subplot(s_row, s_col, i + 1)
         radviz(dframes[i], class_column, ax=ax)
+
+        # ---- configuración de leyenda
+        if ax_conf.legend_show:
+            _c = ax_conf.legend_edge_color
+            ax.legend(prop={'size': ax_conf.legend_size},
+                      loc=ax_conf.legend_loc).get_frame().set_edgecolor(_c)
+
+        # ---- configuración de tick - visualización, labels, colors
+
+        ax.get_xaxis().set_visible(ax_conf.x_axis_show)
+        ax.get_yaxis().set_visible(ax_conf.y_axis_show)
+        ax.tick_params(axis='x', colors=ax_conf.x_axis_color)
+        ax.tick_params(axis='y', colors=ax_conf.y_axis_color)
+
+        ax.set_xlabel(ax_conf.x_axis_label, labelpad=-1)
+        ax.xaxis.label.set_color(ax_conf.x_color_label)
+
+        ax.set_ylabel(ax_conf.y_axis_label, labelpad=-1)
+        ax.yaxis.label.set_color(ax_conf.y_color_label)
+
+        # configuración de spines
+        ax.spines['top'].set_color(ax_conf.color_top_spine)
+        ax.spines['bottom'].set_color(ax_conf.color_bottom_spine)
+        ax.spines['left'].set_color(ax_conf.color_left_spine)
+        ax.spines['right'].set_color(ax_conf.color_right_spine)
 
     return fig
