@@ -8,8 +8,8 @@
 # Ingenieria en Informática - Proyecto Final de Grado        ###
 #                                                            ###
 # Autores:                                                   ###
-#           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
 #           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
+#           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
 #                                                            ###
 # Creado:  26/8/2016                                         ###
 #                                                            ###
