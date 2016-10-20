@@ -72,3 +72,9 @@ class PropertiesHelper():
 
     def set_file_format_sep(self, new_value):
         self.set_by_key('FILE_FORMAT_SEP', str(new_value))
+
+    def get_language(self):
+        return str(self.get_by_key('LANGUAGE'))
+
+    def set_language(self, new_value):
+        self.set_by_key('LANGUAGE', str(new_value))

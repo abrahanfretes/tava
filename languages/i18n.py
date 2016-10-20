@@ -24,7 +24,7 @@ ID_EN_US_LANGUAGE = 1
 
 class I18nLocale(wx.Locale):
 
-    def __init__(self):
+    def __init__(self, langua):
         wx.Locale.__init__(self, language=wx.LANGUAGE_DEFAULT)
 
         # verificación de archivos de internacionlización
@@ -46,7 +46,10 @@ class I18nLocale(wx.Locale):
             cmd = 'msgfmt --output-file="' + en_us_mo + '" "' + en_us_po + '"'
             os.system(cmd)
 
-            self.OnEsPy()
+            if langua == 'es':
+                self.OnEsPy()
+            else:
+                self.OnEnUs()
 
     def SetCatalog(self, catalog):
         self.AddCatalog(catalog)

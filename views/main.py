@@ -92,7 +92,7 @@ class MainFrame(wx.Frame):
     def v_content(self):
 
         # configuración de lenguajes
-        self.i18n = I18nLocale()
+        self.i18n = I18nLocale(self.properties.get_language())
 
         # aui que manejará los paneles principales
         self._mgr = aui.AuiManager(self, aui.AUI_MGR_ANIMATE_FRAMES)
@@ -127,15 +127,18 @@ class MainFrame(wx.Frame):
         self._mgr.Update()
 
     def change_language(self, language):
+
         if not self.i18n.isEnUsLanguage() and language == 'en':
             self.i18n.OnEnUs()
             self.update_language()
             pub().sendMessage(T.LANGUAGE_CHANGED)
+            self.properties.set_language('en')
 
         if not self.i18n.isEsPyLanguage() and language == 'es':
             self.i18n.OnEsPy()
             self.update_language()
             pub().sendMessage(T.LANGUAGE_CHANGED)
+            self.properties.set_language('es')
 
     def update_language(self):
         self._mgr.GetPaneByName("tree_pane").Caption(L('PROJECT_EXPLORER'))
