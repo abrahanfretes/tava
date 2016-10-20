@@ -128,6 +128,27 @@ msgstr "Name error repeated, there is another project with the same name."
 msgid "NEW_PRO_HIDDEN_EXISTING_NAME"
 msgstr "Name error repeated, there is another hidden project with the same name."
 
+msgid "SEPARATOR"
+msgstr "Separator"
+
+msgid "FILES_RESULTS"
+msgstr "Files results"
+
+msgid "COMMA"
+msgstr "(comma)"
+
+msgid "SEMICOLON"
+msgstr "(semicolon)"
+
+msgid "BLANK_SPACE"
+msgstr "(blank space)"
+
+msgid "HYPHEN"
+msgstr "(hyphen)"
+
+msgid "UNDERSCORE"
+msgstr "(underscore)"
+
 # ------------------------------- AddFileDialog -------------------------------
 msgid "FILE_STATIC_LABEL"
 msgstr "Add files to the Project"

@@ -29,14 +29,6 @@ from models.mproject import ProjectM
 import wx.dataview as dv
 
 
-wildcard = "Files results |*"
-
-FILES_FORMATS = ['Von Tava', 'Separador:']
-SEPARATOR_FILE = [', (coma)', '; (punto y coma)', '  (espacio e blanco)',
-                  '- (guion medio)', '_ (guion bajo)']
-SEPARATOR_FILE_VALUE = [',', ';', ' ', '-', '_']
-
-
 class NewProject(wx.Dialog):
     def __init__(self, parent, properties, add_result=False):
         wx.Dialog.__init__(self, parent, size=(700, 630))
@@ -46,6 +38,14 @@ class NewProject(wx.Dialog):
         self.parent = parent
 
         self.properties = properties
+
+        self.wildcard = L('FILES_RESULTS') + " |*"
+
+        self.FILES_FORMATS = ['Von Tava', L('SEPARATOR') + ':']
+
+        self.SEPARATOR_FILE = [', ' + L('COMMA'), '; ' + L('SEMICOLON'), '  ' + L('BLANK_SPACE'),
+                  '- ' + L('HYPHEN'), '_ ' + L('UNDERSCORE')]
+        self.SEPARATOR_FILE_VALUE = [',', ';', ' ', '-', '_']
 
         self.existing_names = []
         self.hidden_names = []
@@ -135,8 +135,8 @@ class NewProject(wx.Dialog):
         self.radio_sep = wx.RadioButton(panel, -1, "Separador:")
         self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_sep, self.radio_sep)
         p_sep = self.properties.get_file_format_sep()
-        self.cb_sep = wx.ComboBox(panel, 500, SEPARATOR_FILE[p_sep], (90, 50),
-                                  (160, -1), SEPARATOR_FILE, wx.CB_DROPDOWN)
+        self.cb_sep = wx.ComboBox(panel, 500, self.SEPARATOR_FILE[p_sep], (90, 50),
+                                  (160, -1), self.SEPARATOR_FILE, wx.CB_DROPDOWN)
         sep_sizer = wx.BoxSizer()
         sep_sizer.Add(self.radio_sep)
         sep_sizer.Add(self.cb_sep)
@@ -200,10 +200,10 @@ class NewProject(wx.Dialog):
             self.parent.p_formate = 0
         elif self.radio_sep.GetValue():
             self.properties.set_file_format(1)
-            i_value = SEPARATOR_FILE.index(self.cb_sep.GetValue())
+            i_value = self.SEPARATOR_FILE.index(self.cb_sep.GetValue())
             self.properties.set_file_format_sep(i_value)
             self.parent.p_formate = 1
-            self.parent.p_sep = SEPARATOR_FILE_VALUE[i_value]
+            self.parent.p_sep = self.SEPARATOR_FILE_VALUE[i_value]
 
     def add_only_results(self):
         self.alert_text.SetLabel(L('ADD_FILE_RESULT_HEADER'))
@@ -316,7 +316,7 @@ class NewProject(wx.Dialog):
         last_path = self.properties.get_search_result()
         dlg = wx.FileDialog(self, message=L('ADD_FILE_DIALOG_TITLE'),
                             defaultDir=last_path,
-                            wildcard=wildcard,
+                            wildcard=self.wildcard,
                             style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR)
 
         if dlg.ShowModal() == wx.ID_OK:

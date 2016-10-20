@@ -128,6 +128,27 @@ msgstr "Error de Nombre repetido, existe otro proyecto con el mismo nombre."
 msgid "NEW_PRO_HIDDEN_EXISTING_NAME"
 msgstr "Error de Nombre repetido, existe otro proyecto oculto con el mismo nombre."
 
+msgid "SEPARATOR"
+msgstr "Separador"
+
+msgid "FILES_RESULTS"
+msgstr "Archivos de Resultados"
+
+msgid "COMMA"
+msgstr "(coma)"
+
+msgid "SEMICOLON"
+msgstr "(punto y coma)"
+
+msgid "BLANK_SPACE"
+msgstr "(espacio en blanco)"
+
+msgid "HYPHEN"
+msgstr "(guión medio)"
+
+msgid "UNDERSCORE"
+msgstr "(guión bajo)"
+
 # ------------------------------- AddFileDialog -------------------------------
 msgid "FILE_STATIC_LABEL"
 msgstr "Agregar archivos al proyecto"
