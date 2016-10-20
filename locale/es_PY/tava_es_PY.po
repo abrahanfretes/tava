@@ -72,6 +72,17 @@ msgstr "Ayuda"
 msgid "MENU_BAR_ABOUT"
 msgstr "Acerca de TAVA"
 
+msgid "MENU_ABOUT_DESCRIPTION"
+msgstr "TAVA es una herramienta que provee análisis visual
+        para resultados de Problemas de Optimización MultiObjetivos (MOPs)
+        mediante la utilización de gráficos y agrupadores."
+
+msgid "MENU_ABOUT_LICENSE"
+msgstr "TAVA es de código libre; usted puede redistribuirlo
+        y/o modificarlo bajo los términos de GNU General Public License según
+        lo publicado por la Free Software Foundation; ya sea la versión 2 de la
+        Licencia, o (a su elección) cualquier versión posterior."
+
 # ------------------------------- TavaToolBar ---------------------------------
 msgid "NEW_PROJECT"
 msgstr "Nuevo Proyecto"

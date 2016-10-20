@@ -103,15 +103,12 @@ class AboutDialog(wx.AboutDialogInfo):
         '''
         super(AboutDialog, self).__init__()
 
-        description = """ TAVA es una herramienta que provee análisis visual
-        para resultados de Probelmas de Optimización MultiObjetivos (MOPs)
-        mediante la utilización de gráficos y agrupadores."""
+        ds = L('MENU_ABOUT_DESCRIPTION')
 
-        licence = """        TAVA es free software; usted puede redistribuirlo
-        y/o modificarlo bajo los términos de GNU General Public License según
-        lo publicado por la Free Software Foundation; ya sea la versión 2 de la
-        Licencia, o (a su elección) cualquier versión posterior.
-        """
+        description = """ %(ds)""" % {'ds': ds}
+
+        lc = L('MENU_ABOUT_LICENSE')
+        licence = """        %(lc)""" % {'lc': lc}
 
         self.SetIcon(shortcut.GetIcon())
         self.SetName('TAVA')
