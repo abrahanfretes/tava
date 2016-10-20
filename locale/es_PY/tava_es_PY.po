@@ -73,15 +73,10 @@ msgid "MENU_BAR_ABOUT"
 msgstr "Acerca de TAVA"
 
 msgid "MENU_ABOUT_DESCRIPTION"
-msgstr "TAVA es una herramienta que provee análisis visual
-        para resultados de Problemas de Optimización MultiObjetivos (MOPs)
-        mediante la utilización de gráficos y agrupadores."
+msgstr "Tava es una herramienta que provee análisis visual para resultados de Problemas de Optimización MultiObjetivos (MOPs) mediante la utilización de gráficos y agrupadores."
 
 msgid "MENU_ABOUT_LICENSE"
-msgstr "TAVA es de código libre; usted puede redistribuirlo
-        y/o modificarlo bajo los términos de GNU General Public License según
-        lo publicado por la Free Software Foundation; ya sea la versión 2 de la
-        Licencia, o (a su elección) cualquier versión posterior."
+msgstr "Tava es de código libre; usted puede redistribuirlo y/o modificarlo bajo los términos de GNU General Public License según lo publicado por la Free Software Foundation; ya sea la versión 2 de la Licencia, o (a su elección) cualquier versión posterior."
 
 # ------------------------------- TavaToolBar ---------------------------------
 msgid "NEW_PROJECT"
@@ -546,11 +541,11 @@ msgstr "Valores menores"
 
 # ------------------------------- vcontrolm ----------------------------------
 
-msgid "H_EMPTY_CLUSTER_DATA"
-msgstr "Visualización de Clusters"
+#msgid "H_EMPTY_CLUSTER_DATA"
+#msgstr "Visualización de Clusters"
 
 msgid "EMPTY_CLUSTER_DATA"
-msgstr "Falta Generar Clusters\n\nDebe generar los clusters correspondientes para\nluego poder visualizarlos:\n1. Seleccione almenos un dato.\n2. Establesca cantidad de clusters.\n 3. Presione button generar cluster.\n\n            TAVA-TOOL  "
+msgstr "Falta Generar Clusters\n\nDebe generar los clusters correspondientes para\nluego poder visualizarlos:\n1. Seleccione almenos un dato.\n2. Establesca cantidad de clusters.\n3. Presione button generar cluster.\n\n            TAVA-TOOL  "
 
 msgid "EMPTY_DATA_SELECTION"
 msgstr "Selección Vacía de Datos"
@@ -571,7 +566,7 @@ msgid "H_EMPTY_CLUSTER_SELECTED"
 msgstr "Visualización de Clusters"
 
 msgid "EMPTY_CLUSTER_SELECTED"
-msgstr "Falta Seleccionar Clusters\n\n"Debe seleccionar almenos un cluster para ser \nvisualizado:\n1. Seleccionar almenos un clusters.\n2. Vuelva a intentar visualizar.\n\n            TAVA-TOOL  "
+msgstr "Falta Seleccionar Clusters\n\nDebe seleccionar almenos un cluster para ser \nvisualizado:\n1. Seleccionar almenos un clusters.\n2. Vuelva a intentar visualizar.\n\n            TAVA-TOOL  "
 
 msgid "H_EMPTY_DATA_GENERATE_CLUSTER"
 msgstr "Generación de Clusters"

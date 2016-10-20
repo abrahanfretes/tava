@@ -73,15 +73,10 @@ msgid "MENU_BAR_ABOUT"
 msgstr "About TAVA"
 
 msgid "MENU_ABOUT_DESCRIPTION"
-msgstr "TAVA is a tool that provides visual analysis
-        for results multiobjective optimization problems (MOPs)
-        using graphics and clustering"
+msgstr "Tava is a tool that provides visual analysis for results multiobjective optimization problems (MOPs) using graphics and clustering"
 
 msgid "MENU_ABOUT_LICENSE"
-msgstr "TAVA is free software; you can redistribute it
-        and / or modify it under the terms of the GNU General Public License as
-        published by the Free Software Foundation; either version 2 of the License
-        or (at your option) any later version."
+msgstr "Tava is free software; you can redistribute it and / or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License or (at your option) any later version."
 
 # ------------------------------- TavaToolBar ---------------------------------
 msgid "NEW_PROJECT"
@@ -546,11 +541,11 @@ msgstr "Smaller values"
 
 # ------------------------------- vcontrolm ----------------------------------
 
-msgid "H_EMPTY_CLUSTER_DATA"
-msgstr "Display Clusters"
+#msgid "H_EMPTY_CLUSTER_DATA"
+#msgstr "Display Clusters"
 
 msgid "EMPTY_CLUSTER_DATA"
-msgstr "Cluster generation is required\n\nYou must generate the corresponding groups to watch them:\n1. Select at least one data.\n2. Set number of clusters.\n 3. Press button to generate cluster.\n\n            TAVA-TOOL  "
+msgstr "Cluster generation is required\n\nYou must generate the corresponding groups to watch them:\n1. Select at least one data.\n2. Set number of clusters.\n3. Press button to generate cluster.\n\n            TAVA-TOOL  "
 
 msgid "EMPTY_DATA_SELECTION"
 msgstr "Empty data selection"
@@ -571,7 +566,7 @@ msgid "H_EMPTY_CLUSTER_SELECTED"
 msgstr "Display Cluster"
 
 msgid "EMPTY_CLUSTER_SELECTED"
-msgstr "Cluster selection is required\n\n"You must select at least one cluster to be \ndisplayed:\n1. Select at least one cluster.\n2. Retry display.\n\n            TAVA-TOOL  "
+msgstr "Cluster selection is required\n\nYou must select at least one cluster to be \ndisplayed:\n1. Select at least one cluster.\n2. Retry display.\n\n            TAVA-TOOL  "
 
 msgid "H_EMPTY_DATA_GENERATE_CLUSTER"
 msgstr "Generating Clusters"

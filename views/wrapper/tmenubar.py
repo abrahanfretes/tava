@@ -103,16 +103,12 @@ class AboutDialog(wx.AboutDialogInfo):
         '''
         super(AboutDialog, self).__init__()
 
-        ds = L('MENU_ABOUT_DESCRIPTION')
-
-        description = """ %(ds)""" % {'ds': ds}
-
-        lc = L('MENU_ABOUT_LICENSE')
-        licence = """        %(lc)""" % {'lc': lc}
+        description = L('MENU_ABOUT_DESCRIPTION')
+        licence = L('MENU_ABOUT_LICENSE')
 
         self.SetIcon(shortcut.GetIcon())
-        self.SetName('TAVA')
-        self.SetVersion('0.001')
+        self.SetName('Tava')
+        self.SetVersion('1.0')
         self.SetDescription(description)
         self.SetCopyright('(C) 2015 - 2016 fp-una')
         self.SetWebSite('http://www.pol.una.py')
