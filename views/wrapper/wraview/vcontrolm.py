@@ -90,8 +90,8 @@ class KMessage():
         self.parent = parent
 
         if key_message == KMSG_EMPTY_DATA_SELECTED:
-            self.h_msg = H_EMPTY_DATA_SELECTED
-            self.m_msg = EMPTY_DATA_SELECTED
+            self.h_msg = L('H_EMPTY_DATA_SELECTED')
+            self.m_msg = L('EMPTY_DATA_SELECTED')
             self.k_ico = key_ico
             self.k_but = key_button
         elif key_message == KMSG_EMPTY_CLUSTER_DATA:
@@ -100,18 +100,18 @@ class KMessage():
             self.k_ico = key_ico
             self.k_but = key_button
         elif key_message == KMSG_EMPTY_CLUSTER_SELECTED:
-            self.h_msg = H_EMPTY_CLUSTER_SELECTED
-            self.m_msg = EMPTY_CLUSTER_SELECTED
+            self.h_msg = L('H_EMPTY_CLUSTER_SELECTED')
+            self.m_msg = L('EMPTY_CLUSTER_SELECTED')
             self.k_ico = key_ico
             self.k_but = key_button
         elif key_message == KMSG_EMPTY_DATA_GENERATE_CLUSTER:
-            self.h_msg = H_EMPTY_DATA_GENERATE_CLUSTER
-            self.m_msg = EMPTY_EMPTY_DATA_GENERATE_CLUSTER
+            self.h_msg = L('H_EMPTY_DATA_GENERATE_CLUSTER')
+            self.m_msg = L('EMPTY_EMPTY_DATA_GENERATE_CLUSTER')
             self.k_ico = key_ico
             self.k_but = key_button
         elif key_message == KMSG_GENERATE_CLUSTER:
-            self.h_msg = H_GENERATE_CLUSTER
-            self.m_msg = EMPTY_GENERATE_CLUSTER
+            self.h_msg = L('H_GENERATE_CLUSTER')
+            self.m_msg = L('EMPTY_GENERATE_CLUSTER')
             self.k_ico = key_ico
             self.k_but = key_button
 

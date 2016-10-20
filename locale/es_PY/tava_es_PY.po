@@ -528,3 +528,27 @@ msgstr "Selección de datos para Visualizar"
 
 msgid "YOU_HAVE_NOT_SELECTED_ANY_OPTION"
 msgstr "No has seleccionado ninguna opción de"
+
+msgid "H_EMPTY_CLUSTER_DATA"
+msgstr "Selección Vacía de Datos"
+
+msgid "EMPTY_DATA_SELECTED"
+msgstr "Selección de datos para Visualizar.\n\nNo has seleccionado ninguna opción de \nDatos para Visualizar, checkee algunas de\nlas casillas disponibles en la parte\nsuperior derecha (Datas o Clusters).\n\n            TAVA-TOOL  "
+
+msgid "H_EMPTY_CLUSTER_SELECTED"
+msgstr "Visualización de Clusters"
+
+msgid "EMPTY_CLUSTER_SELECTED"
+msgstr "Falta Seleccionar Clusters\n\n"Debe seleccionar almenos un cluster para ser \nvisualizado:\n1. Seleccionar almenos un clusters.\n2. Vuelva a intentar visualizar.\n\n            TAVA-TOOL  "
+
+msgid "H_EMPTY_DATA_GENERATE_CLUSTER"
+msgstr "Generación de Clusters"
+
+msgid "EMPTY_EMPTY_DATA_GENERATE_CLUSTER"
+msgstr "No Contiene Datos\n\nNo tiene datos para ser agrupados. La lista\nde datos que se encuentra en la esquina superior\nderecha se encuentra vacía. Agregue datos a la Vista.\n\n            TAVA-TOOL  "
+
+msgid "H_GENERATE_CLUSTER"
+msgstr "Generación de Clusters"
+
+msgid "EMPTY_GENERATE_CLUSTER"
+msgstr "Falta Seleccionar Datos\n\nDebe seleccionar almenos un dato para ser \nagrupado. La lista de datos se encuentra en\nla parte superior derecho:\n1. Seleccionar almenos un dato.\n2. Establezca cantidad de clusters.\n3. Vuelva a intentar agrupar.\n\n            TAVA-TOOL  "

@@ -518,7 +518,7 @@ msgid "H_EMPTY_CLUSTER_DATA"
 msgstr "Display Clusters"
 
 msgid "EMPTY_CLUSTER_DATA"
-msgstr "It is required generate Clusters\n\nYou must generate the corresponding groups to watch them:\n1. Select at least one data.\n2. Set number of clusters.\n 3. Press button to generate cluster.\n\n            TAVA-TOOL  "
+msgstr "Cluster generation is required\n\nYou must generate the corresponding groups to watch them:\n1. Select at least one data.\n2. Set number of clusters.\n 3. Press button to generate cluster.\n\n            TAVA-TOOL  "
 
 msgid "EMPTY_DATA_SELECTION"
 msgstr "Empty data selection"
@@ -529,3 +529,26 @@ msgstr "Selection of data to display"
 msgid "YOU_HAVE_NOT_SELECTED_ANY_OPTION"
 msgstr "You have not selected any option of"
 
+msgid "H_EMPTY_CLUSTER_DATA"
+msgstr "Empty data selection"
+
+msgid "EMPTY_DATA_SELECTED"
+msgstr "Data selection to display.\n\nYou have not selected any option for \nDisplay Data, check some of\nthe boxes available in the upper right part\nsuperior derecha (Datas or Clusters).\n\n            TAVA-TOOL  "
+
+msgid "H_EMPTY_CLUSTER_SELECTED"
+msgstr "Display Cluster"
+
+msgid "EMPTY_CLUSTER_SELECTED"
+msgstr "Cluster selection is required\n\n"You must select at least one cluster to be \ndisplayed:\n1. Select at least one cluster.\n2. Retry display.\n\n            TAVA-TOOL  "
+
+msgid "H_EMPTY_DATA_GENERATE_CLUSTER"
+msgstr "Generating Clusters"
+
+msgid "EMPTY_EMPTY_DATA_GENERATE_CLUSTER"
+msgstr "Contains No Data\n\nIt has no data to be grouped. The list\nof data found in the upper right corner\nis empty. Add data to View.\n\n            TAVA-TOOL  "
+
+msgid "H_GENERATE_CLUSTER"
+msgstr "Generating Clusters"
+
+msgid "EMPTY_GENERATE_CLUSTER"
+msgstr "Cluster selection is required\n\nYou must select at least one cluster to be \ngrouped. The list of data found in\nthe upper right corner:\n1. Select at least one data.\n2. Set number of clusters.\n3. Retry group.\n\n            TAVA-TOOL  "
