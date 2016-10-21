@@ -323,8 +323,17 @@ msgstr "Aceptar"
 msgid "CANCEL"
 msgstr "Cancelar"
 
-msgid "NORMALIZED"
+msgid "NORMALIZED_FULL"
 msgstr "Normalizado"
+
+msgid "NORMALIZED_CLUSTER"
+msgstr "Por Cluster"
+
+msgid "NORMALIZED_SELECTED"
+msgstr "Por Seleccionados"
+
+msgid "DATA_CRUDE"
+msgstr "Dato Crudo"
 
 msgid "DATA"
 msgstr "Datos"

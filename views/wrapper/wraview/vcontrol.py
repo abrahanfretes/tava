@@ -129,6 +129,8 @@ class ControlPanel(wx.Panel):
         menu = wx.Menu()
         menu.Append(0, self.NORMA_METO[0])
         menu.Append(1, self.NORMA_METO[1])
+        menu.Append(2, self.NORMA_METO[2])
+        menu.Append(3, self.NORMA_METO[3])
         self.tbtn0.SetMenu(menu)
         self.tbtn0.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
@@ -141,8 +143,8 @@ class ControlPanel(wx.Panel):
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
         tbtna = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[0], None,
-                                    style=platebtn.PB_STYLE_DEFAULT |
-                                    platebtn.PB_STYLE_NOBG)
+                                     style=platebtn.PB_STYLE_DEFAULT |
+                                     platebtn.PB_STYLE_NOBG)
         tbtna.SetPressColor(wx.Colour(255, 165, 0))
         tbtna.SetLabelColor(wx.Colour(0, 0, 255))
         tbtna.Bind(wx.EVT_BUTTON, self.on_generate)
@@ -200,6 +202,7 @@ class ControlPanel(wx.Panel):
         self.tbtn0.SetLabel(self.NORMA_METO[self.normalization])
         self.tbtn0.GetMenu().SetLabel(0, self.NORMA_METO[0])
         self.tbtn0.GetMenu().SetLabel(1, self.NORMA_METO[1])
+        self.tbtn0.GetMenu().SetLabel(1, self.NORMA_METO[2])
         self.tbtn0.Refresh()
 
         self.tbtna.SetLabel(self.ANALISIS_LABEL[0])
@@ -210,7 +213,8 @@ class ControlPanel(wx.Panel):
         self.tbtnc.Refresh()
 
     def init_arrays(self):
-        self.NORMA_METO = [L('NORMALIZED'), 'Natural']
+        self.NORMA_METO = [L('NORMALIZED_FULL'), L('NORMALIZED_CLUSTER'),
+                           L('NORMALIZED_SELECTED'), L('DATA_CRUDE')]
         self.DATA_SELEC = ['Cluster', L('DATA')]
         self.ANALISIS_LABEL = [L('GENERATE'), L('SELECT'), L('VISUALIZE')]
 
@@ -252,41 +256,114 @@ class ControlPanel(wx.Panel):
         if not self.clusters_seccion.contain_elemens():
             KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_DATA).kshow()
             return
-
         if not self.clusters_seccion.checked_elemens():
             KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_SELECTED).kshow()
             return
-        # ---- selección de clusters checked
+
+        # ---- selección de clusters a visualizar
         shape = self.clusters_seccion.g_for_view()
         s_clusters = shape.g_checkeds()
 
-        # Se establece el modo de visualizacion para los clusters.
+        # ---- se obtienen los datos/normalizado
         _v = []
+        crude = False if self.normalization == 0 else True
         if self.visualization_mode == V_M_CLUSTER:
-            dd = shape.g_data_for_fig(s_clusters, self.legends_cluster,
-                                      self.clus_one_axe)
-            _v = dd
-        if self.visualization_mode == V_M_SUMMARY:
-            dr = shape.g_resume_for_fig(s_clusters, self.legends_summary,
-                                        self.summ_one_axe)
-            _v = dr
-        if self.visualization_mode == V_M_CLUSTER_SUMMARY:
-            dcr = shape.g_data_and_resume_for_fig(s_clusters,
-                                                  self.legends_cluster,
-                                                  self.legends_summary,
-                                                  self.clus_summ_axs)
-            _v = dcr
+            _v = shape.g_data_for_fig(s_clusters, self.legends_cluster, crude)
 
-        # ---- normalización de datos
-        _s = []
-        if self.normalization == 0:
-            for df in _v:
-                _s.append(self._nor(df))
-        else:
-            _s = _v
+            # ---- si se trae crudo
+            if crude:
+                if self.normalization == 1:
+                    _v = self._nor_by_cluster(_v)
+                elif self.normalization == 2:
+                    _v = self._nor_by_selected(_v, shape.column_name)
+
+            if self.clus_one_axe:
+                _v = [pd.concat(_v)]
+
+        if self.visualization_mode == V_M_SUMMARY:
+            _ls = self.legends_summary
+            _v = shape.g_resume_for_fig(s_clusters, _ls, crude)
+
+            if self.summ_one_axe:
+                _v = [pd.concat(_v)]
+
+        if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+
+            # ---- todo en un axe
+            _c, _r = shape.g_data_by_dr(s_clusters, self.legends_cluster,
+                                        self.legends_summary, crude)
+            if self.normalization == 1:
+                # ----  normalizar cada cluster y recalcular resumen
+                _c, _r = self._nor_by_cr_one(_c, _r, shape.column_name)
+
+            elif self.normalization == 2:
+                _c, _r = self._nor_by_cr_two(_c, _r, shape.column_name)
+
+            # ---- mescla de datos de acuerdo a la opción seleccionada
+            if self.clus_summ_axs[0]:
+                for i, cr in enumerate(_c):
+                    _v.append(cr)
+                    _v.append(_r[i])
+                _v = [pd.concat(_v)]
+
+            if self.clus_summ_axs[1]:
+                for i, cr in enumerate(_c):
+                    _v.append(cr)
+                    _v.append(_r[i])
+
+            if self.clus_summ_axs[2]:
+                for i, cr in enumerate(_c):
+                    _v.append(pd.concat([cr, _r[i]]))
+
+            if self.clus_summ_axs[3]:
+                _v.append(pd.concat(_c))
+                _v.append(pd.concat(_r))
 
         # ---- update figure
-        self.kfigure.kdraw(_s)
+        self.kfigure.kdraw(_v)
+
+    def _nor_by_cr_one(self, v, r, column_name):
+        _r = []
+        _v = self._nor_by_cluster(v)
+        for i, df in enumerate(_v):
+            leg = r[i][column_name].drop_duplicates()[0]
+            _dnr = self.g_resume_by_df(df, leg, column_name)
+            _r.append(_dnr)
+
+        return _v, _r
+
+    def _nor_by_cr_two(self, v, r, column_name):
+        _r = []
+        _v = self._nor_by_selected(v, column_name)
+        for i, df in enumerate(_v):
+            leg = r[i][column_name].drop_duplicates()[0]
+            _dnr = self.g_resume_by_df(df, leg, column_name)
+            _r.append(_dnr)
+        return _v, _r
+
+    def g_resume_by_df(self, df, legend, column_name):
+
+        serie_mean = df[df.columns[:-1]].mean()
+        df_mean = serie_mean.to_frame()
+        df_mean = df_mean.transpose()
+        df_mean[column_name] = legend
+        return df_mean
+
+    def _nor_by_cluster(self, v):
+        _v = []
+        for df in v:
+            _v.append(self._nor(df))
+        return _v
+
+    def _nor_by_selected(self, v, column_name):
+        _v = []
+        df = pd.concat(v)
+        df = self._nor(df)
+
+        df_group = df.groupby(column_name)
+        for _, group in df_group:
+            _v.append(group)
+        return _v
 
     def rangecero_nor(self, df):
         for cols in df.columns[:-1]:

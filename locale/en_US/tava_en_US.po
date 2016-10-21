@@ -323,8 +323,17 @@ msgstr "OK"
 msgid "CANCEL"
 msgstr "Cancel"
 
-msgid "NORMALIZED"
+msgid "NORMALIZED_FULL"
 msgstr "Normalized"
+
+msgid "NORMALIZED_CLUSTER"
+msgstr "By Cluster"
+
+msgid "NORMALIZED_SELECTED"
+msgstr "By Selected"
+
+msgid "DATA_CRUDE"
+msgstr "Raw Data"
 
 msgid "DATA"
 msgstr "Data"
