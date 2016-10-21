@@ -107,6 +107,14 @@ class ControlPanel(wx.Panel):
         self.data_seccion = DataSeccion(self, ksub_blocks)
 
         # ---- datos - normalización de datos
+        grid_radio = wx.FlexGridSizer(cols=2)
+        radio1 = wx.RadioButton(self, -1, "Cluster", style=wx.RB_GROUP)
+        radio2 = wx.RadioButton(self, -1, "Data    ")
+        grid_radio.Add(radio1, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid_radio.Add(radio2, 1, wx.ALIGN_LEFT | wx.ALL, 5)
+        radio1.Bind(wx.EVT_RADIOBUTTON, self.on_check_cluster)
+        radio2.Bind(wx.EVT_RADIOBUTTON, self.on_check_data)
+
 
         grid = wx.FlexGridSizer(cols=2)
         self.tbtn = platebtn.PlateButton(self, -1,
@@ -127,10 +135,26 @@ class ControlPanel(wx.Panel):
                                           style=platebtn.PB_STYLE_SQUARE |
                                           platebtn.PB_STYLE_NOBG)
         menu = wx.Menu()
-        menu.Append(0, self.NORMA_METO[0])
-        menu.Append(1, self.NORMA_METO[1])
-        menu.Append(2, self.NORMA_METO[2])
-        menu.Append(3, self.NORMA_METO[3])
+
+#         __init__(self, Menu parentMenu=None, int id=ID_SEPARATOR, String text=EmptyString, 
+#             String help=EmptyString, int kind=ITEM_NORMAL, 
+#             Menu subMenu=None) -> MenuItem
+
+        m_n1 = wx.MenuItem(menu, 0, self.NORMA_METO[0], self.NORMA_METO[0])
+        m_n2 = wx.MenuItem(menu, 1, self.NORMA_METO[1], self.NORMA_METO[1])
+        m_n3 = wx.MenuItem(menu, 2, self.NORMA_METO[2], self.NORMA_METO[2])
+        m_n4 = wx.MenuItem(menu, 3, self.NORMA_METO[3], self.NORMA_METO[3])
+
+        menu.AppendItem(m_n1)
+        menu.AppendItem(m_n2)
+        menu.AppendItem(m_n3)
+        menu.AppendItem(m_n4)
+
+#         menu.Append(0, self.NORMA_METO[0])
+#         menu.Append(1, self.NORMA_METO[1])
+#         menu.Append(2, self.NORMA_METO[2])
+#         menu.Append(3, self.NORMA_METO[3])
+
         self.tbtn0.SetMenu(menu)
         self.tbtn0.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtn0.Bind(wx.EVT_MENU, self.on_nor_menu)
@@ -183,6 +207,9 @@ class ControlPanel(wx.Panel):
         self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
 
+        self.sizer.Add(grid_radio, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+                       wx.ALIGN_CENTER_HORIZONTAL, 2)
+
         self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
@@ -191,6 +218,27 @@ class ControlPanel(wx.Panel):
 
         self.SetSizer(self.sizer)
         self.Fit()
+
+    def on_check_cluster(self, event):
+        self.sc_count_clusters.Enable()
+        self.tbtna.Enable()
+        self.tbtnb.Enable()
+        self.tbtnc.Enable()
+        self.tbtna.SetLabelColor(wx.Colour(0, 0, 255))
+        self.tbtnb.SetLabelColor(wx.Colour(0, 0, 255))
+        self.tbtnc.SetLabelColor(wx.Colour(0, 0, 255))
+
+    def on_check_data(self, event):
+        self.sc_count_clusters.Disable()
+        self.tbtna.SetLabelColor(wx.Colour(191, 191, 191))
+        self.tbtnb.SetLabelColor(wx.Colour(191, 191, 191))
+        self.tbtnc.SetLabelColor(wx.Colour(191, 191, 191))
+        self.tbtna.Disable()
+        self.tbtnb.Disable()
+        self.tbtnc.Disable()
+
+        self.tbtn0.GetMenu().SetLabel(0, self.NORMA_METO[0])
+
 
     def update_language(self, msg):
         self.init_arrays()
@@ -202,7 +250,8 @@ class ControlPanel(wx.Panel):
         self.tbtn0.SetLabel(self.NORMA_METO[self.normalization])
         self.tbtn0.GetMenu().SetLabel(0, self.NORMA_METO[0])
         self.tbtn0.GetMenu().SetLabel(1, self.NORMA_METO[1])
-        self.tbtn0.GetMenu().SetLabel(1, self.NORMA_METO[2])
+        self.tbtn0.GetMenu().SetLabel(2, self.NORMA_METO[2])
+        self.tbtn0.GetMenu().SetLabel(3, self.NORMA_METO[3])
         self.tbtn0.Refresh()
 
         self.tbtna.SetLabel(self.ANALISIS_LABEL[0])
