@@ -281,8 +281,9 @@ class Shape():
 
         return _clusters
 
-    def g_data_by_dr(self, s_clusters, legends_cluster, legends_summary,
-                     clus_summ_axs, crude=True):
+    def g_data_and_resume_one_for_fig(self, s_clusters, legends_cluster,
+                                      legends_summary, clus_summ_axs,
+                                      crude=True):
         if s_clusters == []:
             return pd.DataFrame()
         _clusters = []
@@ -349,8 +350,9 @@ class Shape():
         if clus_summ_axs[1]:
             return _clusters
 
-    def g_data_and_resume_one_for_fig(self, s_clusters, legends_cluster,
-                                      legends_summary, crude=True):
+    def g_data_by_dr(self, s_clusters, legends_cluster,
+                     legends_summary, crude=True):
+
         if s_clusters == []:
             return pd.DataFrame()
 
