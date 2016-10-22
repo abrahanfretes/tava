@@ -23,6 +23,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from wx import GetTranslation as L
 import wx
 from wx.lib.pubsub import Publisher as pub
+import threading
 
 from imgs.ifigure import settings_fig, play_fig
 from languages import topic as T
@@ -134,24 +135,23 @@ class FigurePanel(wx.Panel):
                           horizontalalignment='center',
                           verticalalignment='center')
 
+    def draw_graphic(self, dframes):
+        key_figure = self.g_figure()
+        if key_figure == K_PARALLEL_COORDENATE:
+            return k_parallel_coordinates(dframes, 'Name', self.fig,
+                self.ax_conf, self.fig_config)
+        elif key_figure == K_RADAR_CHART_POLYGON:
+            return k_radar_chart(dframes, 'Name', self.fig, self.ax_conf,
+                                     self.radar_chard_con)
+        elif key_figure == K_RADVIZ:
+            return k_radviz(dframes, 'Name', self.fig, self.ax_conf)
+
     def kdraw(self, dframes):
 
-        self.dframes = dframes
-        key_figure = self.g_figure()
-        self.key_figure = key_figure
-        # actualización de figura
         self.fig.clear()
-
-        if key_figure == K_PARALLEL_COORDENATE:
-            self.fig = k_parallel_coordinates(dframes, 'Name', self.fig,
-                                              self.ax_conf, self.fig_config)
-        elif key_figure == K_RADAR_CHART_POLYGON:
-            self.fig = k_radar_chart(dframes, 'Name', self.fig,
-                                     self.ax_conf, self.radar_chard_con)
-        elif key_figure == K_RADVIZ:
-            self.fig = k_radviz(dframes, 'Name', self.fig, self.ax_conf)
-
-        self.canvas.draw()
+        self.start_busy()
+        task = DrawThread(self, dframes)
+        task.start()
 
     def kdraw_one(self, list_df, key_figure=1):
         class_column = 'Name'
@@ -238,3 +238,42 @@ class FigurePanel(wx.Panel):
         self.ch_graph.SetToolTipString(L('SELECT_A_GRAPHIC'))
         self.b_setting.SetToolTipString(L('FIGURE_CONF'))
         self.b_play.SetToolTipString(L('VISUALIZE_DATE_CLUSTER'))
+
+    def start_busy(self):
+        self.timer.Start(100)
+        self.prog.Show()
+        self.sizer_tool.Layout()
+        self.b_play.Disable()
+        self.toolbar.Disable()
+        self.b_setting.Disable()
+        self.ch_graph.Disable()
+
+    def stop_busy(self):
+        self.timer.Stop()
+        self.prog.Hide()
+        self.prog.SetValue(0)
+        self.sizer_tool.Layout()
+        self.b_play.Enable()
+        self.toolbar.Enable()
+        self.b_setting.Enable()
+        self.ch_graph.Enable()
+
+    def canvas_draw(self):
+        self.canvas.draw()
+
+    def set_fig(self, fig):
+        self.fig = fig
+
+
+class DrawThread(threading.Thread):
+    def __init__(self, panel, dframes):
+        super(DrawThread, self).__init__()
+        # Attributes
+        self.panel = panel
+        self.dframes = dframes
+
+    def run(self):
+        fig = self.panel.draw_graphic(self.dframes)
+        wx.CallAfter(self.panel.stop_busy)
+        wx.CallAfter(self.panel.set_fig, fig)
+        wx.CallAfter(self.panel.canvas_draw)

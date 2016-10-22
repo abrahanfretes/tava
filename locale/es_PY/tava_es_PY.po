@@ -568,6 +568,9 @@ msgstr "No has seleccionado ninguna opción de"
 msgid "H_EMPTY_CLUSTER_DATA"
 msgstr "Selección Vacía de Datos"
 
+msgid "H_EMPTY_DATA_SELECTED"
+msgstr "Selección Vacía de Datos"
+
 msgid "EMPTY_DATA_SELECTED"
 msgstr "Selección de datos para Visualizar.\n\nNo has seleccionado ninguna opción de \nDatos para Visualizar, checkee algunas de\nlas casillas disponibles en la parte\nsuperior derecha (Datas o Clusters).\n\n            TAVA-TOOL  "
 

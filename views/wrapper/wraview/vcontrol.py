@@ -529,9 +529,7 @@ class ControlPanel(wx.Panel):
         L('EXIT_TAVA')
 
     def start_busy(self):
-        self.kfigure.timer.Start(100)
-        self.kfigure.prog.Show()
-        self.kfigure.sizer_tool.Layout()
+        self.kfigure.start_busy()
         self.tbtna.SetLabelColor(wx.Colour(191, 191, 191))
         self.tbtna.Disable()
         self.tbtnb.SetLabelColor(wx.Colour(191, 191, 191))
@@ -539,10 +537,7 @@ class ControlPanel(wx.Panel):
         self.sc_count_clusters.Disable()
 
     def stop_busy(self):
-        self.kfigure.timer.Stop()
-        self.kfigure.prog.Hide()
-        self.kfigure.sizer_tool.Layout()
-        self.kfigure.prog.SetValue(0)
+        self.kfigure.stop_busy()
         self.tbtna.Enable()
         self.tbtna.SetLabelColor(wx.Colour(0, 0, 255))
         self.tbtnb.Enable()
