@@ -37,6 +37,7 @@ import wx.lib.agw.aui as aui
 from wx import GetTranslation as L
 from wx.lib.pubsub import Publisher as pub
 from languages import topic as T
+import threading
 
 K_MANY_PAGE = 0
 K_3D_PAGE = 1
@@ -428,8 +429,12 @@ class ControlPanel(wx.Panel):
         if not self.data_seccion.checked_elemens():
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
-        self.clusters_seccion.generate(self.sc_count_clusters.GetValue(),
-                                       self.normalization)
+
+        dfpopulation = self.clusters_seccion.get_dfpopulation()
+
+        self.start_busy()
+        task = GenerateClusterThread(self, dfpopulation)
+        task.start()
 
     def on_filter(self, event):
 
@@ -478,25 +483,11 @@ class ControlPanel(wx.Panel):
 
             self.clusters_seccion.more_representative(_max, _ten - _min)
 
-#             # ---- seleccionar los menos representativos
-#             _ten = self.data_selected.count_tendency
-#             _min = self.data_selected.less_repre
-#             self.clusters_seccion.less_representative(_ten - _min)
-
         if self.data_selected.option == 1:
             # seleccionar los menos representativos
             _o_max = self.data_selected.max_objetives_use
             _o_min = self.data_selected.min_objetives_use
             self.clusters_seccion.max_min_objective(_o_max, _o_min)
-#             # seleccionar los menos representativos
-#             _ten = self.data_selected.count_tendency
-#             _min = self.data_selected.less_repre
-#             self.clusters_seccion.less_representative(_ten - _min)
-#         if self.data_selected.option == 2:
-#             # seleccionar los menos representativos
-#             _o_max = self.data_selected.max_objetives_use
-#             _o_min = self.data_selected.min_objetives_use
-#             self.clusters_seccion.max_min_objective(_o_max, _o_min)
 
     def on_config(self, event):
         # ---- controlar valores consistentes para clusters
@@ -537,6 +528,42 @@ class ControlPanel(wx.Panel):
             return L('EXIT_TAVA')
         L('EXIT_TAVA')
 
+    def start_busy(self):
+        self.kfigure.timer.Start(100)
+        self.kfigure.prog.Show()
+        self.kfigure.sizer_tool.Layout()
+        self.tbtna.SetLabelColor(wx.Colour(191, 191, 191))
+        self.tbtna.Disable()
+        self.tbtnb.SetLabelColor(wx.Colour(191, 191, 191))
+        self.tbtnb.Disable()
+        self.sc_count_clusters.Disable()
+
+    def stop_busy(self):
+        self.kfigure.timer.Stop()
+        self.kfigure.prog.Hide()
+        self.kfigure.sizer_tool.Layout()
+        self.kfigure.prog.SetValue(0)
+        self.tbtna.Enable()
+        self.tbtna.SetLabelColor(wx.Colour(0, 0, 255))
+        self.tbtnb.Enable()
+        self.tbtnb.SetLabelColor(wx.Colour(0, 0, 255))
+        self.sc_count_clusters.Enable()
+        self.clusters_seccion.update_list()
+
+
+class GenerateClusterThread(threading.Thread):
+    def __init__(self, panel, dfpopulation):
+        super(GenerateClusterThread, self).__init__()
+        # Attributes
+        self.panel = panel
+        self.dfpopulation = dfpopulation
+
+    def run(self):
+        self.panel.clusters_seccion.generate_clusters(self.dfpopulation,
+                                       self.panel.sc_count_clusters.GetValue(),
+                                       self.panel.normalization)
+        wx.CallAfter(self.panel.stop_busy)
+
 
 # -------------------                                  ------------------------
 # -------------------                                  ------------------------
@@ -575,26 +602,30 @@ class ClusterSeccion(wx.Panel):
         self.shape.cluster_uncheckeds = position_unchecked
         return self.shape
 
-    def generate(self, clus, nor):
+    def get_dfpopulation(self):
+        # ----- bloques marcados para generar clusters
+        blocks_checkeds = self.parent.data_seccion.get_checkeds_for_cluster()
+        self.row_index = []
+        # ----- mezclar bloques marcados para crear un solo bloques
+        blocks_checkeds_merge = []
+        for _key, data in blocks_checkeds.iteritems():
+            blocks_checkeds_merge.append(data[1].dframe)
+
+        df_population = pd.concat(blocks_checkeds_merge)
+        return df_population
+
+    def generate_clusters(self, df_population, clus, nor):
+        # ---- generar clusters
+        self.shape = Shape(df_population, clus=clus, nor=nor)
+
+    def update_list(self):
         _tit = '- '
 
         # ----- limpiar clusters anteriores
         self.list_control.DeleteAllItems()
 
-        # ----- bloques marcados para generar clusters
-        blocks_checkeds = self.parent.data_seccion.get_checkeds_for_cluster()
-        self.row_index = []
-
-        # ----- mezclar bloques marcados para crear un solo bloques
-        blocks_checkeds_merge = []
-        for _key, data in blocks_checkeds.iteritems():
-            blocks_checkeds_merge.append(data[1].dframe)
-        df_population = pd.concat(blocks_checkeds_merge)
         # kblocks_two[0] = ('', KBlock('0', df_merge))
         _tit = ''
-
-        # ---- generar clusters
-        self.shape = Shape(df_population, clus=clus, nor=nor)
 
         # ---- agregar clusters a la vista
         for i, c in enumerate(self.shape.clusters):

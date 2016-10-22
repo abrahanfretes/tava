@@ -75,33 +75,42 @@ class FigurePanel(wx.Panel):
         self.radar_chard_con = RadarChadConfig()
 
         # ---- toolbar
-        sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer_tool = wx.BoxSizer(wx.HORIZONTAL)
         _bitmap = play_fig.GetBitmap()
         self.b_play = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
-        sizer_tool.Add(self.b_play, flag=wx.ALIGN_CENTER_VERTICAL)
+        self.sizer_tool.Add(self.b_play, flag=wx.ALIGN_CENTER_VERTICAL)
         self.b_play.Bind(wx.EVT_BUTTON, self.on_play)
         self.b_play.SetToolTipString(L('VISUALIZE_DATE_CLUSTER'))
         _bitmap = settings_fig.GetBitmap()
         self.b_setting = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
-        sizer_tool.Add(self.b_setting, flag=wx.ALIGN_CENTER_VERTICAL)
+        self.sizer_tool.Add(self.b_setting, flag=wx.ALIGN_CENTER_VERTICAL)
         self.b_setting.Bind(wx.EVT_BUTTON, self.on_config)
         self.b_setting.SetToolTipString(L('FIGURE_CONF'))
 
         self.toolbar = Toolbar(self.canvas)
         self.toolbar.Realize()
         self.toolbar.SetBackgroundColour('#DCE5EE')
-        sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
+        self.sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
 
         choice_grafic = self.get_choice_grafic()
-        sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
+        self.sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
+
+        self.prog = wx.Gauge(self, size=(150, 15))
+        self.sizer_tool.Add(self.prog, 0, wx.ALIGN_CENTER_VERTICAL)
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.on_pulse, self.timer)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(sizer_tool, 0, wx.EXPAND)
+        self.sizer.Add(self.sizer_tool, 0, wx.EXPAND)
         self.sizer.Add(self.canvas, 1, wx.EXPAND)
 
         self.SetSizer(self.sizer)
-        self.Fit()
+#         self.Fit()
+        self.prog.Hide()
         self._welcome()
+
+    def on_pulse(self, event):
+        self.prog.Pulse()
 
     def _welcome(self):
         Axes3D(self.fig)
