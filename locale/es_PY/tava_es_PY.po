@@ -324,7 +324,7 @@ msgid "CANCEL"
 msgstr "Cancelar"
 
 msgid "NORMALIZED_FULL"
-msgstr "Normalizado"
+msgstr "Normalizado          "
 
 msgid "NORMALIZED_CLUSTER"
 msgstr "Por Cluster"
