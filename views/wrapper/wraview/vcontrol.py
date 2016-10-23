@@ -554,9 +554,10 @@ class GenerateClusterThread(threading.Thread):
         self.dfpopulation = dfpopulation
 
     def run(self):
-        self.panel.clusters_seccion.generate_clusters(self.dfpopulation,
-                                       self.panel.sc_count_clusters.GetValue(),
-                                       self.panel.normalization)
+        _r = self.panel.clusters_seccion
+        _r.generate_clusters(self.dfpopulation,
+                             self.panel.sc_count_clusters.GetValue(),
+                             self.panel.normalization)
         wx.CallAfter(self.panel.stop_busy)
 
 
@@ -612,6 +613,7 @@ class ClusterSeccion(wx.Panel):
     def generate_clusters(self, df_population, clus, nor):
         # ---- generar clusters
         self.shape = Shape(df_population, clus=clus, nor=nor)
+        #self.tkmeans = Tkmeans(df_population, clus=clus, nor=nor)
 
     def update_list(self):
         _tit = '- '

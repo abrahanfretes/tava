@@ -402,13 +402,13 @@ class Cluster():
     full_nor = None
     df_resume_nor = None
 
-    def __init__(self, name, shape, count, df_value, all_count):
+    def __init__(self, name, shape, count, df_value, all_count, resume=None):
         self.name = name
         self.shape = shape
         self.count = count
         self.df_value = df_value
         self.all_count = all_count
-        self.df_resume = self.g_resume(df_value, shape)
+        self.df_resume = self.g_resume(df_value, shape, resume)
         self.complete_max_min()
 
     def complete_max_min(self):
@@ -431,12 +431,16 @@ class Cluster():
         _por = self.g_percent(total)
         return str(round(_por, 3)) + '%'
 
-    def g_resume(self, df, shape):
+    def g_resume(self, df, shape, resume=None):
 
-        serie_mean = df[df.columns[:-1]].mean()
-        df_mean = serie_mean.to_frame()
-        df_mean = df_mean.transpose()
-        df_mean[self.column_name] = shape
+        if resume is None:
+            serie_mean = df[df.columns[:-1]].mean()
+            df_mean = serie_mean.to_frame()
+            df_mean = df_mean.transpose()
+            df_mean[self.column_name] = shape
+            return df_mean
+
+        df_mean = pd.DataFrame([resume], columns=df.columns)
         return df_mean
 
     def g_legend(self, legends, legends_condition, repeat=False):
@@ -460,7 +464,7 @@ class Cluster():
         if legends_condition[3]:
             if _legend != "":
                 _legend = _legend + ' - '
-            _legend = _legend + self.shape
+            _legend = _legend + str(self.shape)
 
         if not repeat:
             while _legend in legends:
