@@ -41,6 +41,9 @@ msgstr "Salir de TAVA?"
 msgid "EXIT_TAVA_HEADER"
 msgstr "Pregunta"
 
+msgid "STATUS_WELCOME_MSG"
+msgstr "Bienvenido a TAVA!"
+
 # ------------------------------- TavaMenuBar ---------------------------------
 msgid "MENU_BAR_FILE"
 msgstr "Archivo"

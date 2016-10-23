@@ -35,6 +35,7 @@ from views.wrapper.ttoolbar import TToolBar
 from views.wrapper.vdialog.vproject import NewProject, UnhideProject, \
     ResultErrors
 from views.wrapper.vdialog.vview import ViewsTava
+import EnhancedStatusBar as ESB
 
 
 class MainFrame(wx.Frame):
@@ -54,6 +55,10 @@ class MainFrame(wx.Frame):
 
         # ---- project
         pub().subscribe(self.unhide_project, T.PREUNHIDE_PROJECT)
+
+        # ---- statusbar
+        pub().subscribe(self.start_busy, T.START_BUSY)
+        pub().subscribe(self.stop_busy, T.STOP_BUSY)
 
         # ---- properties helper
         self.properties = PropertiesHelper()
@@ -101,8 +106,43 @@ class MainFrame(wx.Frame):
         self.menu_bar = TMenuBar(self)
         self.SetMenuBar(self.menu_bar)
 
+        self.set_status_bar()
+
         self.build_panels()
-        pass
+
+        self.Bind(wx.EVT_SIZE, self.on_resize_window)
+
+    def set_status_bar(self):
+        self.statusbar = ESB.EnhancedStatusBar(self, -1)
+        self.statusbar.SetFieldsCount(2)
+        self.SetStatusBar(self.statusbar)
+        self.statusbar.SetStatusWidths([-1, 150])
+        self.statusBarText = wx.StaticText(self.statusbar, -1, "   " +
+                                   L('STATUS_WELCOME_MSG'))
+        self.statusbar.AddWidget(self.statusBarText,
+                                 horizontalalignment=ESB.ESB_ALIGN_LEFT, pos=0)
+        self.prog = wx.Gauge(self.statusbar, size=(125, 10))
+        self.statusbar.AddWidget(self.prog, pos=1)
+        self.prog.Hide()
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.on_pulse, self.timer)
+
+    def on_pulse(self, event):
+        self.prog.Pulse()
+
+    def start_busy(self, msg):
+        self.timer.Start(100)
+        self.prog.Show()
+
+    def stop_busy(self, msg):
+        self.timer.Stop()
+        self.prog.Hide()
+
+    def on_resize_window(self, event):
+        self.prog = wx.Gauge(self.statusbar, size=(125, 10))
+        self.statusbar.AddWidget(self.prog, pos=1)
+        self.prog.Hide()
+        event.Skip()
 
     def build_panels(self):
 
@@ -145,6 +185,7 @@ class MainFrame(wx.Frame):
         self._mgr.RefreshCaptions()
         self.menu_bar.SetLabelsLanguages()
         self.ttoolbar.SetLabelsLanguages()
+        self.statusBarText.SetLabel("   " + L('STATUS_WELCOME_MSG'))
 
     # ------------- funciones logicas ---------------------
 

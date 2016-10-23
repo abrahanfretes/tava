@@ -131,3 +131,11 @@ OPEN_RESULT_METRIC = 'OPEN.RESULT_METRIC'
 # Send = pmetric->MainPanelPresenter
 # Subscribe = ptree->TavaTreeP
 ADD_RESULT_METRIC_IN_TREE = 'ADD_IN_TREE.RESULT_METRIC'
+
+# Send = vcontrol -> ControlPanel
+# Subscribe = main->MainFrame
+START_BUSY = 'START_BUSY'
+
+# Send = vcontrol -> ControlPanel, vfigure->FigurePanel
+# Subscribe = main->MainFrame
+STOP_BUSY = 'STOP_BUSY'

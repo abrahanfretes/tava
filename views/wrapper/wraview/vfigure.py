@@ -96,22 +96,13 @@ class FigurePanel(wx.Panel):
         choice_grafic = self.get_choice_grafic()
         self.sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
 
-        self.prog = wx.Gauge(self, size=(150, 15))
-        self.sizer_tool.Add(self.prog, 0, wx.ALIGN_CENTER_VERTICAL)
-        self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.on_pulse, self.timer)
-
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.sizer_tool, 0, wx.EXPAND)
         self.sizer.Add(self.canvas, 1, wx.EXPAND)
 
         self.SetSizer(self.sizer)
-#         self.Fit()
-        self.prog.Hide()
+        self.Fit()
         self._welcome()
-
-    def on_pulse(self, event):
-        self.prog.Pulse()
 
     def _welcome(self):
         Axes3D(self.fig)
@@ -240,19 +231,14 @@ class FigurePanel(wx.Panel):
         self.b_play.SetToolTipString(L('VISUALIZE_DATE_CLUSTER'))
 
     def start_busy(self):
-        self.timer.Start(100)
-        self.prog.Show()
-        self.sizer_tool.Layout()
+        pub().sendMessage(T.START_BUSY)
         self.b_play.Disable()
         self.toolbar.Disable()
         self.b_setting.Disable()
         self.ch_graph.Disable()
 
     def stop_busy(self):
-        self.timer.Stop()
-        self.prog.Hide()
-        self.prog.SetValue(0)
-        self.sizer_tool.Layout()
+        pub().sendMessage(T.STOP_BUSY)
         self.b_play.Enable()
         self.toolbar.Enable()
         self.b_setting.Enable()
