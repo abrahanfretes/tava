@@ -513,21 +513,6 @@ class ControlPanel(wx.Panel):
             self.tbtn0.SetLabel(label)
             self.normalization = self.NORMA_METO.index(label)
 
-    def g_label_nor(self, id_nor):
-        if id_nor == 0:
-            return L('EXIT_TAVA')
-        L('EXIT_TAVA')
-
-    def g_label_data(self, id_nor):
-        if id_nor == 0:
-            return L('EXIT_TAVA')
-        L('EXIT_TAVA')
-
-    def g_label_analisis(self, id_nor):
-        if id_nor == 0:
-            return L('EXIT_TAVA')
-        L('EXIT_TAVA')
-
     def start_busy(self):
         pub().sendMessage(T.START_BUSY)
         self.tbtna.SetLabelColor(wx.Colour(191, 191, 191))
@@ -554,10 +539,9 @@ class GenerateClusterThread(threading.Thread):
         self.dfpopulation = dfpopulation
 
     def run(self):
-        _r = self.panel.clusters_seccion
-        _r.generate_clusters(self.dfpopulation,
-                             self.panel.sc_count_clusters.GetValue(),
-                             self.panel.normalization)
+        self.panel.clusters_seccion.generate_shapes(self.dfpopulation,
+                                       self.panel.sc_count_clusters.GetValue(),
+                                       self.panel.normalization)
         wx.CallAfter(self.panel.stop_busy)
 
 
@@ -571,20 +555,75 @@ class ClusterSeccion(wx.Panel):
         pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         self.SetBackgroundColour('#FFFFFF')
-        self.parent = parent
         self.shape = None
         self.row_index = []
+
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.list_control = CheckListCtrl(self)
-        self.list_control.InsertColumn(0, L('NAME'))
+        panel_cluster = self.get_panel_cluster()
 
         self._checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
         self._checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
 
         sizer.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
-        sizer.Add(self.list_control, 1, wx.EXPAND)
+        sizer.Add(panel_cluster, 1, wx.EXPAND | wx.ALL)
         self.SetSizer(sizer)
+
+    def get_panel_cluster(self):
+
+        p = wx.Panel(self)
+        self.nb = wx.Choicebook(p, -1)
+
+        self.nb.AddPage(self.get_shape_panel(self.nb), "Shape")
+        self.nb.AddPage(self.get_kmeans_panel(self.nb), "Kmeans")
+        self.nb.AddPage(self.get_shape_kmeans_panel(self.nb), "Ambos")
+
+        sizer = wx.BoxSizer()
+        sizer.Add(self.nb, 1, wx.EXPAND | wx.ALL)
+        p.SetSizer(sizer)
+
+        return p
+
+    def get_shape_panel(self, parent):
+
+        panel = wx.Panel(parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.shape_list = CheckListCtrl(panel)
+        self.shape_list.InsertColumn(0, L('NAME'))
+
+        sizer.Add(self.shape_list, 1, wx.EXPAND | wx.ALL, 5)
+
+        panel.SetSizer(sizer)
+
+        return panel
+
+    def get_kmeans_panel(self, parent):
+        panel = wx.Panel(parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.kmeans_list = CheckListCtrl(panel)
+        self.kmeans_list.InsertColumn(0, L('NAME'))
+
+        sizer.Add(self.kmeans_list, 1, wx.EXPAND | wx.ALL, 5)
+
+        panel.SetSizer(sizer)
+        return panel
+
+    def get_shape_kmeans_panel(self, parent):
+        p = wx.Panel(parent)
+        nb = wx.Notebook(p)
+
+        nb.AddPage(self.get_shape_panel(nb), "Shape")
+        nb.AddPage(self.get_kmeans_panel(nb), "Kmeans")
+
+        sizer = wx.BoxSizer()
+        sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
+        p.SetSizer(sizer)
+
+        return p
 
     def g_for_view(self):
         position_checked = []
@@ -600,7 +639,7 @@ class ClusterSeccion(wx.Panel):
 
     def get_dfpopulation(self):
         # ----- bloques marcados para generar clusters
-        blocks_checkeds = self.parent.data_seccion.get_checkeds_for_cluster()
+        blocks_checkeds = self.GetParent().data_seccion.get_checkeds_for_cluster()
         self.row_index = []
         # ----- mezclar bloques marcados para crear un solo bloques
         blocks_checkeds_merge = []
@@ -610,10 +649,16 @@ class ClusterSeccion(wx.Panel):
         df_population = pd.concat(blocks_checkeds_merge)
         return df_population
 
-    def generate_clusters(self, df_population, clus, nor):
+    def generate_shapes(self, df_population,
+                clus, nor):
         # ---- generar clusters
         self.shape = Shape(df_population, clus=clus, nor=nor)
         #self.tkmeans = Tkmeans(df_population, clus=clus, nor=nor)
+
+    def generate_kmeans(self, df_population,
+                clus, nor):
+        # ---- generar clusters
+        self.kmeans = None
 
     def update_list(self):
         _tit = '- '
