@@ -69,7 +69,6 @@ class Kmeans():
         return df
 
     def generate_clusters(self, df_population,  clus, nor):
-        clus = 4
         df = df_population.drop(self.column_name, axis=1)
         # ---- forma de normalizar
         # whitened = whiten(df.values)
@@ -188,6 +187,21 @@ class Kmeans():
             _leg = c.g_legend(_legends, legends_cluster)
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
+            _clusters.append(_df)
+
+        return _clusters
+
+    def g_resume_for_fig(self, s_clusters, legends_summary, crude=True):
+        if s_clusters == []:
+            return pd.DataFrame()
+
+        _clusters = []
+        _legends = []
+        for c in s_clusters:
+            _df = c.df_resume.copy() if crude else c.df_resume_nor.copy()
+            _leg = c.g_legend(_legends, legends_summary)
+            _legends.append(_leg)
+            _df[self.column_name] = [_leg]
             _clusters.append(_df)
 
         return _clusters

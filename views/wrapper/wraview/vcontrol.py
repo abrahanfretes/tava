@@ -39,6 +39,7 @@ from wx import GetTranslation as L
 from wx.lib.pubsub import Publisher as pub
 from languages import topic as T
 import threading
+from views.wrapper.wraview.vclustersection import ClusterSeccionNew
 
 K_MANY_PAGE = 0
 K_3D_PAGE = 1
@@ -152,6 +153,18 @@ class ControlPanel(wx.Panel):
         grid.Add(self.tbtn0, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         # ---- Configuración de Clusters
+        clus_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.cb_shape = wx.CheckBox(self, -1, "Shape")
+        self.cb_shape.SetForegroundColour("white")
+        self.cb_shape.SetValue(True)
+        self.cb_kmeans = wx.CheckBox(self, -1, "Kmeans")
+        self.cb_kmeans.SetForegroundColour("white")
+        clus_sizer.Add(self.cb_shape)
+        clus_sizer.Add(self.cb_kmeans)
+
+        self.cb_shape.Bind(wx.EVT_CHECKBOX, self.on_cluster_shape_or_kmeans)
+        self.cb_kmeans.Bind(wx.EVT_CHECKBOX, self.on_cluster_shape_or_kmeans)
+
         c_sizer = wx.BoxSizer()
         self.sc_count_clusters = wx.SpinCtrl(self, -1, "", size=(80, 30))
         self.sc_count_clusters.SetRange(0, 1000)
@@ -190,7 +203,7 @@ class ControlPanel(wx.Panel):
         a_sizer.Add(tbtnc, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
         # ---- Lista de Clusters
-        self.clusters_seccion = ClusterSeccion(self)
+        self.clusters_seccion = ClusterSeccionNew(self)
 
         # ---- marco visualización
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -201,11 +214,16 @@ class ControlPanel(wx.Panel):
         self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(clus_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(self.clusters_seccion, 4, wx.EXPAND | wx.ALL, 1)
 
         self.SetSizer(self.sizer)
         self.Fit()
+
+    def on_cluster_shape_or_kmeans(self, event):
+        self.clusters_seccion.update_page(self.cb_shape.GetValue(),
+                                          self.cb_kmeans.GetValue())
 
     def on_check_cluster(self, event):
         self.sc_count_clusters.Enable()
@@ -298,66 +316,134 @@ class ControlPanel(wx.Panel):
             return
 
         # ---- selección de clusters a visualizar
-        shape = self.clusters_seccion.g_for_view()
-        s_clusters = shape.g_checkeds()
+        self.clusters_seccion.g_for_view()
+        crude = False if self.normalization == 0 else True
 
         # ---- se obtienen los datos/normalizado
-        _v = []
-        crude = False if self.normalization == 0 else True
-        if self.visualization_mode == V_M_CLUSTER:
-            _v = shape.g_data_for_fig(s_clusters, self.legends_cluster, crude)
+        _vs = []
+        if self.cb_shape.GetValue():
+            shape = self.clusters_seccion.shape
+            s_clusters = shape.g_checkeds()
 
-            # ---- si se trae crudo
-            if crude:
+            if self.visualization_mode == V_M_CLUSTER:
+                _vs = shape.g_data_for_fig(s_clusters, self.legends_cluster, crude)
+ 
+                # ---- si se trae crudo
+                if crude:
+                    if self.normalization == 1:
+                        _vs = self._nor_by_cluster(_vs)
+                    elif self.normalization == 2:
+                        _vs = self._nor_by_selected(_vs, shape.column_name)
+ 
+                if self.clus_one_axe:
+                    _vs = [pd.concat(_vs)]
+ 
+            if self.visualization_mode == V_M_SUMMARY:
+                _ls = self.legends_summary
+                _vs = shape.g_resume_for_fig(s_clusters, _ls, crude)
+ 
+                if self.summ_one_axe:
+                    _vs = [pd.concat(_vs)]
+ 
+            if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+ 
+                # ---- todo en un axe
+                _c, _r = shape.g_data_by_dr(s_clusters, self.legends_cluster,
+                                            self.legends_summary, crude)
                 if self.normalization == 1:
-                    _v = self._nor_by_cluster(_v)
+                    # ----  normalizar cada cluster y recalcular resumen
+                    _c, _r = self._nor_by_cr_one(_c, _r, shape.column_name)
+ 
                 elif self.normalization == 2:
-                    _v = self._nor_by_selected(_v, shape.column_name)
+                    _c, _r = self._nor_by_cr_two(_c, _r, shape.column_name)
+ 
+                # ---- mescla de datos de acuerdo a la opción seleccionada
+                if self.clus_summ_axs[0]:
+                    for i, cr in enumerate(_c):
+                        _vs.append(cr)
+                        _vs.append(_r[i])
+                    _vs = [pd.concat(_vs)]
+ 
+                if self.clus_summ_axs[1]:
+                    for i, cr in enumerate(_c):
+                        _vs.append(cr)
+                        _vs.append(_r[i])
+ 
+                if self.clus_summ_axs[2]:
+                    for i, cr in enumerate(_c):
+                        _vs.append(pd.concat([cr, _r[i]]))
+ 
+                if self.clus_summ_axs[3]:
+                    _vs.append(pd.concat(_c))
+                    _vs.append(pd.concat(_r))
 
-            if self.clus_one_axe:
-                _v = [pd.concat(_v)]
+        _vk = []
+        if self.cb_kmeans.GetValue():
+            tkmeans = self.clusters_seccion.tkmeans
+            k_clusters = tkmeans.g_checkeds()
 
-        if self.visualization_mode == V_M_SUMMARY:
-            _ls = self.legends_summary
-            _v = shape.g_resume_for_fig(s_clusters, _ls, crude)
+            if self.visualization_mode == V_M_CLUSTER:
+                _vk = tkmeans.g_data_for_fig(k_clusters, self.legends_cluster, crude)
 
-            if self.summ_one_axe:
-                _v = [pd.concat(_v)]
+                # ---- si se trae crudo
+                if crude:
+                    if self.normalization == 1:
+                        _vk = self._nor_by_cluster(_vk)
+                    elif self.normalization == 2:
+                        _vk = self._nor_by_selected(_vk, tkmeans.column_name)
 
-        if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+                if self.clus_one_axe:
+                    _vk = [pd.concat(_vk)]
 
-            # ---- todo en un axe
-            _c, _r = shape.g_data_by_dr(s_clusters, self.legends_cluster,
-                                        self.legends_summary, crude)
-            if self.normalization == 1:
-                # ----  normalizar cada cluster y recalcular resumen
-                _c, _r = self._nor_by_cr_one(_c, _r, shape.column_name)
+            if self.visualization_mode == V_M_SUMMARY:
+                _ls = self.legends_summary
+                _vk = tkmeans.g_resume_for_fig(k_clusters, _ls, crude)
 
-            elif self.normalization == 2:
-                _c, _r = self._nor_by_cr_two(_c, _r, shape.column_name)
+                if self.summ_one_axe:
+                    _vk = [pd.concat(_vk)]
 
-            # ---- mescla de datos de acuerdo a la opción seleccionada
-            if self.clus_summ_axs[0]:
-                for i, cr in enumerate(_c):
-                    _v.append(cr)
-                    _v.append(_r[i])
-                _v = [pd.concat(_v)]
+            if self.visualization_mode == V_M_CLUSTER_SUMMARY:
 
-            if self.clus_summ_axs[1]:
-                for i, cr in enumerate(_c):
-                    _v.append(cr)
-                    _v.append(_r[i])
+                # ---- todo en un axe
+                _c, _r = tkmeans.g_data_by_dr(k_clusters, self.legends_cluster,
+                                              self.legends_summary, crude)
+                if self.normalization == 1:
+                    # ----  normalizar cada cluster y recalcular resumen
+                    _c, _r = self._nor_by_cr_one(_c, _r, tkmeans.column_name)
 
-            if self.clus_summ_axs[2]:
-                for i, cr in enumerate(_c):
-                    _v.append(pd.concat([cr, _r[i]]))
+                elif self.normalization == 2:
+                    _c, _r = self._nor_by_cr_two(_c, _r, tkmeans.column_name)
 
-            if self.clus_summ_axs[3]:
-                _v.append(pd.concat(_c))
-                _v.append(pd.concat(_r))
+                # ---- mescla de datos de acuerdo a la opción seleccionada
+                if self.clus_summ_axs[0]:
+                    for i, cr in enumerate(_c):
+                        _vk.append(cr)
+                        _vk.append(_r[i])
+                    _vk = [pd.concat(_vk)]
+
+                if self.clus_summ_axs[1]:
+                    for i, cr in enumerate(_c):
+                        _vk.append(cr)
+                        _vk.append(_r[i])
+
+                if self.clus_summ_axs[2]:
+                    for i, cr in enumerate(_c):
+                        _vk.append(pd.concat([cr, _r[i]]))
+
+                if self.clus_summ_axs[3]:
+                    _vk.append(pd.concat(_c))
+                    _vk.append(pd.concat(_r))
 
         # ---- update figure
-        self.kfigure.kdraw(_v)
+        _vu = []
+        if _vk != [] and _vs != []:
+            _vu = [pd.concat(_vs), pd.concat(_vk)]
+        elif _vs != []:
+            _vu = _vs
+        else:
+            _vu = _vk
+
+        self.kfigure.kdraw(_vu)
 
     def _nor_by_cr_one(self, v, r, column_name):
         _r = []
@@ -433,10 +519,15 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
-        dfpopulation = self.clusters_seccion.get_dfpopulation()
+        dfpopulation = self.data_seccion.get_dfpopulation()
 
         self.start_busy()
-        task = GenerateClusterThread(self, dfpopulation)
+        clus = self.sc_count_clusters.GetValue()
+        clus_sec = self.clusters_seccion
+
+        task = GenerateClusterThread(self, dfpopulation, clus, clus_sec,
+                                     self.cb_shape.GetValue(),
+                                     self.cb_kmeans.GetValue())
         task.start()
 
     def on_filter(self, event):
@@ -531,37 +622,49 @@ class ControlPanel(wx.Panel):
         self.tbtnb.Enable()
         self.tbtnb.SetLabelColor(wx.Colour(0, 0, 255))
         self.sc_count_clusters.Enable()
-        self.clusters_seccion.update_list()
+        self.clusters_seccion.update_list(self.cb_shape.GetValue(),
+                                          self.cb_kmeans.GetValue())
 
 
 class GenerateClusterThread(threading.Thread):
-    def __init__(self, panel, dfpopulation):
+    def __init__(self, panel, dfpopulation, clus, clus_sec, c_shape, c_kmenas):
         super(GenerateClusterThread, self).__init__()
-        # Attributes
+        # ---- Attributes
         self.panel = panel
+        self.n_clas = clus
+        self.c_sec = clus_sec
         self.dfpopulation = dfpopulation
+        self.c_shape = c_shape
+        self.c_kmenas = c_kmenas
 
     def run(self):
-        sel = self.panel.clusters_seccion.nb.GetSelection()
-        if sel == CLUS_SHAPE:
-            self.panel.clusters_seccion.\
-                generate_shapes(self.dfpopulation,
-                                self.panel.sc_count_clusters.GetValue(),
-                                self.panel.normalization)
-        if sel == CLUS_KMEANS:
-            self.panel.clusters_seccion.\
-                generate_kmeans(self.dfpopulation,
-                                self.panel.sc_count_clusters.GetValue(),
-                                self.panel.normalization)
-        if sel == CLUS_BOTH:
-            self.panel.clusters_seccion.\
-                generate_shapes(self.dfpopulation,
-                                self.panel.sc_count_clusters.GetValue(),
-                                self.panel.normalization)
-            self.panel.clusters_seccion.\
-                generate_kmeans(self.dfpopulation,
-                                self.panel.sc_count_clusters.GetValue(),
-                                self.panel.normalization)
+
+        if self.c_shape:
+            self.c_sec.generate_shapes(self.dfpopulation, self.n_clas)
+
+        if self.c_kmenas:
+            self.c_sec.generate_kmeans(self.dfpopulation, self.n_clas)
+
+#         sel = self.panel.clusters_seccion.nb.GetSelection()
+#         if sel == CLUS_SHAPE:
+#             self.panel.clusters_seccion.\
+#                 generate_shapes(self.dfpopulation,
+#                                 self.panel.sc_count_clusters.GetValue(),
+#                                 self.panel.normalization)
+#         if sel == CLUS_KMEANS:
+#             self.panel.clusters_seccion.\
+#                 generate_kmeans(self.dfpopulation,
+#                                 self.panel.sc_count_clusters.GetValue(),
+#                                 self.panel.normalization)
+#         if sel == CLUS_BOTH:
+#             self.panel.clusters_seccion.\
+#                 generate_shapes(self.dfpopulation,
+#                                 self.panel.sc_count_clusters.GetValue(),
+#                                 self.panel.normalization)
+#             self.panel.clusters_seccion.\
+#                 generate_kmeans(self.dfpopulation,
+#                                 self.panel.sc_count_clusters.GetValue(),
+#                                 self.panel.normalization)
         wx.CallAfter(self.panel.stop_busy)
 
 
@@ -861,6 +964,17 @@ class DataSeccion(wx.Panel):
                 key = self.list_control.GetItemData(index)
                 block_checked[key] = self.kblocks[key]
         return block_checked
+
+    def get_dfpopulation(self):
+        # ----- bloques marcados para generar clusters
+        blocks_checkeds = self.get_checkeds_for_cluster()
+        # ----- mezclar bloques marcados para crear un solo bloques
+        blocks_checkeds_merge = []
+        for _key, data in blocks_checkeds.iteritems():
+            blocks_checkeds_merge.append(data[1].dframe)
+
+        df_population = pd.concat(blocks_checkeds_merge)
+        return df_population
 
     def on_checked_all(self, event):
         if event.IsChecked():
