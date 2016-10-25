@@ -28,6 +28,7 @@ import pandas as pd
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
 from views.wrapper.wraview.cluster.shape import Shape
+from views.wrapper.wraview.cluster.tkmeans import Kmeans
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
@@ -72,6 +73,10 @@ K_COLOR_ONE = 0
 K_COLOR_BLOCK = 1
 K_COLOR_SUB_BLOCK = 2
 K_COLOR_VALUE = 3
+
+CLUS_SHAPE = 0
+CLUS_KMEANS = 1
+CLUS_BOTH = 2
 
 
 class ControlPanel(wx.Panel):
@@ -539,9 +544,26 @@ class GenerateClusterThread(threading.Thread):
         self.dfpopulation = dfpopulation
 
     def run(self):
-        self.panel.clusters_seccion.generate_shapes(self.dfpopulation,
-                                       self.panel.sc_count_clusters.GetValue(),
-                                       self.panel.normalization)
+        sel = self.panel.clusters_seccion.nb.GetSelection()
+        if sel == CLUS_SHAPE:
+            self.panel.clusters_seccion.\
+                generate_shapes(self.dfpopulation,
+                                self.panel.sc_count_clusters.GetValue(),
+                                self.panel.normalization)
+        if sel == CLUS_KMEANS:
+            self.panel.clusters_seccion.\
+                generate_kmeans(self.dfpopulation,
+                                self.panel.sc_count_clusters.GetValue(),
+                                self.panel.normalization)
+        if sel == CLUS_BOTH:
+            self.panel.clusters_seccion.\
+                generate_shapes(self.dfpopulation,
+                                self.panel.sc_count_clusters.GetValue(),
+                                self.panel.normalization)
+            self.panel.clusters_seccion.\
+                generate_kmeans(self.dfpopulation,
+                                self.panel.sc_count_clusters.GetValue(),
+                                self.panel.normalization)
         wx.CallAfter(self.panel.stop_busy)
 
 
@@ -577,6 +599,7 @@ class ClusterSeccion(wx.Panel):
         self.nb.AddPage(self.get_shape_panel(self.nb), "Shape")
         self.nb.AddPage(self.get_kmeans_panel(self.nb), "Kmeans")
         self.nb.AddPage(self.get_shape_kmeans_panel(self.nb), "Ambos")
+        self.nb.SetSelection(CLUS_SHAPE)
 
         sizer = wx.BoxSizer()
         sizer.Add(self.nb, 1, wx.EXPAND | wx.ALL)
@@ -590,10 +613,10 @@ class ClusterSeccion(wx.Panel):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.shape_list = CheckListCtrl(panel)
-        self.shape_list.InsertColumn(0, L('NAME'))
+        panel.shape_list = CheckListCtrl(panel)
+        panel.shape_list.InsertColumn(0, L('NAME'))
 
-        sizer.Add(self.shape_list, 1, wx.EXPAND | wx.ALL, 5)
+        sizer.Add(panel.shape_list, 1, wx.EXPAND | wx.ALL, 5)
 
         panel.SetSizer(sizer)
 
@@ -604,23 +627,23 @@ class ClusterSeccion(wx.Panel):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.kmeans_list = CheckListCtrl(panel)
-        self.kmeans_list.InsertColumn(0, L('NAME'))
+        panel.kmeans_list = CheckListCtrl(panel)
+        panel.kmeans_list.InsertColumn(0, L('NAME'))
 
-        sizer.Add(self.kmeans_list, 1, wx.EXPAND | wx.ALL, 5)
+        sizer.Add(panel.kmeans_list, 1, wx.EXPAND | wx.ALL, 5)
 
         panel.SetSizer(sizer)
         return panel
 
     def get_shape_kmeans_panel(self, parent):
         p = wx.Panel(parent)
-        nb = wx.Notebook(p)
+        p.nb = wx.Notebook(p)
 
-        nb.AddPage(self.get_shape_panel(nb), "Shape")
-        nb.AddPage(self.get_kmeans_panel(nb), "Kmeans")
+        p.nb.AddPage(self.get_shape_panel(p.nb), "Shape")
+        p.nb.AddPage(self.get_kmeans_panel(p.nb), "Kmeans")
 
         sizer = wx.BoxSizer()
-        sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
+        sizer.Add(p.nb, 1, wx.EXPAND | wx.ALL)
         p.SetSizer(sizer)
 
         return p
@@ -639,8 +662,8 @@ class ClusterSeccion(wx.Panel):
 
     def get_dfpopulation(self):
         # ----- bloques marcados para generar clusters
-        blocks_checkeds = self.GetParent().data_seccion.get_checkeds_for_cluster()
-        self.row_index = []
+        blocks_checkeds = self.GetParent().data_seccion.\
+                             get_checkeds_for_cluster()
         # ----- mezclar bloques marcados para crear un solo bloques
         blocks_checkeds_merge = []
         for _key, data in blocks_checkeds.iteritems():
@@ -649,64 +672,121 @@ class ClusterSeccion(wx.Panel):
         df_population = pd.concat(blocks_checkeds_merge)
         return df_population
 
-    def generate_shapes(self, df_population,
-                clus, nor):
+    def generate_shapes(self, df_population, clus, nor):
         # ---- generar clusters
         self.shape = Shape(df_population, clus=clus, nor=nor)
-        #self.tkmeans = Tkmeans(df_population, clus=clus, nor=nor)
 
-    def generate_kmeans(self, df_population,
-                clus, nor):
+    def generate_kmeans(self, df_population, clus, nor):
         # ---- generar clusters
-        self.kmeans = None
+        self.kmeans = Kmeans(df_population, clus=clus, nor=nor)
 
     def update_list(self):
-        _tit = '- '
 
+        sel = self.nb.GetSelection()
+        if sel == CLUS_SHAPE:
+            self.shape_row_index = []
+            shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
+            self.populate_list(shape_list, self.shape.clusters,
+                               self.shape_row_index)
+        if sel == CLUS_KMEANS:
+            self.kmeans_row_index = []
+            kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
+            self.populate_list(kmeans_list, self.kmeans.clusters,
+                               self.kmeans_row_index)
+        if sel == CLUS_BOTH:
+            self.kmeans_row_index = []
+            self.shape_row_index = []
+            shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
+            self.populate_list(shape_list, self.shape.clusters,
+                               self.shape_row_index)
+            kmeans_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(1).kmeans_list
+            self.populate_list(kmeans_list, self.kmeans.clusters,
+                               self.kmeans_row_index)
+
+    def populate_list(self, _list, _clusters, _row_index):
         # ----- limpiar clusters anteriores
-        self.list_control.DeleteAllItems()
-
-        # kblocks_two[0] = ('', KBlock('0', df_merge))
-        _tit = ''
+        _list.DeleteAllItems()
 
         # ---- agregar clusters a la vista
-        for i, c in enumerate(self.shape.clusters):
-            # name = data[0] + _tit + 'c' + str(vclus)
+        for i, c in enumerate(_clusters):
             name = 'cluster_' + str(i + 1) + ': ' + c.g_percent_format()
-            index = self.list_control.InsertStringItem(sys.maxint, name)
-            self.list_control.SetItemData(index, index)
-            self.row_index.append(index)
+            index = _list.InsertStringItem(sys.maxint, name)
+            _list.SetItemData(index, index)
+            _row_index.append(index)
 
-        self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        _list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+
+    def pre_un_select_all(self):
+        sel = self.nb.GetSelection()
+        if sel == CLUS_SHAPE:
+            shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
+            self.un_select_all(shape_list, self.shape_row_index)
+        if sel == CLUS_KMEANS:
+            kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
+            self.un_select_all(kmeans_list, self.kmeans_row_index)
+        if sel == CLUS_BOTH:
+            shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
+            kmeans_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(1).kmeans_list
+            self.un_select_all(shape_list, self.shape_row_index)
+            self.un_select_all(kmeans_list, self.kmeans_row_index)
 
     def on_checked_all(self, event):
         if event.IsChecked():
-            for index in self.row_index:
-                self.list_control.CheckItem(index)
+            sel = self.nb.GetSelection()
+            if sel == CLUS_SHAPE:
+                shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
+                self.select_all(shape_list, self.shape_row_index)
+            if sel == CLUS_KMEANS:
+                kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
+                self.select_all(kmeans_list, self.kmeans_row_index)
+            if sel == CLUS_BOTH:
+                shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
+                kmeans_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(1).kmeans_list
+                self.select_all(shape_list, self.shape_row_index)
+                self.select_all(kmeans_list, self.kmeans_row_index)
         else:
-            self.un_select_all()
+            self.pre_un_select_all()
 
-    def select_all(self):
-        for index in self.row_index:
-            self.list_control.CheckItem(index)
+    def select_all(self, _list, _row_index):
+        for index in _row_index:
+            _list.CheckItem(index)
 
-    def un_select_all(self):
-        for index in self.row_index:
-            self.list_control.CheckItem(index, False)
+    def un_select_all(self, _list, _row_index):
+        for index in _row_index:
+            _list.CheckItem(index, False)
 
     def contain_elemens(self):
-        return self.list_control.GetItemCount()
+        sel = self.nb.GetSelection()
+        if sel == CLUS_SHAPE:
+            shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
+            return shape_list.GetItemCount()
+        if sel == CLUS_KMEANS:
+            kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
+            return kmeans_list.GetItemCount()
+        if sel == CLUS_BOTH:
+            shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
+            return shape_list.GetItemCount()
 
     def checked_elemens(self):
-        for index in self.row_index:
-            if self.list_control.IsChecked(index):
+        sel = self.nb.GetSelection()
+        if sel == CLUS_SHAPE:
+            _list = self.nb.GetPage(CLUS_SHAPE).shape_list
+            _row_index = self.shape_row_index
+        if sel == CLUS_KMEANS:
+            _list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
+            _row_index = self.kmeans_row_index
+        if sel == CLUS_BOTH:
+            _list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
+            _row_index = self.shape_row_index
+        for index in _row_index:
+            if _list.IsChecked(index):
                 return True
-        return False
+            return False
 
     # ---- funciones para análisis
 
     def more_representative(self, repre, less_rep):
-        self.un_select_all()
+        self.pre_un_select_all()
 
         # ---- más representativos
         for index in self.row_index[:repre]:
@@ -717,12 +797,12 @@ class ClusterSeccion(wx.Panel):
             self.list_control.CheckItem(index)
 
     def less_representative(self, repre):
-        self.un_select_all()
+        self.pre_un_select_all()
         for index in self.row_index[repre:]:
             self.list_control.CheckItem(index)
 
     def max_min_objective(self, v_max, v_min):
-        self.un_select_all()
+        self.pre_un_select_all()
         for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
             self.list_control.CheckItem(index)
 

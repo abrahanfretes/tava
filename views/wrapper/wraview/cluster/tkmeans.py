@@ -11,7 +11,7 @@
 #           - Arsenio Ferreira (arse.ferreira@gmail.com)     ###
 #           - Abrahan Fretes (abrahan.fretes@gmail.com)      ###
 #                                                            ###
-# Creado:  23/10/2016                                          ###
+# Creado:  23/10/2016                                        ###
 #                                                            ###
 # ##############################################################
 '''
@@ -24,7 +24,7 @@ import pandas as pd
 from views.wrapper.wraview.cluster.shape import Cluster
 
 
-class Tkmeans():
+class Kmeans():
 
     population = 0
     clusters = []
@@ -69,6 +69,7 @@ class Tkmeans():
         return df
 
     def generate_clusters(self, df_population,  clus, nor):
+        clus = 4
         df = df_population.drop(self.column_name, axis=1)
         # ---- forma de normalizar
         # whitened = whiten(df.values)
