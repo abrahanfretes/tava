@@ -194,17 +194,15 @@ class ControlPanel(wx.Panel):
 
         # ---- marco visualización
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
+        self.sizer.Add(self.data_seccion, 2, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-
         self.sizer.Add(panel_control, 0, wx.EXPAND | wx.TOP | wx.RIGHT |
                        wx.LEFT | wx.ALIGN_RIGHT, 2)
-
         self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
+        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(self.clusters_seccion, 4, wx.EXPAND | wx.ALL, 1)
 
         self.SetSizer(self.sizer)
         self.Fit()
