@@ -88,7 +88,7 @@ class ControlPanel(wx.Panel):
         self.parent = parent
         self.mainpanel = mainpanel
         self.kfigure = kfigure
-        self.SetBackgroundColour("#3B598D")
+        self.SetBackgroundColour("#627aa3")
 
         self.init_arrays()
 
@@ -113,8 +113,7 @@ class ControlPanel(wx.Panel):
 
         # ---- datos - normalización de datos
         panel_control = wx.Panel(self)
-        # panel_control.SetBackgroundColour('#DCE5EE')
-        panel_control.SetBackgroundColour('#627aa3')
+        panel_control.SetBackgroundColour('#3B598D')
         panel_radio = wx.Panel(panel_control)
         grid_radio = wx.BoxSizer(wx.HORIZONTAL)
         radio1 = wx.RadioButton(panel_radio, -1, 'Cluster', style=wx.RB_GROUP)
@@ -126,8 +125,7 @@ class ControlPanel(wx.Panel):
         self.radio2.Bind(wx.EVT_RADIOBUTTON, self.on_check_data)
         self.radio2.SetForegroundColour("white")
         panel_radio.SetSizer(grid_radio)
-#         panel_radio.SetBackgroundColour('#DCE5EE')
-        panel_radio.SetBackgroundColour('#627aa3')
+        panel_radio.SetBackgroundColour('#3B598D')
         panel_sizer = wx.BoxSizer(wx.VERTICAL)
         panel_sizer.Add(panel_radio, 1, wx.ALIGN_CENTER_HORIZONTAL)
         panel_control.SetSizer(panel_sizer)
@@ -215,8 +213,9 @@ class ControlPanel(wx.Panel):
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(panel_control, 0, wx.EXPAND | wx.TOP | wx.RIGHT |
                        wx.LEFT | wx.ALIGN_RIGHT, 2)
-        self.sizer.Add(clus_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(clus_sizer, 0, wx.TOP | wx.RIGHT |
+                       wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 1)
         self.sizer.Add(self.clusters_seccion, 4, wx.EXPAND | wx.ALL, 1)
         self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
 
