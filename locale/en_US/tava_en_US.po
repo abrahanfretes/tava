@@ -594,3 +594,9 @@ msgstr "Generating Clusters"
 
 msgid "EMPTY_GENERATE_CLUSTER"
 msgstr "Cluster selection is required\n\nYou must select at least one cluster to be \ngrouped. The list of data found in\nthe upper right corner:\n1. Select at least one data.\n2. Set number of clusters.\n3. Retry group.\n\n            TAVA-TOOL  "
+
+msgid "H_EMPTY_NUMBER_KMEANS"
+msgstr "Kmeans Clusters"
+
+msgid "EMPTY_NUMBER_KMEANS"
+msgstr "Clusters amount unspecified\n\nThe minimum amount of clusters for Kmeans\n is one. Specify the number and then try\nagain.\n\n            TAVA-TOOL  "

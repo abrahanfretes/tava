@@ -18,28 +18,28 @@
 
 from pandas.core.frame import DataFrame
 import sys
+import threading
+from wx import GetTranslation as L
 import wx
 from wx.lib import platebtn
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
+from wx.lib.pubsub import Publisher as pub
 
+from languages import topic as T
 import numpy as np
 import pandas as pd
-from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
+from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER, \
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
 from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.cluster.tkmeans import Kmeans
+from views.wrapper.wraview.vclustersection import ClusterSeccionNew
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
-    KMSG_GENERATE_CLUSTER
+    KMSG_GENERATE_CLUSTER, KMSG_EMPTY_NUMBER_KMEANS
 import wx.lib.agw.aui as aui
 
-from wx import GetTranslation as L
-from wx.lib.pubsub import Publisher as pub
-from languages import topic as T
-import threading
-from views.wrapper.wraview.vclustersection import ClusterSeccionNew
 
 K_MANY_PAGE = 0
 K_3D_PAGE = 1
@@ -517,6 +517,10 @@ class ControlPanel(wx.Panel):
 
         if not self.data_seccion.checked_elemens():
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
+            return
+        _cl = self.sc_count_clusters.GetValue()
+        if self.cb_kmeans.GetValue() and _cl == 0:
+            KMessage(self.mainpanel, KMSG_EMPTY_NUMBER_KMEANS).kshow()
             return
 
         dfpopulation = self.data_seccion.get_dfpopulation()

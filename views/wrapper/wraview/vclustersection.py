@@ -73,7 +73,16 @@ class ClusterSeccionNew(wx.Panel):
     def update_page(self, sh, km):
         self.nb_clus.EnableTab(0, enable=sh)
         self.nb_clus.EnableTab(1, enable=km)
+
         self.pages = [sh, km]
+
+        if sh and km:
+            self.shape_list.DeleteAllItems()
+            self.kmeans_list.DeleteAllItems()
+        if km:
+            self.nb_clus.SetSelection(1)
+        if sh:
+            self.nb_clus.SetSelection(0)
 
     def generate_shapes(self, df_population, clus):
         # ---- generar clusters
