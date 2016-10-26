@@ -65,9 +65,12 @@ class ClusterConfig(wx.Dialog):
         nb = wx.Choicebook(p, -1)
 
         # add the pages to the notebook with the label to show on the tab
-        nb.AddPage(ClusterPage(nb, self), "Clusters")
-        nb.AddPage(SummaryPage(nb, self), L('SUMMARIES'))
-        nb.AddPage(ClusterSummaryPage(nb, self), L('CLUSTERS_AND_SUMMARIES'))
+        self.page_cluster = ClusterPage(nb, self)
+        nb.AddPage(self.page_cluster, "Clusters")
+        self.page_resumes = SummaryPage(nb, self)
+        nb.AddPage(self.page_resumes, L('SUMMARIES'))
+        self.page_cluster_sumary = ClusterSummaryPage(nb, self)
+        nb.AddPage(self.page_cluster_sumary, L('CLUSTERS_AND_SUMMARIES'))
 
         nb.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.on_page_changed)
         self.nb = nb
@@ -82,7 +85,6 @@ class ClusterConfig(wx.Dialog):
         return sboxs_mv
 
     def on_page_changed(self, e):
-        print e.GetSelection()
         selection = e.GetSelection()
         self.GetParent().visualization_mode = selection
         e.Skip()
@@ -112,18 +114,18 @@ class ClusterConfig(wx.Dialog):
 
     def set_legends_parent_values(self):
         # --- Para Cluster
-        self.GetParent().legends_cluster = []
-        self.GetParent().legends_cluster.append(self.clus_lg_check1.GetValue())
-        self.GetParent().legends_cluster.append(self.clus_lg_check2.GetValue())
-        self.GetParent().legends_cluster.append(self.clus_lg_check3.GetValue())
-        self.GetParent().legends_cluster.append(self.clus_lg_check4.GetValue())
+        if self.GetParent().visualization_mode == 0:
+            self.GetParent().legends_cluster = self.page_cluster.g_values()
 
-#         Para Resumen
-        self.GetParent().legends_summary = []
-        self.GetParent().legends_summary.append(self.summ_lg_check1.GetValue())
-        self.GetParent().legends_summary.append(self.summ_lg_check2.GetValue())
-        self.GetParent().legends_summary.append(self.summ_lg_check3.GetValue())
-        self.GetParent().legends_summary.append(self.summ_lg_check4.GetValue())
+        # -- Para Resumen
+        if self.GetParent().visualization_mode == 1:
+            self.GetParent().legends_summary = self.page_resumes.g_values()
+
+        # --- Para Cluster y Resumen
+        if self.GetParent().visualization_mode == 2:
+            _clus, _sum = self.page_cluster_sumary.g_values()
+            self.GetParent().legends_cluster = _clus
+            self.GetParent().legends_summary = _sum
 
     def set_axes_parent_values(self):
         # ---- Para Cluster
@@ -221,6 +223,10 @@ class ClusterPage(wx.Panel):
         self.checkbox3.SetLabel(L('NAME'))
         self.checkbox4.SetLabel(L('SHAPES'))
 
+    def g_values(self):
+        return [self.checkbox1.GetValue(), self.checkbox2.GetValue(),
+                self.checkbox3.GetValue(), self.checkbox4.GetValue()]
+
 
 class SummaryPage(wx.Panel):
     def __init__(self, parent, dialog_ref):
@@ -290,6 +296,10 @@ class SummaryPage(wx.Panel):
         self.checkbox2.SetLabel(L('AMOUNT_OF_OBSERVATIONS'))
         self.checkbox3.SetLabel(L('NAME'))
         self.checkbox4.SetLabel(L('SHAPES'))
+
+    def g_values(self):
+        return [self.checkbox1.GetValue(), self.checkbox2.GetValue(),
+                self.checkbox3.GetValue(), self.checkbox4.GetValue()]
 
 
 class ClusterSummaryPage(wx.Panel):
@@ -437,6 +447,14 @@ class ClusterSummaryPage(wx.Panel):
         self.chkbox3.SetLabel(L('SHOW_NAME'))
         self.chkbox4.SetLabel(L('SHOW_SHAPES'))
 
+    def g_values(self):
+        _clus = [self.checkbox1.GetValue(), self.checkbox2.GetValue(),
+                 self.checkbox3.GetValue(), self.checkbox4.GetValue()]
+
+        _sum = [self.chkbox1.GetValue(), self.chkbox2.GetValue(),
+                self.chkbox3.GetValue(), self.chkbox4.GetValue()]
+        return _clus, _sum
+
 
 class FilterClusterDialog(wx.Dialog):
     def __init__(self, parent, data):
@@ -461,8 +479,8 @@ class FilterClusterDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(vsizer, 0, wx.EXPAND)
-        sizer.Add(line, 0, wx.GROW | wx.ALIGN_CENTER_VERTICAL | wx.RIGHT |
-                                                                wx.TOP, 5)
+        _style = wx.GROW | wx.ALIGN_CENTER_VERTICAL | wx.RIGHT | wx.TOP
+        sizer.Add(line, 0, _style, 5)
         sizer.Add(sbuttons, flag=wx.ALIGN_RIGHT | wx.TOP | wx.BOTTOM,
                   border=10)
 
@@ -552,7 +570,6 @@ class FilterClusterDialog(wx.Dialog):
 
     def on_page_changed(self, e):
         selection = e.GetSelection()
-        self.GetParent().visualization_mode = selection
 
         self.parent.data_selected.max_repre = self.more_repre.GetMax()
 
@@ -684,6 +701,12 @@ class FilterClusterDialog(wx.Dialog):
 
         self.lb1_label.SetLabel(L('HIGHER_VALUES'))
         self.lb2_label.SetLabel(L('SMALLER_VALUES'))
+
+    def update_by_generateClusters(self, max_value):
+        self.more_repre.SetRange(0, max_value)
+        self.more_repre.SetValue(0)
+        self.less_repre.SetRange(0, max_value)
+        self.less_repre.SetValue(0)
 
 
 class SelectedData():

@@ -16,8 +16,6 @@
 # ##############################################################
 '''
 
-# from wx.lib.agw.customtreectrl import A
-
 import sys
 from wx import GetTranslation as L
 import wx
@@ -31,7 +29,6 @@ from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.cluster.tkmeans import Kmeans
 
 
-# from views.wrapper.wraview.vcontrol import CLUS_SHAPE, CLUS_KMEANS, CLUS_BOTH
 class ClusterSeccionNew(wx.Panel):
 
     def __init__(self, parent):
@@ -194,131 +191,47 @@ class ClusterSeccionNew(wx.Panel):
                     return True
             return False
 
-# 
-#         sel = self.nb.GetSelection()
-#         if sel == CLUS_SHAPE:
-#             self.shape_row_index = []
-#             shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
-#             self.populate_list(shape_list, self.shape.clusters,
-#                                self.shape_row_index)
-#         if sel == CLUS_KMEANS:
-#             self.kmeans_row_index = []
-#             kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
-#             self.populate_list(kmeans_list, self.kmeans.clusters,
-#                                self.kmeans_row_index)
-#         if sel == CLUS_BOTH:
-#             self.kmeans_row_index = []
-#             self.shape_row_index = []
-#             shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
-#             self.populate_list(shape_list, self.shape.clusters,
-#                                self.shape_row_index)
-#             kmeans_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(1).kmeans_list
-#             self.populate_list(kmeans_list, self.kmeans.clusters,
-#                                self.kmeans_row_index)
+    def g_elements(self):
+        if self.pages[0]:
+            return self.shape.clusters_count
 
-#     def populate_list(self, _list, _clusters, _row_index):
-#         # ----- limpiar clusters anteriores
-#         _list.DeleteAllItems()
-# 
-#         # ---- agregar clusters a la vista
-#         for i, c in enumerate(_clusters):
-#             name = 'cluster_' + str(i + 1) + ': ' + c.g_percent_format()
-#             index = _list.InsertStringItem(sys.maxint, name)
-#             _list.SetItemData(index, index)
-#             _row_index.append(index)
-# 
-#         _list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        if self.pages[1]:
+            return self.tkmeans.clusters_count
 
-    def pre_un_select_all(self):
-        sel = self.nb.GetSelection()
-        if sel == CLUS_SHAPE:
-            shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
-            self.un_select_all(shape_list, self.shape_row_index)
-        if sel == CLUS_KMEANS:
-            kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
-            self.un_select_all(kmeans_list, self.kmeans_row_index)
-        if sel == CLUS_BOTH:
-            shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
-            kmeans_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(1).kmeans_list
-            self.un_select_all(shape_list, self.shape_row_index)
-            self.un_select_all(kmeans_list, self.kmeans_row_index)
+    # ---- funciones para análisis
 
-#     def on_checked_all(self, event):
-#         if event.IsChecked():
-#             
-#             sel = self.nb.GetSelection()
-#             if sel == CLUS_SHAPE:
-#                 shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
-#                 self.select_all(shape_list, self.shape_row_index)
-#             if sel == CLUS_KMEANS:
-#                 kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
-#                 self.select_all(kmeans_list, self.kmeans_row_index)
-#             if sel == CLUS_BOTH:
-#                 shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
-#                 kmeans_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(1).kmeans_list
-#                 self.select_all(shape_list, self.shape_row_index)
-#                 self.select_all(kmeans_list, self.kmeans_row_index)
-#         else:
-#             self.pre_un_select_all()
+    def more_representative(self, repre, less_rep):
 
-#     def select_all(self, _list, _row_index):
-#         for index in _row_index:
-#             _list.CheckItem(index)
-# 
-#     def un_select_all(self, _list, _row_index):
-#         for index in _row_index:
-#             _list.CheckItem(index, False)
+        self.un_select_all()
 
-#     def contain_elemens(self):
-#         sel = self.nb.GetSelection()
-#         if sel == CLUS_SHAPE:
-#             shape_list = self.nb.GetPage(CLUS_SHAPE).shape_list
-#             return shape_list.GetItemCount()
-#         if sel == CLUS_KMEANS:
-#             kmeans_list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
-#             return kmeans_list.GetItemCount()
-#         if sel == CLUS_BOTH:
-#             shape_list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
-#             return shape_list.GetItemCount()
-# 
-#     def checked_elemens(self):
-#         sel = self.nb.GetSelection()
-#         if sel == CLUS_SHAPE:
-#             _list = self.nb.GetPage(CLUS_SHAPE).shape_list
-#             _row_index = self.shape_row_index
-#         if sel == CLUS_KMEANS:
-#             _list = self.nb.GetPage(CLUS_KMEANS).kmeans_list
-#             _row_index = self.kmeans_row_index
-#         if sel == CLUS_BOTH:
-#             _list = self.nb.GetPage(CLUS_BOTH).nb.GetPage(0).shape_list
-#             _row_index = self.shape_row_index
-#         for index in _row_index:
-#             if _list.IsChecked(index):
-#                 return True
-#             return False
+        if self.pages[0]:
+            # ---- más representativos
+            for index in self.shape_row_index[:repre]:
+                self.shape_list.CheckItem(index)
 
-#     # ---- funciones para análisis
-# 
-#     def more_representative(self, repre, less_rep):
-#         self.pre_un_select_all()
-# 
-#         # ---- más representativos
-#         for index in self.row_index[:repre]:
-#             self.list_control.CheckItem(index)
-# 
-#         # ---- menos representativos
-#         for index in self.row_index[less_rep:]:
-#             self.list_control.CheckItem(index)
-# 
-#     def less_representative(self, repre):
-#         self.pre_un_select_all()
-#         for index in self.row_index[repre:]:
-#             self.list_control.CheckItem(index)
+            # ---- menos representativos
+            for index in self.shape_row_index[less_rep:]:
+                self.shape_list.CheckItem(index)
+
+        if self.pages[1]:
+            # ---- más representativos
+            for index in self.kmeans_row_index[:repre]:
+                self.kmeans_list.CheckItem(index)
+
+            # ---- menos representativos
+            for index in self.kmeans_row_index[less_rep:]:
+                self.kmeans_list.CheckItem(index)
 
     def max_min_objective(self, v_max, v_min):
-        self.pre_un_select_all()
-        for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
-            self.list_control.CheckItem(index)
+        self.un_select_all()
+
+        if self.pages[0]:
+            for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
+                self.shape_list.CheckItem(index)
+
+        if self.pages[1]:
+            for index in self.tkmeans.g_clusters_max_min_in_var(v_max, v_min):
+                self.kmeans_list.CheckItem(index)
 
     def update_language(self, msg):
         self._checked_all.SetLabel(L('SELECT_ALL'))

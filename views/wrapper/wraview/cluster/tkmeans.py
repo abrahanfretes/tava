@@ -117,6 +117,39 @@ class Kmeans():
     def g_checkeds(self):
         return [self.clusters[cl] for cl in self.cluster_checkeds]
 
+    # ------------------ METODOS PARA ANALISIS SHAPES -----------
+    # -----------------------------------------------------------
+
+    def g_clusters_max_min_in_var(self, indexes_max, indexes_min):
+        _indexes = []
+        for i in indexes_max:
+            _indexes = _indexes + self.g_clusters_max_in_var(i)
+        for i in indexes_min:
+            _indexes = _indexes + self.g_clusters_min_in_var(i)
+        return _indexes
+
+    def g_clusters_max_in_var(self, index):
+        index_max = []
+        max_values = [c.g_max_in_var(index) for c in self.clusters]
+        _max = max(max_values)
+        for i, m in enumerate(max_values):
+            if m == _max:
+                index_max.append(i)
+#         _clusters = [self.clusters[i] for i in index_max]
+#         return _clusters
+        return index_max
+
+    def g_clusters_min_in_var(self, index):
+        index_min = []
+        min_values = [c.g_min_in_var(index) for c in self.clusters]
+        _min = min(min_values)
+        for i, m in enumerate(min_values):
+            if m == _min:
+                index_min.append(i)
+#         _clusters = [self.clusters[i] for i in index_min]
+#         return _clusters
+        return index_min
+
     def g_data_by_dr(self, s_clusters, legends_cluster,
                      legends_summary, crude=True):
 
