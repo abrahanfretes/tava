@@ -103,7 +103,7 @@ class ControlPanel(wx.Panel):
         self.k_color = K_COLOR_SUB_BLOCK
         self.cluster_config = None
         self.cluster_filter = None
-        self.visualization_mode = V_M_CLUSTER_SUMMARY
+        self.visualization_mode = V_M_CLUSTER
         self.legends_cluster = [False, False, False, True]
         self.legends_summary = [True, False, False, False]
         self.clus_one_axe = True
@@ -134,7 +134,7 @@ class ControlPanel(wx.Panel):
         self.tbtn0 = platebtn.PlateButton(self, -1,
                                           self.NORMA_METO[self.normalization],
                                           None,
-                                          style=platebtn.PB_STYLE_SQUARE |
+                                          style=platebtn.PB_STYLE_SQUARE | 
                                           platebtn.PB_STYLE_NOBG)
         menu = wx.Menu()
         m_n1 = wx.MenuItem(menu, 0, self.NORMA_METO[0])
@@ -170,21 +170,21 @@ class ControlPanel(wx.Panel):
         self.sc_count_clusters.SetRange(0, 1000)
         self.sc_count_clusters.SetValue(0)
         tbtna = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[0], None,
-                                     style=platebtn.PB_STYLE_DEFAULT |
+                                     style=platebtn.PB_STYLE_DEFAULT | 
                                      platebtn.PB_STYLE_NOBG)
         tbtna.SetPressColor(wx.Colour(255, 165, 0))
         tbtna.SetLabelColor(wx.Colour(0, 0, 255))
         tbtna.Bind(wx.EVT_BUTTON, self.on_generate)
         self.tbtna = tbtna
-        c_sizer.Add(self.sc_count_clusters, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+        c_sizer.Add(self.sc_count_clusters, 0, wx.TOP | wx.RIGHT | wx.LEFT | 
                     wx.ALIGN_CENTER_HORIZONTAL, 5)
-        c_sizer.Add(tbtna, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+        c_sizer.Add(tbtna, 0, wx.TOP | wx.RIGHT | wx.LEFT | 
                     wx.ALIGN_CENTER_VERTICAL, 5)
 
         # ---- seleccionar - analizar
         a_sizer = wx.BoxSizer()
         tbtnb = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[1], None,
-                                     style=platebtn.PB_STYLE_DEFAULT |
+                                     style=platebtn.PB_STYLE_DEFAULT | 
                                      platebtn.PB_STYLE_NOBG)
         tbtnb.SetPressColor(wx.Colour(165, 42, 42))
         tbtnb.SetLabelColor(wx.Colour(0, 0, 255))
@@ -192,7 +192,7 @@ class ControlPanel(wx.Panel):
         self.tbtnb = tbtnb
 
         tbtnc = platebtn.PlateButton(self, -1, self.ANALISIS_LABEL[2], None,
-                                     style=platebtn.PB_STYLE_DEFAULT |
+                                     style=platebtn.PB_STYLE_DEFAULT | 
                                      platebtn.PB_STYLE_NOBG)
         tbtnc.SetPressColor(wx.Colour(165, 42, 42))
         tbtnc.SetLabelColor(wx.Colour(0, 0, 255))
@@ -207,11 +207,11 @@ class ControlPanel(wx.Panel):
 
         # ---- marco visualización
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.data_seccion, 2, wx.EXPAND | wx.ALL |
+        self.sizer.Add(self.data_seccion, 2, wx.EXPAND | wx.ALL | 
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(panel_control, 0, wx.EXPAND | wx.TOP | wx.RIGHT |
+        self.sizer.Add(panel_control, 0, wx.EXPAND | wx.TOP | wx.RIGHT | 
                        wx.LEFT | wx.ALIGN_RIGHT, 2)
-        self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT |
+        self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT | 
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
         self.sizer.Add(clus_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)

@@ -19,9 +19,9 @@ from wx import GetTranslation as L
 from wx.lib.pubsub import Publisher as pub
 from languages import topic as T
 
-V_M_CLUSTER = 1
-V_M_SUMMARY = 2
-V_M_CLUSTER_SUMMARY = 0
+V_M_CLUSTER = 0
+V_M_SUMMARY = 1
+V_M_CLUSTER_SUMMARY = 2
 
 
 class ClusterConfig(wx.Dialog):
@@ -48,8 +48,8 @@ class ClusterConfig(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(msizer, 0, wx.EXPAND)
-        sizer.Add(line, 0, wx.GROW | wx.ALIGN_CENTER_VERTICAL | wx.RIGHT |
-                                                                wx.TOP, 5)
+        _style = wx.GROW | wx.ALIGN_CENTER_VERTICAL | wx.RIGHT | wx.TOP
+        sizer.Add(line, 0, _style, 5)
         sizer.Add(sbuttons, flag=wx.ALIGN_RIGHT | wx.TOP | wx.BOTTOM,
                   border=10)
 
@@ -65,9 +65,9 @@ class ClusterConfig(wx.Dialog):
         nb = wx.Choicebook(p, -1)
 
         # add the pages to the notebook with the label to show on the tab
-        nb.AddPage(ClusterSummaryPage(nb, self), L('CLUSTERS_AND_SUMMARIES'))
         nb.AddPage(ClusterPage(nb, self), "Clusters")
         nb.AddPage(SummaryPage(nb, self), L('SUMMARIES'))
+        nb.AddPage(ClusterSummaryPage(nb, self), L('CLUSTERS_AND_SUMMARIES'))
 
         nb.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.on_page_changed)
         self.nb = nb
