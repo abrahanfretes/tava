@@ -327,13 +327,13 @@ msgid "CANCEL"
 msgstr "Cancel"
 
 msgid "NORMALIZED_FULL"
-msgstr "Normalized"
+msgstr "Full Normalization        "
 
 msgid "NORMALIZED_CLUSTER"
-msgstr "By Cluster"
+msgstr "Normalising by Cluster    "
 
 msgid "NORMALIZED_SELECTED"
-msgstr "By Selected"
+msgstr "Normalising by Selection  "
 
 msgid "DATA_CRUDE"
 msgstr "Raw Data"
