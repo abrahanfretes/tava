@@ -18,26 +18,26 @@
 
 from pandas.core.frame import DataFrame
 import sys
+import threading
+from wx import GetTranslation as L
 import wx
 from wx.lib import platebtn
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
+from wx.lib.pubsub import Publisher as pub
 
+from languages import topic as T
 import numpy as np
 import pandas as pd
-from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER,\
+from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER, \
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
-from views.wrapper.wraview.cluster.shape import Shape
+from views.wrapper.wraview.vclustersection import ClusterSeccionNew
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
-    KMSG_GENERATE_CLUSTER
+    KMSG_GENERATE_CLUSTER, KMSG_EMPTY_NUMBER_KMEANS
 import wx.lib.agw.aui as aui
 
-from wx import GetTranslation as L
-from wx.lib.pubsub import Publisher as pub
-from languages import topic as T
-import threading
 
 K_MANY_PAGE = 0
 K_3D_PAGE = 1
@@ -73,6 +73,10 @@ K_COLOR_BLOCK = 1
 K_COLOR_SUB_BLOCK = 2
 K_COLOR_VALUE = 3
 
+CLUS_SHAPE = 0
+CLUS_KMEANS = 1
+CLUS_BOTH = 2
+
 
 class ControlPanel(wx.Panel):
 
@@ -84,7 +88,7 @@ class ControlPanel(wx.Panel):
         self.parent = parent
         self.mainpanel = mainpanel
         self.kfigure = kfigure
-        self.SetBackgroundColour("#3B598D")
+        self.SetBackgroundColour("#627aa3")
 
         self.init_arrays()
 
@@ -97,7 +101,7 @@ class ControlPanel(wx.Panel):
         self.k_color = K_COLOR_SUB_BLOCK
         self.cluster_config = None
         self.cluster_filter = None
-        self.visualization_mode = V_M_CLUSTER_SUMMARY
+        self.visualization_mode = V_M_CLUSTER
         self.legends_cluster = [False, False, False, True]
         self.legends_summary = [True, False, False, False]
         self.clus_one_axe = True
@@ -109,17 +113,19 @@ class ControlPanel(wx.Panel):
 
         # ---- datos - normalización de datos
         panel_control = wx.Panel(self)
-        panel_control.SetBackgroundColour('#DCE5EE')
+        panel_control.SetBackgroundColour('#3B598D')
         panel_radio = wx.Panel(panel_control)
         grid_radio = wx.BoxSizer(wx.HORIZONTAL)
         radio1 = wx.RadioButton(panel_radio, -1, 'Cluster', style=wx.RB_GROUP)
+        radio1.SetForegroundColour("white")
         self.radio2 = wx.RadioButton(panel_radio, -1, L('DATA'))
         grid_radio.Add(radio1, 0, wx.ALL, 5)
         grid_radio.Add(self.radio2, 0, wx.ALL, 5)
         radio1.Bind(wx.EVT_RADIOBUTTON, self.on_check_cluster)
         self.radio2.Bind(wx.EVT_RADIOBUTTON, self.on_check_data)
+        self.radio2.SetForegroundColour("white")
         panel_radio.SetSizer(grid_radio)
-        panel_radio.SetBackgroundColour('#DCE5EE')
+        panel_radio.SetBackgroundColour('#3B598D')
         panel_sizer = wx.BoxSizer(wx.VERTICAL)
         panel_sizer.Add(panel_radio, 1, wx.ALIGN_CENTER_HORIZONTAL)
         panel_control.SetSizer(panel_sizer)
@@ -147,6 +153,18 @@ class ControlPanel(wx.Panel):
         grid.Add(self.tbtn0, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         # ---- Configuración de Clusters
+        clus_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.cb_shape = wx.CheckBox(self, -1, "Shape")
+        self.cb_shape.SetForegroundColour("white")
+        self.cb_shape.SetValue(True)
+        self.cb_kmeans = wx.CheckBox(self, -1, "Kmeans")
+        self.cb_kmeans.SetForegroundColour("white")
+        clus_sizer.Add(self.cb_shape)
+        clus_sizer.Add(self.cb_kmeans)
+
+        self.cb_shape.Bind(wx.EVT_CHECKBOX, self.on_cluster_shape_or_kmeans)
+        self.cb_kmeans.Bind(wx.EVT_CHECKBOX, self.on_cluster_shape_or_kmeans)
+
         c_sizer = wx.BoxSizer()
         self.sc_count_clusters = wx.SpinCtrl(self, -1, "", size=(80, 30))
         self.sc_count_clusters.SetRange(0, 1000)
@@ -185,24 +203,28 @@ class ControlPanel(wx.Panel):
         a_sizer.Add(tbtnc, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
         # ---- Lista de Clusters
-        self.clusters_seccion = ClusterSeccion(self)
+        self.clusters_seccion = ClusterSeccionNew(self)
 
         # ---- marco visualización
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.data_seccion, 1, wx.EXPAND | wx.ALL |
+        self.sizer.Add(self.data_seccion, 2, wx.EXPAND | wx.ALL |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-
-        self.sizer.Add(panel_control, 0, wx.EXPAND | wx.TOP | wx.RIGHT |
-                       wx.LEFT | wx.ALIGN_RIGHT, 2)
-
         self.sizer.Add(grid, 0, wx.TOP | wx.RIGHT | wx.LEFT |
                        wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(panel_control, 0, wx.EXPAND | wx.TOP | wx.RIGHT |
+                       wx.LEFT | wx.ALIGN_RIGHT, 2)
+        self.sizer.Add(clus_sizer, 0, wx.TOP | wx.RIGHT |
+                       wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL, 2)
+        self.sizer.Add(c_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 1)
+        self.sizer.Add(self.clusters_seccion, 4, wx.EXPAND | wx.ALL, 1)
         self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
-        self.sizer.Add(self.clusters_seccion, 1, wx.EXPAND | wx.ALL, 1)
 
         self.SetSizer(self.sizer)
         self.Fit()
+
+    def on_cluster_shape_or_kmeans(self, event):
+        self.clusters_seccion.update_page(self.cb_shape.GetValue(),
+                                          self.cb_kmeans.GetValue())
 
     def on_check_cluster(self, event):
         self.sc_count_clusters.Enable()
@@ -214,6 +236,11 @@ class ControlPanel(wx.Panel):
         self.tbtnc.SetLabelColor(wx.Colour(0, 0, 255))
         self.m_n2.Enable()
         self.m_n3.Enable()
+        self.cb_shape.Enable()
+        self.cb_kmeans.Enable()
+        self.clusters_seccion.update_page(self.cb_shape.GetValue(),
+                                          self.cb_kmeans.GetValue())
+        self.clusters_seccion._checked_all.Enable()
         self.cluster_or_date = 0
 
     def on_check_data(self, event):
@@ -226,6 +253,10 @@ class ControlPanel(wx.Panel):
         self.tbtnc.Disable()
         self.m_n2.Enable(False)
         self.m_n3.Enable(False)
+        self.cb_shape.Enable(False)
+        self.cb_kmeans.Enable(False)
+        self.clusters_seccion._checked_all.Enable(False)
+        self.clusters_seccion.update_page(False, False)
         self.cluster_or_date = 1
 
     def update_language(self, msg):
@@ -295,66 +326,136 @@ class ControlPanel(wx.Panel):
             return
 
         # ---- selección de clusters a visualizar
-        shape = self.clusters_seccion.g_for_view()
-        s_clusters = shape.g_checkeds()
+        self.clusters_seccion.g_for_view()
+        crude = False if self.normalization == 0 else True
 
         # ---- se obtienen los datos/normalizado
-        _v = []
-        crude = False if self.normalization == 0 else True
-        if self.visualization_mode == V_M_CLUSTER:
-            _v = shape.g_data_for_fig(s_clusters, self.legends_cluster, crude)
+        _vs = []
+        if self.cb_shape.GetValue():
+            shape = self.clusters_seccion.shape
+            s_clusters = shape.g_checkeds()
 
-            # ---- si se trae crudo
-            if crude:
+            if self.visualization_mode == V_M_CLUSTER:
+                _le = self.legends_cluster
+                _vs = shape.g_data_for_fig(s_clusters, _le, crude)
+
+                # ---- si se trae crudo
+                if crude:
+                    if self.normalization == 1:
+                        _vs = self._nor_by_cluster(_vs)
+                    elif self.normalization == 2:
+                        _vs = self._nor_by_selected(_vs, shape.column_name)
+
+                if self.clus_one_axe:
+                    _vs = [pd.concat(_vs)]
+
+            if self.visualization_mode == V_M_SUMMARY:
+                _ls = self.legends_summary
+                _vs = shape.g_resume_for_fig(s_clusters, _ls, crude)
+
+                if self.summ_one_axe:
+                    _vs = [pd.concat(_vs)]
+
+            if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+
+                # ---- todo en un axe
+                _c, _r = shape.g_data_by_dr(s_clusters, self.legends_cluster,
+                                            self.legends_summary, crude)
                 if self.normalization == 1:
-                    _v = self._nor_by_cluster(_v)
+                    # ----  normalizar cada cluster y recalcular resumen
+                    _c, _r = self._nor_by_cr_one(_c, _r, shape.column_name)
+
                 elif self.normalization == 2:
-                    _v = self._nor_by_selected(_v, shape.column_name)
+                    _c, _r = self._nor_by_cr_two(_c, _r, shape.column_name)
 
-            if self.clus_one_axe:
-                _v = [pd.concat(_v)]
+                # ---- mescla de datos de acuerdo a la opción seleccionada
+                if self.clus_summ_axs[0]:
+                    for i, cr in enumerate(_c):
+                        _vs.append(cr)
+                        _vs.append(_r[i])
+                    _vs = [pd.concat(_vs)]
 
-        if self.visualization_mode == V_M_SUMMARY:
-            _ls = self.legends_summary
-            _v = shape.g_resume_for_fig(s_clusters, _ls, crude)
+                if self.clus_summ_axs[1]:
+                    for i, cr in enumerate(_c):
+                        _vs.append(cr)
+                        _vs.append(_r[i])
 
-            if self.summ_one_axe:
-                _v = [pd.concat(_v)]
+                if self.clus_summ_axs[2]:
+                    for i, cr in enumerate(_c):
+                        _vs.append(pd.concat([cr, _r[i]]))
 
-        if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+                if self.clus_summ_axs[3]:
+                    _vs.append(pd.concat(_c))
+                    _vs.append(pd.concat(_r))
 
-            # ---- todo en un axe
-            _c, _r = shape.g_data_by_dr(s_clusters, self.legends_cluster,
-                                        self.legends_summary, crude)
-            if self.normalization == 1:
-                # ----  normalizar cada cluster y recalcular resumen
-                _c, _r = self._nor_by_cr_one(_c, _r, shape.column_name)
+        _vk = []
+        if self.cb_kmeans.GetValue():
+            tkmeans = self.clusters_seccion.tkmeans
+            k_clusters = tkmeans.g_checkeds()
 
-            elif self.normalization == 2:
-                _c, _r = self._nor_by_cr_two(_c, _r, shape.column_name)
+            if self.visualization_mode == V_M_CLUSTER:
+                _le = self.legends_cluster
+                _vk = tkmeans.g_data_for_fig(k_clusters, _le, crude)
 
-            # ---- mescla de datos de acuerdo a la opción seleccionada
-            if self.clus_summ_axs[0]:
-                for i, cr in enumerate(_c):
-                    _v.append(cr)
-                    _v.append(_r[i])
-                _v = [pd.concat(_v)]
+                # ---- si se trae crudo
+                if crude:
+                    if self.normalization == 1:
+                        _vk = self._nor_by_cluster(_vk)
+                    elif self.normalization == 2:
+                        _vk = self._nor_by_selected(_vk, tkmeans.column_name)
 
-            if self.clus_summ_axs[1]:
-                for i, cr in enumerate(_c):
-                    _v.append(cr)
-                    _v.append(_r[i])
+                if self.clus_one_axe:
+                    _vk = [pd.concat(_vk)]
 
-            if self.clus_summ_axs[2]:
-                for i, cr in enumerate(_c):
-                    _v.append(pd.concat([cr, _r[i]]))
+            if self.visualization_mode == V_M_SUMMARY:
+                _ls = self.legends_summary
+                _vk = tkmeans.g_resume_for_fig(k_clusters, _ls, crude)
 
-            if self.clus_summ_axs[3]:
-                _v.append(pd.concat(_c))
-                _v.append(pd.concat(_r))
+                if self.summ_one_axe:
+                    _vk = [pd.concat(_vk)]
+
+            if self.visualization_mode == V_M_CLUSTER_SUMMARY:
+
+                # ---- todo en un axe
+                _c, _r = tkmeans.g_data_by_dr(k_clusters, self.legends_cluster,
+                                              self.legends_summary, crude)
+                if self.normalization == 1:
+                    # ----  normalizar cada cluster y recalcular resumen
+                    _c, _r = self._nor_by_cr_one(_c, _r, tkmeans.column_name)
+
+                elif self.normalization == 2:
+                    _c, _r = self._nor_by_cr_two(_c, _r, tkmeans.column_name)
+
+                # ---- mescla de datos de acuerdo a la opción seleccionada
+                if self.clus_summ_axs[0]:
+                    for i, cr in enumerate(_c):
+                        _vk.append(cr)
+                        _vk.append(_r[i])
+                    _vk = [pd.concat(_vk)]
+
+                if self.clus_summ_axs[1]:
+                    for i, cr in enumerate(_c):
+                        _vk.append(cr)
+                        _vk.append(_r[i])
+
+                if self.clus_summ_axs[2]:
+                    for i, cr in enumerate(_c):
+                        _vk.append(pd.concat([cr, _r[i]]))
+
+                if self.clus_summ_axs[3]:
+                    _vk.append(pd.concat(_c))
+                    _vk.append(pd.concat(_r))
 
         # ---- update figure
-        self.kfigure.kdraw(_v)
+        _vu = []
+        if _vk != [] and _vs != []:
+            _vu = [pd.concat(_vs), pd.concat(_vk)]
+        elif _vs != []:
+            _vu = _vs
+        else:
+            _vu = _vk
+
+        self.kfigure.kdraw(_vu)
 
     def _nor_by_cr_one(self, v, r, column_name):
         _r = []
@@ -429,11 +530,20 @@ class ControlPanel(wx.Panel):
         if not self.data_seccion.checked_elemens():
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
+        _cl = self.sc_count_clusters.GetValue()
+        if self.cb_kmeans.GetValue() and _cl == 0:
+            KMessage(self.mainpanel, KMSG_EMPTY_NUMBER_KMEANS).kshow()
+            return
 
-        dfpopulation = self.clusters_seccion.get_dfpopulation()
+        dfpopulation = self.data_seccion.get_dfpopulation()
 
         self.start_busy()
-        task = GenerateClusterThread(self, dfpopulation)
+        clus = self.sc_count_clusters.GetValue()
+        clus_sec = self.clusters_seccion
+
+        task = GenerateClusterThread(self, dfpopulation, clus, clus_sec,
+                                     self.cb_shape.GetValue(),
+                                     self.cb_kmeans.GetValue())
         task.start()
 
     def on_filter(self, event):
@@ -446,23 +556,17 @@ class ControlPanel(wx.Panel):
         if self.data_selected is None:
             self.data_selected = SelectedData()
             _data = self.data_selected
-            _shape = self.clusters_seccion.shape
-
-            # --- opción de selección
             _data.option = 0
-
-            # ---- cantidad de tendencias
-            _data.count_tendency = _shape.clusters_count
-
-            # ---- clusters más representativos - en número de individuos
+            _data.count_tendency = self.clusters_seccion.g_elements()
             _data.more_repre = 0
-
-            # ---- clusters menos representativos - en número de individuos
             _data.less_repre = 0
+            _names = []
+            if self.clusters_seccion.shape is None:
+                _names = self.clusters_seccion.tkmeans.name_objectives
+            else:
+                _names = self.clusters_seccion.shape.name_objectives
+            _data.max_objetives = list(_names)
 
-            # ---- clusters por valor de objetivos mayores
-            _shape.name_objectives
-            _data.max_objetives = list(_shape.name_objectives)
         if self.cluster_filter is None:
             self.cluster_filter = FilterClusterDialog(self, self.data_selected)
         else:
@@ -475,12 +579,10 @@ class ControlPanel(wx.Panel):
         _data = self.clusters_seccion
         # ---- seleccionar clusters automáticamente
         if self.data_selected.option == 0:
-            # ---- seleccionar los mas representativos
-            # ---- seleccionar los menos representativos
+            # ---- seleccionar los mas y menos representativos
             _max = self.data_selected.more_repre
             _ten = self.data_selected.count_tendency
             _min = self.data_selected.less_repre
-
             self.clusters_seccion.more_representative(_max, _ten - _min)
 
         if self.data_selected.option == 1:
@@ -501,6 +603,7 @@ class ControlPanel(wx.Panel):
 
         if self.cluster_config is None:
             self.cluster_config = ClusterConfig(self)
+
         self.cluster_config.ShowModal()
 
     def on_nor_menu(self, evt):
@@ -513,21 +616,6 @@ class ControlPanel(wx.Panel):
             self.tbtn0.SetLabel(label)
             self.normalization = self.NORMA_METO.index(label)
 
-    def g_label_nor(self, id_nor):
-        if id_nor == 0:
-            return L('EXIT_TAVA')
-        L('EXIT_TAVA')
-
-    def g_label_data(self, id_nor):
-        if id_nor == 0:
-            return L('EXIT_TAVA')
-        L('EXIT_TAVA')
-
-    def g_label_analisis(self, id_nor):
-        if id_nor == 0:
-            return L('EXIT_TAVA')
-        L('EXIT_TAVA')
-
     def start_busy(self):
         pub().sendMessage(T.START_BUSY)
         self.tbtna.SetLabelColor(wx.Colour(191, 191, 191))
@@ -535,6 +623,8 @@ class ControlPanel(wx.Panel):
         self.tbtnb.SetLabelColor(wx.Colour(191, 191, 191))
         self.tbtnb.Disable()
         self.sc_count_clusters.Disable()
+        self.cb_shape.Disable()
+        self.cb_kmeans.Disable()
 
     def stop_busy(self):
         pub().sendMessage(T.STOP_BUSY)
@@ -543,144 +633,36 @@ class ControlPanel(wx.Panel):
         self.tbtnb.Enable()
         self.tbtnb.SetLabelColor(wx.Colour(0, 0, 255))
         self.sc_count_clusters.Enable()
-        self.clusters_seccion.update_list()
+        self.clusters_seccion.update_list(self.cb_shape.GetValue(),
+                                          self.cb_kmeans.GetValue())
+        self.cb_shape.Enable()
+        self.cb_kmeans.Enable()
+
+        if self.cluster_filter is not None:
+            _c = self.clusters_seccion.g_elements()
+            self.cluster_filter.update_by_generateClusters(_c)
 
 
 class GenerateClusterThread(threading.Thread):
-    def __init__(self, panel, dfpopulation):
+    def __init__(self, panel, dfpopulation, clus, clus_sec, c_shape, c_kmenas):
         super(GenerateClusterThread, self).__init__()
-        # Attributes
+        # ---- Attributes
         self.panel = panel
+        self.n_clas = clus
+        self.c_sec = clus_sec
         self.dfpopulation = dfpopulation
+        self.c_shape = c_shape
+        self.c_kmenas = c_kmenas
 
     def run(self):
-        self.panel.clusters_seccion.generate_clusters(self.dfpopulation,
-                                       self.panel.sc_count_clusters.GetValue(),
-                                       self.panel.normalization)
+
+        if self.c_shape:
+            self.c_sec.generate_shapes(self.dfpopulation, self.n_clas)
+
+        if self.c_kmenas:
+            self.c_sec.generate_kmeans(self.dfpopulation, self.n_clas)
+
         wx.CallAfter(self.panel.stop_busy)
-
-
-# -------------------                                  ------------------------
-# -------------------                                  ------------------------
-class ClusterSeccion(wx.Panel):
-
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent, -1)
-
-        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
-
-        self.SetBackgroundColour('#FFFFFF')
-        self.parent = parent
-        self.shape = None
-        self.row_index = []
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        self.list_control = CheckListCtrl(self)
-        self.list_control.InsertColumn(0, L('NAME'))
-
-        self._checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
-        self._checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
-
-        sizer.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
-        sizer.Add(self.list_control, 1, wx.EXPAND)
-        self.SetSizer(sizer)
-
-    def g_for_view(self):
-        position_checked = []
-        position_unchecked = []
-        for i, r_i in enumerate(self.row_index):
-            if self.list_control.IsChecked(r_i):
-                position_checked.append(i)
-            else:
-                position_unchecked.append(i)
-        self.shape.cluster_checkeds = position_checked
-        self.shape.cluster_uncheckeds = position_unchecked
-        return self.shape
-
-    def get_dfpopulation(self):
-        # ----- bloques marcados para generar clusters
-        blocks_checkeds = self.parent.data_seccion.get_checkeds_for_cluster()
-        self.row_index = []
-        # ----- mezclar bloques marcados para crear un solo bloques
-        blocks_checkeds_merge = []
-        for _key, data in blocks_checkeds.iteritems():
-            blocks_checkeds_merge.append(data[1].dframe)
-
-        df_population = pd.concat(blocks_checkeds_merge)
-        return df_population
-
-    def generate_clusters(self, df_population, clus, nor):
-        # ---- generar clusters
-        self.shape = Shape(df_population, clus=clus, nor=nor)
-
-    def update_list(self):
-        _tit = '- '
-
-        # ----- limpiar clusters anteriores
-        self.list_control.DeleteAllItems()
-
-        # kblocks_two[0] = ('', KBlock('0', df_merge))
-        _tit = ''
-
-        # ---- agregar clusters a la vista
-        for i, c in enumerate(self.shape.clusters):
-            # name = data[0] + _tit + 'c' + str(vclus)
-            name = 'cluster_' + str(i + 1) + ': ' + c.g_percent_format()
-            index = self.list_control.InsertStringItem(sys.maxint, name)
-            self.list_control.SetItemData(index, index)
-            self.row_index.append(index)
-
-        self.list_control.SetColumnWidth(0, wx.LIST_AUTOSIZE)
-
-    def on_checked_all(self, event):
-        if event.IsChecked():
-            for index in self.row_index:
-                self.list_control.CheckItem(index)
-        else:
-            self.un_select_all()
-
-    def select_all(self):
-        for index in self.row_index:
-            self.list_control.CheckItem(index)
-
-    def un_select_all(self):
-        for index in self.row_index:
-            self.list_control.CheckItem(index, False)
-
-    def contain_elemens(self):
-        return self.list_control.GetItemCount()
-
-    def checked_elemens(self):
-        for index in self.row_index:
-            if self.list_control.IsChecked(index):
-                return True
-        return False
-
-    # ---- funciones para análisis
-
-    def more_representative(self, repre, less_rep):
-        self.un_select_all()
-
-        # ---- más representativos
-        for index in self.row_index[:repre]:
-            self.list_control.CheckItem(index)
-
-        # ---- menos representativos
-        for index in self.row_index[less_rep:]:
-            self.list_control.CheckItem(index)
-
-    def less_representative(self, repre):
-        self.un_select_all()
-        for index in self.row_index[repre:]:
-            self.list_control.CheckItem(index)
-
-    def max_min_objective(self, v_max, v_min):
-        self.un_select_all()
-        for index in self.shape.g_clusters_max_min_in_var(v_max, v_min):
-            self.list_control.CheckItem(index)
-
-    def update_language(self, msg):
-        self._checked_all.SetLabel(L('SELECT_ALL'))
 
 
 # -------------------                                  ------------------------
@@ -736,6 +718,17 @@ class DataSeccion(wx.Panel):
                 key = self.list_control.GetItemData(index)
                 block_checked[key] = self.kblocks[key]
         return block_checked
+
+    def get_dfpopulation(self):
+        # ----- bloques marcados para generar clusters
+        blocks_checkeds = self.get_checkeds_for_cluster()
+        # ----- mezclar bloques marcados para crear un solo bloques
+        blocks_checkeds_merge = []
+        for _key, data in blocks_checkeds.iteritems():
+            blocks_checkeds_merge.append(data[1].dframe)
+
+        df_population = pd.concat(blocks_checkeds_merge)
+        return df_population
 
     def on_checked_all(self, event):
         if event.IsChecked():

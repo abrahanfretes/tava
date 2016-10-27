@@ -158,6 +158,16 @@ msgstr "(guión medio)"
 msgid "UNDERSCORE"
 msgstr "(guión bajo)"
 
+msgid "ERROR_REPORTING"
+msgstr "Informe de Errores"
+
+msgid "FILE"
+msgstr "Archivo"
+
+msgid "ERROR_MESSAGE"
+msgstr "Mensaje de Error"
+
+
 # ------------------------------- AddFileDialog -------------------------------
 msgid "FILE_STATIC_LABEL"
 msgstr "Agregar archivos al proyecto"
@@ -327,13 +337,13 @@ msgid "CANCEL"
 msgstr "Cancelar"
 
 msgid "NORMALIZED_FULL"
-msgstr "Normalizado          "
+msgstr "Normalización Completa    "
 
 msgid "NORMALIZED_CLUSTER"
-msgstr "Por Cluster"
+msgstr "Normalización x Cluster   "
 
 msgid "NORMALIZED_SELECTED"
-msgstr "Por Seleccionados"
+msgstr "Normalización x Selección "
 
 msgid "DATA_CRUDE"
 msgstr "Dato Crudo"
@@ -594,3 +604,9 @@ msgstr "Generación de Clusters"
 
 msgid "EMPTY_GENERATE_CLUSTER"
 msgstr "Falta Seleccionar Datos\n\nDebe seleccionar almenos un dato para ser \nagrupado. La lista de datos se encuentra en\nla parte superior derecho:\n1. Seleccionar almenos un dato.\n2. Establezca cantidad de clusters.\n3. Vuelva a intentar agrupar.\n\n            TAVA-TOOL  "
+
+msgid "H_EMPTY_NUMBER_KMEANS"
+msgstr "Cluster Kmeans"
+
+msgid "EMPTY_NUMBER_KMEANS"
+msgstr "Cantidad de Clusters no especificado\n\nLa cantidad de clusters mínima para el agrupador \nKmeans es uno. Especifique el número y luego vuelva \na intentar.\n\n            TAVA-TOOL  "
