@@ -275,27 +275,28 @@ class TTree(CT.CustomTreeCtrl):
     def on_contex(self, event):
         data = self.c_data[0]
         if isinstance(data, Project):
-            print 'Click derecho en Proyecto'
+            pass
+#             print 'Click derecho en Proyecto'
             # menu_p = MenuP(self, data)
             # self.PopupMenu(menu_p)
         elif isinstance(data, PackageFile):
-            print 'Click derecho en Paquete Resultado'
             menu_p = MenuResult(self, data.project)
             self.PopupMenu(menu_p)
+            # print 'Click derecho en Paquete Resultado'
         elif isinstance(data, PackageView):
-            print 'Click derecho en Paquete de Vista'
+            # print 'Click derecho en Paquete de Vista'
             menu_p = MenuPackageView(self, data.project)
             self.PopupMenu(menu_p)
         elif isinstance(data, Result):
-            print 'Click derecho en Result'
+            # print 'Click derecho en Result'
             menu_p = MenuResultFile(self, data)
             self.PopupMenu(menu_p)
         elif isinstance(data, View):
             menu_p = MenuVista(self, data)
             self.PopupMenu(menu_p)
-            print 'Click derecho en Vista'
-        else:
-            print 'ninguno de los anteriores'
+#             print 'Click derecho en Vista'
+#         else:
+#             print 'ninguno de los anteriores'
 
     def _expanded(self, item, expand=True):
         if expand:

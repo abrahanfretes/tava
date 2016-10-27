@@ -158,6 +158,15 @@ msgstr "(hyphen)"
 msgid "UNDERSCORE"
 msgstr "(underscore)"
 
+msgid "ERROR_REPORTING"
+msgstr "Error Reporting"
+
+msgid "FILE"
+msgstr "File"
+
+msgid "ERROR_MESSAGE"
+msgstr "Error message"
+
 # ------------------------------- AddFileDialog -------------------------------
 msgid "FILE_STATIC_LABEL"
 msgstr "Add files to the Project"
@@ -489,7 +498,7 @@ msgid "LEGEND_CONTENT"
 msgstr "Legend Content"
 
 msgid "PERCENTAGE_OF_OBSERVATIONS"
-msgstr "Amount of Observations"
+msgstr "Percentage of observations"
 
 msgid "AMOUNT_OF_OBSERVATIONS"
 msgstr "Amount of Observations"

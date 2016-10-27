@@ -236,6 +236,11 @@ class ControlPanel(wx.Panel):
         self.tbtnc.SetLabelColor(wx.Colour(0, 0, 255))
         self.m_n2.Enable()
         self.m_n3.Enable()
+        self.cb_shape.Enable()
+        self.cb_kmeans.Enable()
+        self.clusters_seccion.update_page(self.cb_shape.GetValue(),
+                                          self.cb_kmeans.GetValue())
+        self.clusters_seccion._checked_all.Enable()
         self.cluster_or_date = 0
 
     def on_check_data(self, event):
@@ -248,6 +253,10 @@ class ControlPanel(wx.Panel):
         self.tbtnc.Disable()
         self.m_n2.Enable(False)
         self.m_n3.Enable(False)
+        self.cb_shape.Enable(False)
+        self.cb_kmeans.Enable(False)
+        self.clusters_seccion._checked_all.Enable(False)
+        self.clusters_seccion.update_page(False, False)
         self.cluster_or_date = 1
 
     def update_language(self, msg):

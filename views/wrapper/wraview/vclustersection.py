@@ -91,6 +91,8 @@ class ClusterSeccionNew(wx.Panel):
 
     def update_list(self, c_shape, c_kmenas):
 
+        self._checked_all.SetValue(False)
+
         # ---- Sección Shape
 
         if c_shape:

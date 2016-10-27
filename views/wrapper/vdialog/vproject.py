@@ -41,10 +41,11 @@ class NewProject(wx.Dialog):
 
         self.wildcard = L('FILES_RESULTS') + " |*"
 
-        self.FILES_FORMATS = ['Von Tava', L('SEPARATOR') + ':']
+        self.FILES_FORMATS = [' Von Tava', L('SEPARATOR') + ':']
 
-        self.SEPARATOR_FILE = [', ' + L('COMMA'), '; ' + L('SEMICOLON'), '  ' + L('BLANK_SPACE'),
-                  '- ' + L('HYPHEN'), '_ ' + L('UNDERSCORE')]
+        self.SEPARATOR_FILE = [', ' + L('COMMA'), '; ' + L('SEMICOLON'), '  '
+                               + L('BLANK_SPACE'), '- ' + L('HYPHEN'), '_ ' +
+                               L('UNDERSCORE')]
         self.SEPARATOR_FILE_VALUE = [',', ';', ' ', '-', '_']
 
         self.existing_names = []
@@ -129,10 +130,10 @@ class NewProject(wx.Dialog):
 
         # ---- selección de formato
 
-        self.radio_von = wx.RadioButton(panel, -1, " Von Tava",
+        self.radio_von = wx.RadioButton(panel, -1, self.FILES_FORMATS[0],
                                         style=wx.RB_GROUP)
         self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_von, self.radio_von)
-        self.radio_sep = wx.RadioButton(panel, -1, "Separador:")
+        self.radio_sep = wx.RadioButton(panel, -1, self.FILES_FORMATS[1])
         self.Bind(wx.EVT_RADIOBUTTON, self.on_radio_sep, self.radio_sep)
         p_sep = self.properties.get_file_format_sep()
         self.cb_sep = wx.ComboBox(panel, 500, self.SEPARATOR_FILE[p_sep], (90, 50),
@@ -142,7 +143,7 @@ class NewProject(wx.Dialog):
         sep_sizer.Add(self.cb_sep)
         self.set_option_radio()
 
-        s_sizer = wx.BoxSizer()
+        s_sizer = wx.BoxSizer(wx.HORIZONTAL)
         s_sizer.Add(self.radio_von, 0, wx.EXPAND)
         s_sizer.Add(sep_sizer, 0, wx.EXPAND)
         boxsizer.Add(s_sizer, 1, flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
@@ -494,7 +495,7 @@ class ResultErrors(wx.Dialog):
 
         h_sizer = wx.BoxSizer()
         error_bmp = wx.StaticBitmap(self, -1, error_bit.GetBitmap())
-        title = wx.StaticText(self, label='Informe de Errores')
+        title = wx.StaticText(self, label=L('ERROR_REPORTING'))
         pts = title.GetFont().GetPointSize()
         title.SetFont(wx.FFont(pts, wx.SWISS, wx.FONTFLAG_BOLD))
         h_sizer.Add(error_bmp)
@@ -503,13 +504,13 @@ class ResultErrors(wx.Dialog):
         st_line = wx.StaticLine(self)
 
         self.dvlc = dvlc = dv.DataViewListCtrl(self)
-        dvlc.AppendTextColumn('File', width=65)
-        dvlc.AppendTextColumn('Error Message', width=100)
+        dvlc.AppendTextColumn(L('FILE'), width=65)
+        dvlc.AppendTextColumn(L('ERROR_MESSAGE'), width=100)
 
         for ers in errores:
             dvlc.AppendItem([ers.filename, ers.message])
 
-        b_accep = wx.Button(self, label='Aceptar', size=(125, 32))
+        b_accep = wx.Button(self, label=L('OK'), size=(125, 32))
         b_accep.Bind(wx.EVT_BUTTON, self.on_accept)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
