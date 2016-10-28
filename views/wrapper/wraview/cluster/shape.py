@@ -127,17 +127,63 @@ class Shape():
             return self.generalized_shape(df_shapes)
 
         # ---- número de clusters mayor a tendencias
-        # esta parte falta completar
-        missing = self.tendency_count - clus
-        c_shape = list(self.tendencies)
-        c_repeat = np.random.randint(0, missing, missing)
-        c_shape = [c_shape.append(c_shape[cs]) for cs in c_repeat]
+
+        # ---- cantidad faltante de shape
+        missing = clus - self.tendency_count
+
+        # ---- cantidad de individuos por shape
+        idividuos_x_shape = []
+        tends = df_shapes[self.column_name].tolist()
+        for t in self.tendencies:
+            idividuos_x_shape.append(tends.count(t))
+
+        # ---- cantidad inicial de clusters - todos a uno
+        n_clusters_final = [1]*len(idividuos_x_shape)
+
+        # --- eliminación de indices con cantidad de indivisuo menores a dos
+        a_paricipar = []
+        for i, v in enumerate(idividuos_x_shape):
+            if v > 1:
+                a_paricipar.append(i)
+
+        # ---- calculo de número de clusters finales
+        while missing != 0:
+            _index = np.random.randint(len(a_paricipar))
+            a = a_paricipar[_index]
+            n_clusters_final[a] = n_clusters_final[a] + 1
+            if idividuos_x_shape[a] == n_clusters_final[a]:
+                del a_paricipar[_index]
+            missing -= 1
+
+        # ---- division se shape para clusters
         df_group = df_shapes.groupby(self.column_name)
+        final_dfs = []
+        for i, tend in enumerate(self.tendencies):
+            df = df_group.get_group(tend).copy()
+            n_clus = n_clusters_final[i]
 
-        for tend in self.tendencies:
-            df = df_group.get_group(tend)
+            if n_clus > 1:
 
-        return self.generalized_shape(df_shapes)
+                c_indi = idividuos_x_shape[i]
+                _mod = c_indi % n_clus
+                ras = range(0, c_indi-_mod, c_indi/n_clus)
+                ras.append(c_indi)
+                _cols = df[self.column_name].tolist()
+
+                sl = []
+                _tend = df[self.column_name].tolist()
+
+                for j in range(len(ras)-1):
+                    _c = _tend[ras[j]:ras[j+1]]
+                    sl = sl + [v+'-'+str(j) for v in _c]
+
+                df[self.column_name] = sl
+                final_dfs.append(df)
+
+            else:
+                final_dfs.append(df)
+
+        return self.generalized_shape(pd.concat(final_dfs))
 
     def generalized_shape(self, df_shapes):
 
