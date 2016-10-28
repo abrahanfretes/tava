@@ -27,6 +27,7 @@ KMSG_EMPTY_CLUSTER_SELECTED = 4
 KMSG_EMPTY_DATA_GENERATE_CLUSTER = 5
 KMSG_GENERATE_CLUSTER = 6
 KMSG_EMPTY_NUMBER_KMEANS = 7
+KMSG_INVALID_NUM_CLUSTERS = 8
 
 
 K_ICON_INFORMATION = wx.ICON_INFORMATION
@@ -78,6 +79,12 @@ class KMessage():
         elif key_message == KMSG_EMPTY_NUMBER_KMEANS:
             self.h_msg = L('H_EMPTY_NUMBER_KMEANS')
             self.m_msg = L('EMPTY_NUMBER_KMEANS')
+            self.k_ico = key_ico
+            self.k_but = key_button
+
+        elif key_message == KMSG_INVALID_NUM_CLUSTERS:
+            self.h_msg = L('H_INVALID_NUM_CLUSTERS')
+            self.m_msg = L('INVALID_NUM_CLUSTERS')
             self.k_ico = key_ico
             self.k_but = key_button
 

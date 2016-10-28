@@ -610,3 +610,9 @@ msgstr "Cluster Kmeans"
 
 msgid "EMPTY_NUMBER_KMEANS"
 msgstr "Cantidad de Clusters no especificado\n\nLa cantidad de clusters mínima para el agrupador \nKmeans es uno. Especifique el número y luego vuelva \na intentar.\n\n            TAVA-TOOL  "
+
+msgid "H_INVALID_NUM_CLUSTERS"
+msgstr "Generación de Cluster"
+
+msgid "INVALID_NUM_CLUSTERS"
+msgstr "Número de Cluster mayor a la Población\n\nLa cantidad de clusters solicitado supera a la\ncantidad de individuo de la población. Disminuya\nla cantidad y vuelva a intentarlo.\n\n           TAVA-TOOL  "

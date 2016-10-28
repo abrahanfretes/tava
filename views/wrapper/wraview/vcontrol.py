@@ -35,7 +35,7 @@ from views.wrapper.wraview.vclustersection import ClusterSeccionNew
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
-    KMSG_GENERATE_CLUSTER, KMSG_EMPTY_NUMBER_KMEANS
+    KMSG_GENERATE_CLUSTER, KMSG_EMPTY_NUMBER_KMEANS, KMSG_INVALID_NUM_CLUSTERS
 import wx.lib.agw.aui as aui
 
 
@@ -521,6 +521,7 @@ class ControlPanel(wx.Panel):
         return df
 
     def on_generate(self, event):
+
         self.data_selected = None
         # ---- controlar valores consistentes para clusters
         if not self.data_seccion.contain_elemens():
@@ -535,12 +536,16 @@ class ControlPanel(wx.Panel):
             KMessage(self.mainpanel, KMSG_EMPTY_NUMBER_KMEANS).kshow()
             return
 
+        clus = self.sc_count_clusters.GetValue()
         dfpopulation = self.data_seccion.get_dfpopulation()
 
-        self.start_busy()
-        clus = self.sc_count_clusters.GetValue()
-        clus_sec = self.clusters_seccion
+        if len(dfpopulation) < clus:
+            KMessage(self.mainpanel, KMSG_INVALID_NUM_CLUSTERS).kshow()
+            return
 
+        self.start_busy()
+
+        clus_sec = self.clusters_seccion
         task = GenerateClusterThread(self, dfpopulation, clus, clus_sec,
                                      self.cb_shape.GetValue(),
                                      self.cb_kmeans.GetValue())
