@@ -80,10 +80,11 @@ class Kmeans():
         # ---- resumenes o centroides
         resumes = {}
         for i, rs in enumerate(centroids):
-            resumes[i] = np.concatenate((rs, [i]))
+            resumes[str(i)+'-k'] = np.concatenate((rs, [i]))
 
         # ---- se crea un dataframe de toda la población
         df_clusters = pd.DataFrame(whitened, columns=df.columns)
+        indexes = [str(i)+'-k' for i in indexes]
         df_clusters['Name'] = indexes
 
         # ---- se crean grupos
