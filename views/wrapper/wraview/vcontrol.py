@@ -25,6 +25,7 @@ from wx.lib import platebtn
 from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from wx.lib.pubsub import Publisher as pub
+import wx.lib.scrolledpanel as scrolled
 
 from languages import topic as T
 import numpy as np
@@ -78,10 +79,10 @@ CLUS_KMEANS = 1
 CLUS_BOTH = 2
 
 
-class ControlPanel(wx.Panel):
+class ControlPanel(scrolled.ScrolledPanel):
 
     def __init__(self, parent, kfigure, ksub_blocks, mainpanel):
-        wx.Panel.__init__(self, parent)
+        scrolled.ScrolledPanel.__init__(self, parent, size=(222, -1))
 
         pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
@@ -220,7 +221,8 @@ class ControlPanel(wx.Panel):
         self.sizer.Add(a_sizer, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 2)
 
         self.SetSizer(self.sizer)
-        self.Fit()
+        self.SetAutoLayout(1)
+        self.SetupScrolling()
 
     def on_cluster_shape_or_kmeans(self, event):
         self.clusters_seccion.update_page(self.cb_shape.GetValue(),
@@ -277,6 +279,8 @@ class ControlPanel(wx.Panel):
         self.tbtnb.Refresh()
         self.tbtnc.SetLabel(self.ANALISIS_LABEL[2])
         self.tbtnc.Refresh()
+
+        self.Layout()
 
     def init_arrays(self):
         self.NORMA_METO = [L('NORMALIZED_FULL'), L('NORMALIZED_CLUSTER'),
