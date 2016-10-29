@@ -24,7 +24,7 @@ import numpy as np
 from views.wrapper.wraview.vgraphic.fuse import square_plot
 
 
-def k_cp(frame, ax, ax_conf, class_column, **kwds):
+def k_cp(frame, ax, ax_conf, class_column, color_values=None, **kwds):
     """Parallel coordinates plotting.
     """
     # import matplotlib.pyplot as plt
@@ -55,7 +55,9 @@ def k_cp(frame, ax, ax_conf, class_column, **kwds):
         x = lrange(ncols)
 
     # ---- selección de colores - automático/personalizado
-    color_values = g_colors(len(classes), ax_conf.color)
+    if color_values is None:
+        color_values = g_colors(len(classes), ax_conf.color)
+
     colors = dict(zip(classes, color_values))
 
     # ---- creación de leyenda por valor
@@ -166,7 +168,7 @@ def set_figure_config(fig, fig_config):
 #                            _xaxis=True, _yaxis=True):
 
 
-def k_parallel_coordinates(dframes, class_column, fig, ax_conf, fg_conf):
+def k_parallel_coordinates(dframes, class_column, fig, ax_conf, fg_conf, colors):
 
     # ---- cantidad de subplot necesarias - filas y columnas.
     # ---- busca el cuadrado de los dos
@@ -174,6 +176,6 @@ def k_parallel_coordinates(dframes, class_column, fig, ax_conf, fg_conf):
 
     for i, df in enumerate(dframes):
         ax = fig.add_subplot(s_row, s_col, i + 1)
-        k_cp(df, ax, ax_conf, class_column)
+        k_cp(df, ax, ax_conf, class_column, colors[i])
 
     return fig

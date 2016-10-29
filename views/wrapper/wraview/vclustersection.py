@@ -146,7 +146,7 @@ class ClusterSeccionNew(wx.Panel):
         else:
             self.un_select_all()
 
-    def g_for_view(self):
+    def pre_view(self):
 
         if self.pages[0]:
             position_checked = []

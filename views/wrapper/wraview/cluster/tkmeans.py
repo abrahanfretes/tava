@@ -18,6 +18,7 @@
 
 import operator
 from scipy.cluster.vq import kmeans, vq
+from pandas.tools.plotting import _get_standard_colors
 
 import numpy as np
 import pandas as pd
@@ -42,6 +43,7 @@ class Kmeans():
         self.clusters_count = len(self.clusters)
         self.name_objectives = df_population.columns.tolist()[:-1]
         self.full_normalization()
+        self.set_color_clusters()
 
     def full_normalization(self):
         cs = []
@@ -56,6 +58,21 @@ class Kmeans():
         for c in self.clusters:
             c.full_nor = df_group.get_group(c.shape)
             c.df_resume_nor = c.g_resume(c.full_nor, c.shape)
+
+    def set_color_clusters(self):
+
+        _count = len(self.clusters)
+        _colors = self.g_colors(_count*2)
+        _clus_cols = _colors[:_count]
+        _resu_cols = _colors[_count:]
+
+        for i, c in enumerate(self.clusters):
+            c.clus_color = [_clus_cols[i]]
+            c.resu_color = [_resu_cols[i]]
+
+    def g_colors(self, count):
+        color_values = _get_standard_colors(count, None, 'random')
+        return color_values
 
     def _nor(self, df):
         def normalize(series):
@@ -160,6 +177,8 @@ class Kmeans():
         _clusters = []
         _resumes = []
         _legends = []
+        _clus_color = []
+        _resu_color = []
 
         for c in s_clusters:
             # data
@@ -168,6 +187,7 @@ class Kmeans():
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
+            _clus_color.append(c.clus_color)
 
             # resume
             _dfr = c.df_resume.copy() if crude else c.df_resume_nor.copy()
@@ -175,8 +195,9 @@ class Kmeans():
             _legends.append(_leg)
             _dfr[self.column_name] = [_leg]
             _resumes.append(_dfr)
+            _resu_color.append(c.resu_color)
 
-        return _clusters, _resumes
+        return _clusters, _clus_color, _resumes, _resu_color
 
     def g_legend(self, legends, legends_condition, repeat=False):
         _legend = ""
@@ -214,6 +235,7 @@ class Kmeans():
 
         _clusters = []
         _legends = []
+        _colors = []
 
         # ---- clsuters seleccionados y creción de legendas
         for c in s_clusters:
@@ -222,8 +244,9 @@ class Kmeans():
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
             _clusters.append(_df)
+            _colors.append(c.clus_color)
 
-        return _clusters
+        return _clusters, _colors
 
     def g_resume_for_fig(self, s_clusters, legends_summary, crude=True):
         if s_clusters == []:
@@ -231,11 +254,13 @@ class Kmeans():
 
         _clusters = []
         _legends = []
+        _colors = []
         for c in s_clusters:
             _df = c.df_resume.copy() if crude else c.df_resume_nor.copy()
             _leg = c.g_legend(_legends, legends_summary)
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
+            _colors.append(c.resu_color)
 
-        return _clusters
+        return _clusters, _colors

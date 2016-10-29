@@ -126,22 +126,23 @@ class FigurePanel(wx.Panel):
                           horizontalalignment='center',
                           verticalalignment='center')
 
-    def draw_graphic(self, dframes):
+    def draw_graphic(self, dframes, colors):
         key_figure = self.g_figure()
         if key_figure == K_PARALLEL_COORDENATE:
             return k_parallel_coordinates(dframes, 'Name', self.fig,
-                self.ax_conf, self.fig_config)
+                                          self.ax_conf, self.fig_config,
+                                          colors)
         elif key_figure == K_RADAR_CHART_POLYGON:
             return k_radar_chart(dframes, 'Name', self.fig, self.ax_conf,
                                      self.radar_chard_con)
         elif key_figure == K_RADVIZ:
             return k_radviz(dframes, 'Name', self.fig, self.ax_conf)
 
-    def kdraw(self, dframes):
+    def kdraw(self, dframes, colors):
 
         self.fig.clear()
         self.start_busy()
-        task = DrawThread(self, dframes)
+        task = DrawThread(self, dframes, colors)
         task.start()
 
     def kdraw_one(self, list_df, key_figure=1):
@@ -252,14 +253,15 @@ class FigurePanel(wx.Panel):
 
 
 class DrawThread(threading.Thread):
-    def __init__(self, panel, dframes):
+    def __init__(self, panel, dframes, colors):
         super(DrawThread, self).__init__()
         # Attributes
         self.panel = panel
         self.dframes = dframes
+        self.colors = colors
 
     def run(self):
-        fig = self.panel.draw_graphic(self.dframes)
+        fig = self.panel.draw_graphic(self.dframes, self.colors)
         wx.CallAfter(self.panel.stop_busy)
         wx.CallAfter(self.panel.set_fig, fig)
         wx.CallAfter(self.panel.canvas_draw)

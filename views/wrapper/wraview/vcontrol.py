@@ -317,7 +317,7 @@ class ControlPanel(scrolled.ScrolledPanel):
             _s.append(df)
 
         # update figure
-        self.kfigure.kdraw(_s)
+        self.kfigure.kdraw(_s, [None])
 
     def v_clusters(self):
 
@@ -330,18 +330,19 @@ class ControlPanel(scrolled.ScrolledPanel):
             return
 
         # ---- selección de clusters a visualizar
-        self.clusters_seccion.g_for_view()
+        self.clusters_seccion.pre_view()
         crude = False if self.normalization == 0 else True
 
         # ---- se obtienen los datos/normalizado
         _vs = []
+        _vsc = []
         if self.cb_shape.GetValue():
             shape = self.clusters_seccion.shape
             s_clusters = shape.g_checkeds()
 
             if self.visualization_mode == V_M_CLUSTER:
                 _le = self.legends_cluster
-                _vs = shape.g_data_for_fig(s_clusters, _le, crude)
+                _vs, _vsc = shape.g_data_for_fig(s_clusters, _le, crude)
 
                 # ---- si se trae crudo
                 if crude:
@@ -352,19 +353,23 @@ class ControlPanel(scrolled.ScrolledPanel):
 
                 if self.clus_one_axe:
                     _vs = [pd.concat(_vs)]
+                    _vsc = [[i[0] for i in _vsc]]
 
             if self.visualization_mode == V_M_SUMMARY:
                 _ls = self.legends_summary
-                _vs = shape.g_resume_for_fig(s_clusters, _ls, crude)
+                _vs, _vsc = shape.g_resume_for_fig(s_clusters, _ls, crude)
 
                 if self.summ_one_axe:
                     _vs = [pd.concat(_vs)]
+                    _vsc = [[i[0] for i in _vsc]]
 
             if self.visualization_mode == V_M_CLUSTER_SUMMARY:
 
                 # ---- todo en un axe
-                _c, _r = shape.g_data_by_dr(s_clusters, self.legends_cluster,
-                                            self.legends_summary, crude)
+                _c, _cc, _r, _rc = shape.g_data_by_dr(s_clusters,
+                                                      self.legends_cluster,
+                                                      self.legends_summary,
+                                                      crude)
                 if self.normalization == 1:
                     # ----  normalizar cada cluster y recalcular resumen
                     _c, _r = self._nor_by_cr_one(_c, _r, shape.column_name)
@@ -374,32 +379,41 @@ class ControlPanel(scrolled.ScrolledPanel):
 
                 # ---- mescla de datos de acuerdo a la opción seleccionada
                 if self.clus_summ_axs[0]:
-                    for i, cr in enumerate(_c):
-                        _vs.append(cr)
-                        _vs.append(_r[i])
+                    # ---- todos en una misma fiura
+                    _vs = _c + _r
                     _vs = [pd.concat(_vs)]
+                    _vsc = _cc + _rc
+                    _vsc = [[i[0] for i in _vsc]]
 
                 if self.clus_summ_axs[1]:
-                    for i, cr in enumerate(_c):
-                        _vs.append(cr)
-                        _vs.append(_r[i])
+                    # --- todos en diferentes figuras
+
+                    _vs = _c + _r
+                    _vsc = _cc + _rc
 
                 if self.clus_summ_axs[2]:
+                    # ---- clsuters y su resumen en una figura
+
                     for i, cr in enumerate(_c):
                         _vs.append(pd.concat([cr, _r[i]]))
+                        _vsc.append([_cc[i][0], _rc[i][0]])
 
                 if self.clus_summ_axs[3]:
+                    # ---- en un eje los clusters en otro los resumenes
                     _vs.append(pd.concat(_c))
                     _vs.append(pd.concat(_r))
+                    _vsc.append([i[0] for i in _cc])
+                    _vsc.append([i[0] for i in _rc])
 
         _vk = []
+        _vkc = []
         if self.cb_kmeans.GetValue():
             tkmeans = self.clusters_seccion.tkmeans
             k_clusters = tkmeans.g_checkeds()
 
             if self.visualization_mode == V_M_CLUSTER:
                 _le = self.legends_cluster
-                _vk = tkmeans.g_data_for_fig(k_clusters, _le, crude)
+                _vk, _vkc = tkmeans.g_data_for_fig(k_clusters, _le, crude)
 
                 # ---- si se trae crudo
                 if crude:
@@ -410,19 +424,23 @@ class ControlPanel(scrolled.ScrolledPanel):
 
                 if self.clus_one_axe:
                     _vk = [pd.concat(_vk)]
+                    _vkc = [[i[0] for i in _vkc]]
 
             if self.visualization_mode == V_M_SUMMARY:
                 _ls = self.legends_summary
-                _vk = tkmeans.g_resume_for_fig(k_clusters, _ls, crude)
+                _vk, _vkc = tkmeans.g_resume_for_fig(k_clusters, _ls, crude)
 
                 if self.summ_one_axe:
                     _vk = [pd.concat(_vk)]
+                    _vkc = [[i[0] for i in _vkc]]
 
             if self.visualization_mode == V_M_CLUSTER_SUMMARY:
 
                 # ---- todo en un axe
-                _c, _r = tkmeans.g_data_by_dr(k_clusters, self.legends_cluster,
-                                              self.legends_summary, crude)
+                _c, _cc, _r, _rc = tkmeans.g_data_by_dr(k_clusters,
+                                                        self.legends_cluster,
+                                                        self.legends_summary,
+                                                        crude)
                 if self.normalization == 1:
                     # ----  normalizar cada cluster y recalcular resumen
                     _c, _r = self._nor_by_cr_one(_c, _r, tkmeans.column_name)
@@ -432,34 +450,44 @@ class ControlPanel(scrolled.ScrolledPanel):
 
                 # ---- mescla de datos de acuerdo a la opción seleccionada
                 if self.clus_summ_axs[0]:
-                    for i, cr in enumerate(_c):
-                        _vk.append(cr)
-                        _vk.append(_r[i])
+                    # ---- todos en una misma fiura
+                    _vk = _c + _r
                     _vk = [pd.concat(_vk)]
+                    _vkc = _cc + _rc
+                    _vkc = [[i[0] for i in _vkc]]
 
                 if self.clus_summ_axs[1]:
-                    for i, cr in enumerate(_c):
-                        _vk.append(cr)
-                        _vk.append(_r[i])
+                    # --- todos en diferentes figuras
+                    _vk = _c + _r
+                    _vkc = _cc + _rc
 
                 if self.clus_summ_axs[2]:
+                    # ---- clsuters y su resumen en una figura
                     for i, cr in enumerate(_c):
                         _vk.append(pd.concat([cr, _r[i]]))
+                        _vkc.append([_cc[i][0], _rc[i][0]])
 
                 if self.clus_summ_axs[3]:
+                    # ---- en un eje los clusters en otro los resumenes
                     _vk.append(pd.concat(_c))
                     _vk.append(pd.concat(_r))
+                    _vkc.append([i[0] for i in _cc])
+                    _vkc.append([i[0] for i in _rc])
 
         # ---- update figure
         _vu = []
+        _vuc = []
         if _vk != [] and _vs != []:
             _vu = [pd.concat(_vs), pd.concat(_vk)]
+            _vuc = _vsc + _vkc
         elif _vs != []:
             _vu = _vs
+            _vuc = _vsc
         else:
             _vu = _vk
+            _vuc = _vkc
 
-        self.kfigure.kdraw(_vu)
+        self.kfigure.kdraw(_vu, _vuc)
 
     def _nor_by_cr_one(self, v, r, column_name):
         _r = []
