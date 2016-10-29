@@ -19,6 +19,7 @@
 import operator
 from scipy.cluster.vq import kmeans, vq
 from pandas.tools.plotting import _get_standard_colors
+from matplotlib import colors
 
 import numpy as np
 import pandas as pd
@@ -71,7 +72,9 @@ class Kmeans():
             c.resu_color = [_resu_cols[i]]
 
     def g_colors(self, count):
-        color_values = _get_standard_colors(count, None, 'random')
+        color_values = []
+        for rgb in _get_standard_colors(count, None, 'random'):
+            color_values.append(colors.rgb2hex(rgb))
         return color_values
 
     def _nor(self, df):
