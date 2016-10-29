@@ -615,3 +615,15 @@ msgstr "Cluster Generation"
 
 msgid "INVALID_NUM_CLUSTERS"
 msgstr "Cluster greater number of the population\n\nThe number of clusters requested exceeds the\nnumber of individuals in the population.\nReduce the number and try again.\n\n           TAVA-TOOL  "
+
+msgid "COLOR_CLUSTER"
+msgstr "Color Cluster"
+
+msgid "COLOR_SUMMARY"
+msgstr "Color SUMMARY"
+
+msgid "CHANGE_COLOR_CLUSTER"
+msgstr "Change color Cluster"
+
+msgid "CHANGE_COLOR_SUMMARY"
+msgstr "Change color Summary"
