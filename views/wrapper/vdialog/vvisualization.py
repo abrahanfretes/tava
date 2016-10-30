@@ -154,6 +154,24 @@ class ClusterConfig(wx.Dialog):
         self.set_legends_parent_values()
         self.Close()
 
+    def pre_show(self):
+        if self.GetParent().cb_shape.GetValue() and \
+                self.GetParent().cb_kmeans.GetValue():
+            self.page_cluster.radio1.SetValue(True)
+            self.page_cluster.radio2.Disable()
+            self.page_resumes.radio1.SetValue(True)
+            self.page_resumes.radio2.Disable()
+            self.page_cluster_sumary.radio1.SetValue(True)
+            self.page_cluster_sumary.radio2.Disable()
+            self.page_cluster_sumary.radio3.Disable()
+            self.page_cluster_sumary.r4.Disable()
+        else:
+            self.page_cluster.radio2.Enable()
+            self.page_resumes.radio2.Enable()
+            self.page_cluster_sumary.radio2.Enable()
+            self.page_cluster_sumary.radio3.Enable()
+            self.page_cluster_sumary.r4.Enable()
+
 
 class ClusterPage(wx.Panel):
     def __init__(self, parent, dialog_ref):

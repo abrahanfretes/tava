@@ -640,7 +640,7 @@ class ControlPanel(scrolled.ScrolledPanel):
 
         if self.cluster_config is None:
             self.cluster_config = ClusterConfig(self)
-
+        self.cluster_config.pre_show()
         self.cluster_config.ShowModal()
 
     def on_nor_menu(self, evt):

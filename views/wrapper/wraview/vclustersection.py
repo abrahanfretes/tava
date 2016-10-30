@@ -22,7 +22,6 @@ import wx
 from wx.lib.agw import aui
 from wx.lib.agw.aui.auibook import AuiNotebook
 import wx.lib.agw.ultimatelistctrl as ULC
-import wx.lib.colourselect as csel
 from wx.lib.pubsub import Publisher as pub
 
 from languages import topic as T
