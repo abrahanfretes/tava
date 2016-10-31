@@ -326,6 +326,9 @@ msgstr "Name"
 msgid "SELECT_ALL"
 msgstr "Select All"
 
+msgid "CHECK_HEADER_CLUSTER"
+msgstr "Header"
+
 msgid "BLOCK"
 msgstr "Block"
 
@@ -627,3 +630,9 @@ msgstr "Change color Cluster"
 
 msgid "CHANGE_COLOR_SUMMARY"
 msgstr "Change color Summary"
+
+msgid "INDI_BY_CLUSTER"
+msgstr "Individuals"
+
+msgid "PORCEN_BY_CLUSTER"
+msgstr "Percent"

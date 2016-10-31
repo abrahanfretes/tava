@@ -507,6 +507,9 @@ class Cluster():
         _por = self.g_percent(total)
         return str(round(_por, 3)) + '%'
 
+    def g_count_format(self, count=None):
+        return str(self.count)
+
     def g_resume(self, df, shape, resume=None):
 
         if resume is None:

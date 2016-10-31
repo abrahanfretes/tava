@@ -38,9 +38,16 @@ class ClusterSeccionNew(wx.Panel):
 
         self.SetBackgroundColour('#FFFFFF')
 
+        chec_sizer = wx.BoxSizer(wx.HORIZONTAL)
         # ---- componetes de vistas
         self._checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
         self._checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
+        chec_sizer.Add(self._checked_all)
+
+        # ---- ver cabeceras
+        self._checked_header = wx.CheckBox(self, -1, L('CHECK_HEADER_CLUSTER'))
+        self._checked_header.Bind(wx.EVT_CHECKBOX, self.on_checked_header)
+        chec_sizer.Add(self._checked_header)
 
         _agws = aui.AUI_NB_TOP | aui.AUI_NB_TAB_SPLIT | aui.AUI_NB_TAB_MOVE
         _agws = _agws | aui.AUI_NB_SCROLL_BUTTONS | aui.AUI_NB_DRAW_DND_TAB
@@ -61,7 +68,7 @@ class ClusterSeccionNew(wx.Panel):
         self.pages = [True, False]
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer.Add(chec_sizer, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(self.nb_clus, 1, wx.EXPAND | wx.ALL, 1)
         self.SetSizer(sizer)
 
@@ -110,22 +117,25 @@ class ClusterSeccionNew(wx.Panel):
         _list_ctrl.DeleteAllItems()
         # ---- agregar clusters a la vista
         for i, c in enumerate(_clusters):
-            name = ' cluster_' + str(i + 1) + ': ' + c.g_percent_format()
+            # name = ' cluster_' + str(i + 1) + ': ' + c.g_percent_format()
+            name = '  ' + str(i + 1)
             index = _list_ctrl.InsertStringItem(sys.maxint, name, it_kind=1)
 
-            _list_ctrl.SetStringItem(index, 1, "")
-
-            _list_ctrl.SetStringItem(index, 2, "")
+            _list_ctrl.SetStringItem(index, 1, str(c.count))
+            _list_ctrl.SetStringItem(index, 2, c.g_percent_format())
+            _list_ctrl.SetStringItem(index, 3, "")
+            _list_ctrl.SetStringItem(index, 4, "")
 
             _list_ctrl.SetItemData(index, index)
             _row_index.append(index)
-        _list_ctrl.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+#         _list_ctrl.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        _list_ctrl.SetColumnWidth(1, wx.LIST_AUTOSIZE)
 
         fontMask = ULC.ULC_MASK_FONTCOLOUR | ULC.ULC_MASK_FONT
         fullMask = fontMask | ULC.ULC_MASK_BACKCOLOUR
 
         for i, c in enumerate(_clusters):
-            item = _list_ctrl.GetItem(i, 1)
+            item = _list_ctrl.GetItem(i, 3)
             item.SetMask(fullMask)
             font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
             font.SetWeight(wx.BOLD)
@@ -133,7 +143,7 @@ class ClusterSeccionNew(wx.Panel):
             item.SetBackgroundColour(wx.NamedColour(c.clus_color[0]))
             _list_ctrl.SetItem(item)
 
-            item = _list_ctrl.GetItem(i, 2)
+            item = _list_ctrl.GetItem(i, 4)
             item.SetMask(fullMask)
             font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
             font.SetWeight(wx.BOLD)
@@ -181,6 +191,10 @@ class ClusterSeccionNew(wx.Panel):
             self.select_all()
         else:
             self.un_select_all()
+
+    def on_checked_header(self, event):
+        self.shape_list.on_chech_header(event.IsChecked())
+        self.kmeans_list.on_chech_header(event.IsChecked())
 
     def pre_view(self):
 
@@ -278,16 +292,19 @@ class ClusterSeccionNew(wx.Panel):
 
     def update_language(self, msg):
         self._checked_all.SetLabel(L('SELECT_ALL'))
+        self._checked_header.SetLabel(L('CHECK_HEADER_CLUSTER'))
+        self.Layout()
 
 
 class CheckListCtrlCluster(ULC.UltimateListCtrl):
 
     def __init__(self, parent):
-        ULC.UltimateListCtrl.__init__(self, parent, wx.ID_ANY,
-                                      agwStyle=wx.LC_REPORT | wx.LC_VRULES |
-                                      wx.LC_HRULES | wx.LC_SINGLE_SEL |
-                                      ULC.ULC_HAS_VARIABLE_ROW_HEIGHT |
-                                      ULC.ULC_AUTO_CHECK_CHILD)
+
+        _style = wx.LC_REPORT | wx.LC_SINGLE_SEL | ULC.ULC_BORDER_SELECT
+        _style = _style | ULC.ULC_NO_HEADER
+        ULC.UltimateListCtrl.__init__(self, parent, wx.ID_ANY, agwStyle=_style)
+
+        pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         self.currentItem = 0
 
@@ -296,8 +313,10 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         self.Bind(ULC.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
 
         self.InsertColumn(0, L('NAME'))
-        self.InsertColumn(1, L('COLOR_CLUSTER'))
-        self.InsertColumn(2, L('COLOR_SUMMARY'))
+        self.InsertColumn(1, L('INDI_BY_CLUSTER'))
+        self.InsertColumn(2, L('PORCEN_BY_CLUSTER'), width=50)
+        self.InsertColumn(3, L('COLOR_CLUSTER'), width=15)
+        self.InsertColumn(4, L('COLOR_SUMMARY'), width=15)
 
     def OnItemSelected(self, event):
         self.currentItem = event.m_itemIndex
@@ -372,3 +391,33 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
                                                               data.GetColour())
 
         dlg.Destroy()
+
+    def on_chech_header(self, see):
+        _style = wx.LC_REPORT | wx.LC_SINGLE_SEL | ULC.ULC_BORDER_SELECT
+        if see:
+            self.SetAGWWindowStyleFlag(_style)
+        else:
+            _style = _style | ULC.ULC_NO_HEADER
+            self.SetAGWWindowStyleFlag(_style)
+
+    def update_language(self, msg):
+
+        col = self.GetColumn(0)
+        col.SetText(L('NAME'))
+        self.SetColumn(0, col)
+
+        col = self.GetColumn(1)
+        col.SetText(L('INDI_BY_CLUSTER'))
+        self.SetColumn(1, col)
+
+        col = self.GetColumn(2)
+        col.SetText(L('PORCEN_BY_CLUSTER'))
+        self.SetColumn(2, col)
+
+        col = self.GetColumn(3)
+        col.SetText(L('COLOR_CLUSTER'))
+        self.SetColumn(3, col)
+
+        col = self.GetColumn(4)
+        col.SetText(L('COLOR_SUMMARY'))
+        self.SetColumn(4, col)
