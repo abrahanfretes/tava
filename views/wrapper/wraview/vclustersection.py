@@ -54,10 +54,10 @@ class ClusterSeccion(wx.Panel):
 
         self.nb_clus = AuiNotebook(self, agwStyle=_agws)
 
-        self.shape_list = CheckListCtrlCluster(self.nb_clus)
+        self.shape_list = CheckListCtrlCluster(self.nb_clus, 0)
         self.nb_clus.AddPage(self.shape_list, "Shape")
 
-        self.kmeans_list = CheckListCtrlCluster(self.nb_clus)
+        self.kmeans_list = CheckListCtrlCluster(self.nb_clus, 1)
         self.nb_clus.AddPage(self.kmeans_list, "Kmeans")
         self.nb_clus.EnableTab(1, False)
 
@@ -175,7 +175,7 @@ class ClusterSeccion(wx.Panel):
                 c.clus_color = _colour
 
         if self.nb_clus.GetSelection() == 1:
-            for c in self.shape.tkmeans:
+            for c in self.tkmeans.clusters:
                 c.clus_color = _colour
 
     def unify_color_summary(self, colour):
@@ -186,7 +186,7 @@ class ClusterSeccion(wx.Panel):
                 c.resu_color = _colour
 
         if self.nb_clus.GetSelection() == 1:
-            for c in self.shape.tkmeans:
+            for c in self.tkmeans.clusters:
                 c.resu_color = _colour
 
     def select_all(self):
@@ -251,7 +251,7 @@ class ClusterSeccion(wx.Panel):
         if self.pages[1]:
             return self.kmeans_list.GetItemCount()
 
-    def checked_elemens(self):
+    def checked_elements(self):
 
         if self.pages[0]:
             for index in self.shape_row_index:
@@ -264,6 +264,20 @@ class ClusterSeccion(wx.Panel):
                 if self.kmeans_list.IsItemChecked(index):
                     return True
             return False
+
+    def checked_elements_one(self):
+
+        if self.pages[0]:
+            for index in self.shape_row_index:
+                if self.shape_list.IsItemChecked(index):
+                    return True
+
+        if self.pages[1]:
+            for index in self.kmeans_row_index:
+                if self.kmeans_list.IsItemChecked(index):
+                    return True
+
+        return False
 
     def g_elements(self):
         if self.pages[0]:
@@ -321,10 +335,13 @@ class ClusterSeccion(wx.Panel):
         self._checked_all.Enable(value)
         self._checked_header.Enable(value)
 
+    def selected_by_children(self, page):
+        self.nb_clus.SetSelection(page)
+
 
 class CheckListCtrlCluster(ULC.UltimateListCtrl):
 
-    def __init__(self, parent):
+    def __init__(self, parent, page):
 
         _style = wx.LC_REPORT | wx.LC_SINGLE_SEL | ULC.ULC_BORDER_SELECT
         _style = _style | ULC.ULC_NO_HEADER
@@ -333,6 +350,7 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         pub().subscribe(self.update_language, T.LANGUAGE_CHANGED)
 
         self.currentItem = 0
+        self.page = page
 
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
@@ -352,6 +370,7 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
 
     def OnItemSelected(self, event):
         self.currentItem = event.m_itemIndex
+        self.GetGrandParent().selected_by_children(self.page)
 
     def OnItemActivated(self, evt):
         self.ToggleItem(evt.m_itemIndex)

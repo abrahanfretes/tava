@@ -325,9 +325,15 @@ class ControlPanel(scrolled.ScrolledPanel):
         if not self.clusters_seccion.contain_elemens():
             KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_DATA).kshow()
             return
-        if not self.clusters_seccion.checked_elemens():
-            KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_SELECTED).kshow()
-            return
+        if self.cb_shape.GetValue() and self.cb_kmeans.GetValue():
+
+            if not self.clusters_seccion.checked_elements_one():
+                KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_SELECTED).kshow()
+                return
+        else:
+            if not self.clusters_seccion.checked_elements():
+                KMessage(self.mainpanel, KMSG_EMPTY_CLUSTER_SELECTED).kshow()
+                return
 
         # ---- selección de clusters a visualizar
         self.clusters_seccion.pre_view()
@@ -336,9 +342,12 @@ class ControlPanel(scrolled.ScrolledPanel):
         # ---- se obtienen los datos/normalizado
         _vs = []
         _vsc = []
-        if self.cb_shape.GetValue():
-            shape = self.clusters_seccion.shape
+        s_clusters = []
+        shape = self.clusters_seccion.shape
+        if shape is not None:
             s_clusters = shape.g_checkeds()
+
+        if self.cb_shape.GetValue() and s_clusters != []:
 
             if self.visualization_mode == V_M_CLUSTER:
                 _le = self.legends_cluster
@@ -407,9 +416,11 @@ class ControlPanel(scrolled.ScrolledPanel):
 
         _vk = []
         _vkc = []
-        if self.cb_kmeans.GetValue():
-            tkmeans = self.clusters_seccion.tkmeans
+        k_clusters = []
+        tkmeans = self.clusters_seccion.tkmeans
+        if tkmeans is not None:
             k_clusters = tkmeans.g_checkeds()
+        if self.cb_kmeans.GetValue() and k_clusters != []:
 
             if self.visualization_mode == V_M_CLUSTER:
                 _le = self.legends_cluster
@@ -560,7 +571,7 @@ class ControlPanel(scrolled.ScrolledPanel):
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
             return
 
-        if not self.data_seccion.checked_elemens():
+        if not self.data_seccion.checked_elements():
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
         _cl = self.sc_count_clusters.GetValue()
@@ -634,7 +645,7 @@ class ControlPanel(scrolled.ScrolledPanel):
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
             return
 
-        if not self.data_seccion.checked_elemens():
+        if not self.data_seccion.checked_elements():
             KMessage(self.mainpanel, KMSG_GENERATE_CLUSTER).kshow()
             return
 
@@ -784,7 +795,7 @@ class DataSeccion(wx.Panel):
     def contain_elemens(self):
         return self.list_control.GetItemCount()
 
-    def checked_elemens(self):
+    def checked_elements(self):
         for index in self.row_index:
             if self.list_control.IsChecked(index):
                 return True
