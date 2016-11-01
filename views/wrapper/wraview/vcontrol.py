@@ -242,7 +242,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         self.cb_kmeans.Enable()
         self.clusters_seccion.update_page(self.cb_shape.GetValue(),
                                           self.cb_kmeans.GetValue())
-        self.clusters_seccion._checked_all.Enable()
+        self.clusters_seccion.s_enable(True)
         self.cluster_or_date = 0
 
     def on_check_data(self, event):
@@ -257,7 +257,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         self.m_n3.Enable(False)
         self.cb_shape.Enable(False)
         self.cb_kmeans.Enable(False)
-        self.clusters_seccion._checked_all.Enable(False)
+        self.clusters_seccion.s_enable(False)
         self.clusters_seccion.update_page(False, False)
         self.cluster_or_date = 1
 
@@ -680,6 +680,10 @@ class ControlPanel(scrolled.ScrolledPanel):
         if self.cluster_filter is not None:
             _c = self.clusters_seccion.g_elements()
             self.cluster_filter.update_by_generateClusters(_c)
+
+        if self.cb_shape.GetValue() and not self.cb_kmeans.GetValue():
+            _v = self.clusters_seccion.shape.clusters_count
+            self.sc_count_clusters.SetValue(_v)
 
 
 class GenerateClusterThread(threading.Thread):
