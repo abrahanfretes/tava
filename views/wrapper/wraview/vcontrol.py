@@ -662,6 +662,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         self.sc_count_clusters.Disable()
         self.cb_shape.Disable()
         self.cb_kmeans.Disable()
+        self.clusters_seccion.s_enable(False)
 
     def stop_busy(self):
         pub().sendMessage(T.STOP_BUSY)
@@ -674,6 +675,7 @@ class ControlPanel(scrolled.ScrolledPanel):
                                           self.cb_kmeans.GetValue())
         self.cb_shape.Enable()
         self.cb_kmeans.Enable()
+        self.clusters_seccion.s_enable(True)
 
         if self.cluster_filter is not None:
             _c = self.clusters_seccion.g_elements()

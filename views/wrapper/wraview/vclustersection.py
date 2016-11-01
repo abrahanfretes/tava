@@ -295,6 +295,10 @@ class ClusterSeccion(wx.Panel):
         self._checked_header.SetLabel(L('CHECK_HEADER_CLUSTER'))
         self.Layout()
 
+    def s_enable(self, value):
+        self._checked_all.Enable(value)
+        self._checked_header.Enable(value)
+
 
 class CheckListCtrlCluster(ULC.UltimateListCtrl):
 

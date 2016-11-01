@@ -54,8 +54,6 @@ class FigurePanel(wx.Panel):
         self.dframes = []
         self.key_figure = 1
 
-        self.kmeans_value = True
-        self.shape_value = True
         self.figure_config_dialog_ref = None
 
         # ---- inicialización de figura
@@ -143,24 +141,9 @@ class FigurePanel(wx.Panel):
         task = DrawThread(self, dframes, colors)
         task.start()
 
-    def on_show_clusters(self, event):
-
-        self.c_shape = False
-        self.c_kmenas = False
-        self.c_number = 0
-        k_shape_frame = []
-
-        if k_shape_frame != []:
-            self.kdraw(k_shape_frame, self.key_figure)
-
     def on_play(self, event):
-
+        # ---- dibujar clusters/datos seleccionados
         self.control_panel.run_fig()
-        # obtener datos
-        # leer configuracion
-        # ver si dibujar cluster o data
-        # dibujar
-        pass
 
     def on_config(self, event):
         if self.figure_config_dialog_ref is None:
