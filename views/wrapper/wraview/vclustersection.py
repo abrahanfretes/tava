@@ -167,6 +167,28 @@ class ClusterSeccion(wx.Panel):
             c = self.tkmeans.clusters[index]
             c.resu_color = [colour.GetAsString(wx.C2S_HTML_SYNTAX)]
 
+    def unify_color_cluster(self, colour):
+        _colour = [colour.GetAsString(wx.C2S_HTML_SYNTAX)]
+
+        if self.nb_clus.GetSelection() == 0:
+            for c in self.shape.clusters:
+                c.clus_color = _colour
+
+        if self.nb_clus.GetSelection() == 1:
+            for c in self.shape.tkmeans:
+                c.clus_color = _colour
+
+    def unify_color_summary(self, colour):
+        _colour = [colour.GetAsString(wx.C2S_HTML_SYNTAX)]
+
+        if self.nb_clus.GetSelection() == 0:
+            for c in self.shape.clusters:
+                c.resu_color = _colour
+
+        if self.nb_clus.GetSelection() == 1:
+            for c in self.shape.tkmeans:
+                c.resu_color = _colour
+
     def select_all(self):
 
         if self.pages[0]:
@@ -343,14 +365,20 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         if not hasattr(self, "popupID1"):
             self.popupID1 = wx.NewId()
             self.popupID2 = wx.NewId()
+            self.popupID3 = wx.NewId()
+            self.popupID4 = wx.NewId()
             self.Bind(wx.EVT_MENU, self.on_change_color_clus, id=self.popupID1)
             self.Bind(wx.EVT_MENU, self.on_change_color_summ, id=self.popupID2)
+            self.Bind(wx.EVT_MENU, self.on_unify_color_clus, id=self.popupID3)
+            self.Bind(wx.EVT_MENU, self.on_unify_color_summ, id=self.popupID4)
 
         # make a menu
         menu = wx.Menu()
         # add some items
         menu.Append(self.popupID1, L('CHANGE_COLOR_CLUSTER'))
         menu.Append(self.popupID2, L('CHANGE_COLOR_SUMMARY'))
+        menu.Append(self.popupID3, L('UNIFY_COLOR_CLUSTER'))
+        menu.Append(self.popupID4, L('UNIFY_COLOR_SUMMARY'))
 
         # Popup the menu.  If an item is selected then its handler
         # will be called before PopupMenu returns.
@@ -381,6 +409,30 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
 
         dlg.Destroy()
 
+    def on_unify_color_clus(self, evt):
+
+        dlg = wx.ColourDialog(self)
+        dlg.GetColourData().SetChooseFull(True)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            c_colour = dlg.GetColourData().GetColour()
+
+            fontMask = ULC.ULC_MASK_FONTCOLOUR | ULC.ULC_MASK_FONT
+            fullMask = fontMask | ULC.ULC_MASK_BACKCOLOUR
+            font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
+            font.SetWeight(wx.BOLD)
+
+            for i in range(self.GetItemCount()):
+                item = self.GetItem(i, 3)
+                item.SetMask(fullMask)
+                item.SetFont(font)
+                item.SetBackgroundColour(c_colour)
+                self.SetItem(item)
+
+            self.GetParent().GetParent().unify_color_cluster(c_colour)
+
+        dlg.Destroy()
+
     def on_change_color_summ(self, evt):
         item = self.GetItem(self.currentItem, 4)
         colour = item.GetBackgroundColour()
@@ -402,6 +454,30 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
             self.SetItem(item)
             self.GetParent().GetParent().change_color_summary(self.currentItem,
                                                               data.GetColour())
+
+        dlg.Destroy()
+
+    def on_unify_color_summ(self, evt):
+
+        dlg = wx.ColourDialog(self)
+        dlg.GetColourData().SetChooseFull(True)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            c_colour = dlg.GetColourData().GetColour()
+
+            fontMask = ULC.ULC_MASK_FONTCOLOUR | ULC.ULC_MASK_FONT
+            fullMask = fontMask | ULC.ULC_MASK_BACKCOLOUR
+            font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
+            font.SetWeight(wx.BOLD)
+
+            for i in range(self.GetItemCount()):
+                item = self.GetItem(i, 4)
+                item.SetMask(fullMask)
+                item.SetFont(font)
+                item.SetBackgroundColour(c_colour)
+                self.SetItem(item)
+
+            self.GetParent().GetParent().unify_color_summary(c_colour)
 
         dlg.Destroy()
 

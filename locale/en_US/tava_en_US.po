@@ -631,6 +631,12 @@ msgstr "Change color Cluster"
 msgid "CHANGE_COLOR_SUMMARY"
 msgstr "Change color Summary"
 
+msgid "UNIFY_COLOR_CLUSTER"
+msgstr "Unify the Colors of Clusters"
+
+msgid "UNIFY_COLOR_SUMMARY"
+msgstr "Unify the Colors of Summary"
+
 msgid "INDI_BY_CLUSTER"
 msgstr "Individuals Number of Clusters"
 
