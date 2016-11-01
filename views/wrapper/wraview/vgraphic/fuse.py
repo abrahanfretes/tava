@@ -17,7 +17,6 @@
 '''
 
 from pandas.tools.plotting import _get_standard_colors
-import numpy as np
 
 
 def square_plot(plots, cc=True):

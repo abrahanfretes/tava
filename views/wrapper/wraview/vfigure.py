@@ -29,9 +29,8 @@ from imgs.ifigure import settings_fig, play_fig
 from languages import topic as T
 from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig, \
                                            FigureConfig, RadarChadConfig
-from views.wrapper.wraview.vgraphic.cparallel import k_parallel_coordinates
-from views.wrapper.wraview.vgraphic.rchart import radarchart
-from views.wrapper.wraview.vgraphic.rviz import kradviz
+from views.wrapper.wraview.vgraphic.figures import radarchart, kradviz, \
+    kparallelcoordinates
 
 
 K_PARALLEL_COORDENATE = 0
@@ -127,9 +126,10 @@ class FigurePanel(wx.Panel):
     def draw_graphic(self, dframes, colors):
         key_figure = self.g_figure()
         if key_figure == K_PARALLEL_COORDENATE:
-            return k_parallel_coordinates(dframes, 'Name', self.fig,
-                                          self.ax_conf, self.fig_config,
-                                          colors)
+            return kparallelcoordinates(dframes, 'Name', self.fig,
+                                        self.ax_conf, self.fig_config,
+                                        colors)
+
         elif key_figure == K_RADAR_CHART_POLYGON:
             return radarchart(dframes, 'Name', self.fig, self.ax_conf,
                               self.radar_chard_con, colors)

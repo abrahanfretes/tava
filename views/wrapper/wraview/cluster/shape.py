@@ -16,16 +16,15 @@
 # ##############################################################
 '''
 
+from matplotlib import colors
 import operator
 from pandas.core.frame import DataFrame
 from pandas.tools.plotting import _get_standard_colors
-from matplotlib import colors
 
 import numpy as np
 import pandas as pd
 import random as rm
 import scipy.stats as st
-from views.wrapper.wraview.vgraphic.cparallel import k_cp
 
 
 class Shape():
@@ -549,74 +548,3 @@ class Cluster():
             while _legend in legends:
                 _legend = _legend + "."
         return _legend
-
-
-def axe_con(ax, label=None):
-    ax.spines['bottom'].set_color('w')
-    ax.spines['top'].set_color('w')
-    ax.spines['right'].set_color('#DDDDDD')
-    ax.spines['left'].set_color('#DDDDDD')
-    if label is not None:
-        ax.set_xlabel(label, labelpad=-1)
-        ax.xaxis.label.set_color('#606060')
-        ax.tick_params(axis='x', colors='w')
-    return ax
-
-
-def grafic_r1(f_path=None, _sep=' '):
-    import matplotlib
-    from matplotlib import pyplot as plt
-    matplotlib.rcParams['text.latex.unicode'] = True
-
-    fig = plt.figure(facecolor='w', figsize=(6.75, 5.75), dpi=80)
-    fig.subplots_adjust(top=0.98, bottom=0.07,
-                        left=0.02,  right=0.98,
-                        wspace=0.05, hspace=0.10)
-
-    # ---------------------------------------------------------
-
-    df = pd.read_csv(f_path,  sep=_sep)
-    # df = df.sample(100)
-
-    shape = Shape(df.copy(), clus=0, nor=2)
-    # s_clusters = shape.clusters
-
-    # ver clusters
-    s_clusters = shape.g_percent_up(15.0)
-    # s_clusters = shape.clusters[130:]
-    # s_clusters = shape.g_with_percent(0.25)
-    # s_clusters = shape.g_with_percent(0.25)
-#     _v = 4
-#     s_clusters = shape.g_clusters_max_in_var(_v)
-#     s_clusters1 = shape.g_clusters_min_in_var(_v)
-#     for s in s_clusters1:
-#         s_clusters.append(s)
-#
-#     print len(s_clusters)
-    dv = shape.g_data_for_fig(s_clusters, [False, False, False, False], True)
-
-    ax = fig.add_subplot(1, 1, 1)
-    k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=True,
-         _xaxis=True, one_color=False, _loc='upper left',
-         _yaxis=True, klinewidth=0.3, klinecolor='#6e6e6e')
-    ax = axe_con(ax)
-#     ax.legend(prop={'size': 9},
-#               loc='upper left').get_frame().set_edgecolor('#DDDDDD')
-
-    # resumenes de clusters
-#     dv = shape.g_resume_for_fig(s_clusters)
-#     # print len(dv.values)
-#     ax = fig.add_subplot(2, 1, 2)
-#     k_cp(dv, 'Name', ax=ax, u_legend=False, u_grid=False,
-#          _xaxis=False, one_color=False, _loc='upper left',
-#          _yaxis=True, klinewidth=0.3, klinecolor='#DDDDDD')
-#     ax = axe_con(ax)
-#     ax.legend(prop={'size': 9},
-#               loc='upper left').get_frame().set_edgecolor('#DDDDDD')
-    plt.show()
-
-
-if __name__ == '__main__':
-
-    f_path = '/home/afretes/tesis/proyectos/kuri/datas/objetivos_8.csv'
-    grafic_r1(f_path, ',')
