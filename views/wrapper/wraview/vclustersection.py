@@ -356,11 +356,11 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         self.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.Bind(ULC.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
 
-        self.InsertColumn(0, L('NAME'), format=ULC.ULC_FORMAT_CENTER)
-        self.InsertColumn(1, 'nro.', width=55, format=ULC.ULC_FORMAT_CENTER)
-        self.InsertColumn(2, '%', width=40, format=ULC.ULC_FORMAT_CENTER)
-        self.InsertColumn(3, 'c', width=15, format=ULC.ULC_FORMAT_CENTER)
-        self.InsertColumn(4, 'r', width=15, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(0, L('NAME'), width=78, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(1, 'nro.', width=42, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(2, '%', width=42, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(3, 'c', width=15, format=ULC.ULC_FORMAT_LEFT)
+        self.InsertColumn(4, 'r', width=15, format=ULC.ULC_FORMAT_LEFT)
 
         self.SetColumnToolTip(0, L('NAME_TOLL_TIP'))
         self.SetColumnToolTip(1, L('INDI_BY_CLUSTER'))
