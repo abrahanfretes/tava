@@ -20,20 +20,18 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
+import threading
 from wx import GetTranslation as L
 import wx
 from wx.lib.pubsub import Publisher as pub
-import threading
 
 from imgs.ifigure import settings_fig, play_fig
 from languages import topic as T
-import numpy as np
 from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig, \
                                            FigureConfig, RadarChadConfig
 from views.wrapper.wraview.vgraphic.cparallel import k_parallel_coordinates
-from views.wrapper.wraview.vgraphic.fuse import g_color
-from views.wrapper.wraview.vgraphic.rchart import k_radar_chart
-from views.wrapper.wraview.vgraphic.rviz import k_radviz
+from views.wrapper.wraview.vgraphic.rchart import radarchart
+from views.wrapper.wraview.vgraphic.rviz import kradviz
 
 
 K_PARALLEL_COORDENATE = 0
@@ -133,10 +131,10 @@ class FigurePanel(wx.Panel):
                                           self.ax_conf, self.fig_config,
                                           colors)
         elif key_figure == K_RADAR_CHART_POLYGON:
-            return k_radar_chart(dframes, 'Name', self.fig, self.ax_conf,
-                                     self.radar_chard_con)
+            return radarchart(dframes, 'Name', self.fig, self.ax_conf,
+                              self.radar_chard_con, colors)
         elif key_figure == K_RADVIZ:
-            return k_radviz(dframes, 'Name', self.fig, self.ax_conf)
+            return kradviz(dframes, 'Name', self.fig, self.ax_conf, colors)
 
     def kdraw(self, dframes, colors):
 
@@ -144,40 +142,6 @@ class FigurePanel(wx.Panel):
         self.start_busy()
         task = DrawThread(self, dframes, colors)
         task.start()
-
-    def kdraw_one(self, list_df, key_figure=1):
-        class_column = 'Name'
-
-        df = list_df[0]
-
-        # actualización de figura
-        self.fig.clear()
-        # axe = self.fig.gca()
-        df1 = df.drop(class_column, axis=1)
-        _len = len(df1)
-        col_names = df1.columns.tolist()
-        _len_color = len(col_names)
-
-        if key_figure == key_figure:
-
-            ax = self.fig.add_subplot(1, 1, 1, projection='3d')
-
-            ax.set_color_cycle(g_color(_len_color))
-            y = np.linspace(0, 1, _len)
-            x = [0] * _len
-            ic = 0
-            for n in col_names:
-                d = df1[n].values.tolist()
-                ax.plot(x, y, d, label=n)
-                ic += 1
-            if True:
-                ax.legend()
-
-            ax.set_xlabel('X')
-            ax.set_ylabel('Y')
-            ax.set_zlabel('Dtlz')
-
-            self.canvas.draw()
 
     def on_show_clusters(self, event):
 

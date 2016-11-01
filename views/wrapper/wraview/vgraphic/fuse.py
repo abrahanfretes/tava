@@ -33,8 +33,6 @@ def square_plot(plots, cc=True):
     return s_row, s_col
 
 
-def g_color(count, grayscale=False):
-    if not grayscale:
-        return _get_standard_colors(num_colors=count, color_type='random')
-    else:
-        return [str(i) for i in np.linspace(0.55555, 0.999999999999, count)]
+def g_colors(count, color):
+    color_values = _get_standard_colors(count, None, 'random', color)
+    return color_values

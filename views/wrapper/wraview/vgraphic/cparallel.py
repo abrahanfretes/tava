@@ -27,7 +27,6 @@ from views.wrapper.wraview.vgraphic.fuse import square_plot
 def k_cp(frame, ax, ax_conf, class_column, color_values=None, **kwds):
     """Parallel coordinates plotting.
     """
-    # import matplotlib.pyplot as plt
 
     # ---- varaibles globales
     n = len(frame)
