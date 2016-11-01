@@ -81,6 +81,8 @@ class ClusterSeccionNew(wx.Panel):
         if sh and km:
             self.shape_list.DeleteAllItems()
             self.kmeans_list.DeleteAllItems()
+            self.shape_row_index = []
+            self.kmeans_row_index = []
         if km:
             self.nb_clus.SetSelection(1)
         if sh:
@@ -116,10 +118,8 @@ class ClusterSeccionNew(wx.Panel):
         # ----- limpiar clusters anteriores
         _list_ctrl.DeleteAllItems()
         # ---- agregar clusters a la vista
-        for i, c in enumerate(_clusters):
-            # name = ' cluster_' + str(i + 1) + ': ' + c.g_percent_format()
-            name = '  ' + str(i + 1)
-            index = _list_ctrl.InsertStringItem(sys.maxint, name, it_kind=1)
+        for c in _clusters:
+            index = _list_ctrl.InsertStringItem(sys.maxint, c.name, it_kind=1)
 
             _list_ctrl.SetStringItem(index, 1, str(c.count))
             _list_ctrl.SetStringItem(index, 2, c.g_percent_format())
@@ -345,7 +345,7 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         menu.Destroy()
 
     def on_change_color_clus(self, evt):
-        item = self.GetItem(self.currentItem, 1)
+        item = self.GetItem(self.currentItem, 3)
         colour = item.GetBackgroundColour()
         c = wx.ColourData()
         c.SetColour(colour)
@@ -369,7 +369,7 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         dlg.Destroy()
 
     def on_change_color_summ(self, evt):
-        item = self.GetItem(self.currentItem, 2)
+        item = self.GetItem(self.currentItem, 4)
         colour = item.GetBackgroundColour()
         c = wx.ColourData()
         c.SetColour(colour)

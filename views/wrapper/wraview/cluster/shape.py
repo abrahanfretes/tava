@@ -221,7 +221,7 @@ class Shape():
         i_name = 1
         for shape, freq in _clusters_frequency:
             _df = df_group.get_group(shape)
-            _c = Cluster(str(i_name), shape, freq, _df, self.population)
+            _c = Cluster(str(i_name) + '-s', shape, freq, _df, self.population)
             current_clusters.append(_c)
             i_name += 1
         return current_clusters

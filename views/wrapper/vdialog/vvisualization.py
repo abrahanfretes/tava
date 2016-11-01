@@ -218,9 +218,9 @@ class ClusterPage(wx.Panel):
 
         self.checkbox3 = wx.CheckBox(self, -1, L('NAME'))
         dialog_ref.clus_lg_check3 = self.checkbox3
+        self.checkbox3.SetValue(True)
 
         self.checkbox4 = wx.CheckBox(self, -1, L('SHAPES'))
-        self.checkbox4.SetValue(True)
         dialog_ref.clus_lg_check4 = self.checkbox4
 
         sboxs_lg.Add(self.checkbox1, 0, wx.ALL, 5)

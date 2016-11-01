@@ -103,7 +103,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         self.cluster_config = None
         self.cluster_filter = None
         self.visualization_mode = V_M_CLUSTER
-        self.legends_cluster = [False, False, False, True]
+        self.legends_cluster = [False, False, True, False]
         self.legends_summary = [True, False, False, False]
         self.clus_one_axe = True
         self.summ_one_axe = True
