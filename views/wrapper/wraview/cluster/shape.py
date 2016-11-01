@@ -506,6 +506,10 @@ class Cluster():
         _por = self.g_percent(total)
         return str(round(_por, 3)) + '%'
 
+    def g_percent_format_str(self, total=None):
+        _por = self.g_percent(total)
+        return str(round(_por, 3))
+
     def g_count_format(self, count=None):
         return str(self.count)
 

@@ -632,7 +632,10 @@ msgid "CHANGE_COLOR_SUMMARY"
 msgstr "Change color Summary"
 
 msgid "INDI_BY_CLUSTER"
-msgstr "Individuals"
+msgstr "Individuals Number of Clusters"
 
 msgid "PORCEN_BY_CLUSTER"
-msgstr "Percent"
+msgstr "Percentage of Individuals with regard to the Population"
+
+msgid "NAME_TOLL_TIP"
+msgstr "Name assigned to Cluster"

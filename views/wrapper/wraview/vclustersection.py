@@ -122,14 +122,14 @@ class ClusterSeccion(wx.Panel):
             index = _list_ctrl.InsertStringItem(sys.maxint, c.name, it_kind=1)
 
             _list_ctrl.SetStringItem(index, 1, str(c.count))
-            _list_ctrl.SetStringItem(index, 2, c.g_percent_format())
+            _list_ctrl.SetStringItem(index, 2, c.g_percent_format_str())
             _list_ctrl.SetStringItem(index, 3, "")
             _list_ctrl.SetStringItem(index, 4, "")
 
             _list_ctrl.SetItemData(index, index)
             _row_index.append(index)
 #         _list_ctrl.SetColumnWidth(0, wx.LIST_AUTOSIZE)
-        _list_ctrl.SetColumnWidth(1, wx.LIST_AUTOSIZE)
+#         _list_ctrl.SetColumnWidth(1, wx.LIST_AUTOSIZE)
 
         fontMask = ULC.ULC_MASK_FONTCOLOUR | ULC.ULC_MASK_FONT
         fullMask = fontMask | ULC.ULC_MASK_BACKCOLOUR
@@ -316,11 +316,17 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         self.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.Bind(ULC.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
 
-        self.InsertColumn(0, L('NAME'))
-        self.InsertColumn(1, L('INDI_BY_CLUSTER'))
-        self.InsertColumn(2, L('PORCEN_BY_CLUSTER'), width=50)
-        self.InsertColumn(3, L('COLOR_CLUSTER'), width=15)
-        self.InsertColumn(4, L('COLOR_SUMMARY'), width=15)
+        self.InsertColumn(0, L('NAME'), format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(1, 'nro.', width=55, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(2, '%', width=40, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(3, 'c', width=15, format=ULC.ULC_FORMAT_CENTER)
+        self.InsertColumn(4, 'r', width=15, format=ULC.ULC_FORMAT_CENTER)
+
+        self.SetColumnToolTip(0, L('NAME_TOLL_TIP'))
+        self.SetColumnToolTip(1, L('INDI_BY_CLUSTER'))
+        self.SetColumnToolTip(2, L('PORCEN_BY_CLUSTER'))
+        self.SetColumnToolTip(3, L('COLOR_CLUSTER'))
+        self.SetColumnToolTip(4, L('COLOR_SUMMARY'))
 
     def OnItemSelected(self, event):
         self.currentItem = event.m_itemIndex
@@ -329,6 +335,9 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         self.ToggleItem(evt.m_itemIndex)
 
     def OnRightClick(self, event):
+
+        if self.GetItemCount() == 0:
+            return
 
         # only do this part the first time so the events are only bound once
         if not hasattr(self, "popupID1"):
@@ -406,22 +415,8 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
 
     def update_language(self, msg):
 
-        col = self.GetColumn(0)
-        col.SetText(L('NAME'))
-        self.SetColumn(0, col)
-
-        col = self.GetColumn(1)
-        col.SetText(L('INDI_BY_CLUSTER'))
-        self.SetColumn(1, col)
-
-        col = self.GetColumn(2)
-        col.SetText(L('PORCEN_BY_CLUSTER'))
-        self.SetColumn(2, col)
-
-        col = self.GetColumn(3)
-        col.SetText(L('COLOR_CLUSTER'))
-        self.SetColumn(3, col)
-
-        col = self.GetColumn(4)
-        col.SetText(L('COLOR_SUMMARY'))
-        self.SetColumn(4, col)
+        self.SetColumnToolTip(0, L('NAME_TOLL_TIP'))
+        self.SetColumnToolTip(1, L('INDI_BY_CLUSTER'))
+        self.SetColumnToolTip(2, L('PORCEN_BY_CLUSTER'))
+        self.SetColumnToolTip(3, L('COLOR_CLUSTER'))
+        self.SetColumnToolTip(4, L('COLOR_SUMMARY'))
