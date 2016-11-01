@@ -26,7 +26,7 @@ from pandas.core import common as com
 from pandas.tools.plotting import radviz
 
 import numpy as np
-from views.wrapper.wraview.vgraphic.fuse import square_plot, g_colors
+from views.wrapper.wraview.vgraphic.figuresutils import square_plot, g_colors
 
 
 # #######################################################################

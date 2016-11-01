@@ -29,7 +29,7 @@ from views.wrapper.wraview.cluster.shape import Shape
 from views.wrapper.wraview.cluster.tkmeans import Kmeans
 
 
-class ClusterSeccionNew(wx.Panel):
+class ClusterSeccion(wx.Panel):
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, -1)

@@ -32,7 +32,7 @@ import numpy as np
 import pandas as pd
 from views.wrapper.vdialog.vvisualization import ClusterConfig, V_M_CLUSTER, \
     V_M_SUMMARY, V_M_CLUSTER_SUMMARY, SelectedData, FilterClusterDialog
-from views.wrapper.wraview.vclustersection import ClusterSeccionNew
+from views.wrapper.wraview.vclustersection import ClusterSeccion
 from views.wrapper.wraview.vcontrolm import KMSG_EMPTY_DATA_SELECTED, \
     KMessage, KMSG_EMPTY_CLUSTER_SELECTED, \
     KMSG_EMPTY_CLUSTER_DATA, KMSG_EMPTY_DATA_GENERATE_CLUSTER, \
@@ -204,7 +204,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         a_sizer.Add(tbtnc, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
         # ---- Lista de Clusters
-        self.clusters_seccion = ClusterSeccionNew(self)
+        self.clusters_seccion = ClusterSeccion(self)
 
         # ---- marco visualización
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -808,32 +808,6 @@ class KBlock():
         self.name = name
         self.dframe = dframe
 #         self.dframe_nor = self.normalized()
-        self.columns = self.g_columns(dframe)
-        self.order = 0
-
-    def normalized(self):
-        class_column = 'Name'
-
-        df = self.dframe.drop(class_column, axis=1)
-        nor = (lambda x: x / np.linalg.norm(x))
-        dframe_nor = DataFrame(nor(df.values), columns=df.columns.tolist())
-        dframe_nor[class_column] = self.dframe[class_column].tolist()
-
-        return dframe_nor
-
-    def g_columns(self, df):
-        cols = df.columns.tolist()
-        return cols[:-1]
-
-
-# -------------------                                  ------------------------
-# -------------------                                  ------------------------
-class KCluster():
-
-    def __init__(self, name, dframe):
-        self.name = name
-        self.dframe = dframe
-        # self.dframe_nor = self.normalized()
         self.columns = self.g_columns(dframe)
         self.order = 0
 
