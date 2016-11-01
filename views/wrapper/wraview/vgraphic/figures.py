@@ -159,7 +159,8 @@ def _parallelcoordinates(frame, ax, ax_conf, class_column, color_values=None):
     if ax_conf.legend_show:
         _c = ax_conf.legend_edge_color
         ax.legend(prop={'size': ax_conf.legend_size},
-                  loc=ax_conf.legend_loc).get_frame().set_edgecolor(_c)
+                  loc=ax_conf.legend_loc,
+                  fancybox=True).get_frame().set_edgecolor(_c)
 
     # ---- configuración de grid
     if ax_conf.grid_lines:
@@ -268,10 +269,7 @@ def radar_factory(num_vars, frame):
 
 
 def _radarchart(frame, ax, fig, ax_conf, class_column, rc_config,
-                theta, color_values=None):
-
-    alpha = 0.15
-    _classes_colors = []
+                theta, alpha=0.15, color_values=None):
 
     # ---- varaibles globales
     n = len(frame)
@@ -299,15 +297,17 @@ def _radarchart(frame, ax, fig, ax_conf, class_column, rc_config,
 
     # ---- configuración de leyenda
     if ax_conf.legend_show:
-
         r_patch = []
         classes = []
+        _c = ax_conf.legend_edge_color
 
         for k in colors.keys():
-            r_patch.append(mpatches.Patch(color=colors[k]))
+            r_patch.append(mpatches.Patch(color=colors[k], linewidth=0.1))
             classes.append(k)
 
-        fig.legend(r_patch, classes)
+        leg = fig.legend(r_patch, classes, ax_conf.legend_loc, fancybox=True,
+                         prop={'size': ax_conf.legend_size})
+        leg.get_frame().set_edgecolor(ax_conf.legend_edge_color)
 
     # ---- configuración de grid
     if ax_conf.grid_lines:
@@ -331,7 +331,8 @@ def _radviz(frame, ax, ax_conf, class_column, color_values=None):
     if ax_conf.legend_show:
         _c = ax_conf.legend_edge_color
         ax.legend(prop={'size': ax_conf.legend_size},
-                  loc=ax_conf.legend_loc).get_frame().set_edgecolor(_c)
+                  loc=ax_conf.legend_loc,
+                  fancybox=True).get_frame().set_edgecolor(_c)
 
     # ---- configuración de tick - visualización, labels, colors
 
