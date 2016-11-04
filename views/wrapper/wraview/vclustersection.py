@@ -352,7 +352,6 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         self.currentItem = 0
         self.page = page
 
-        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.Bind(ULC.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
 
@@ -371,9 +370,6 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
     def OnItemSelected(self, event):
         self.currentItem = event.m_itemIndex
         self.GetGrandParent().selected_by_children(self.page)
-
-    def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
 
     def OnRightClick(self, event):
 

@@ -489,7 +489,7 @@ class Cluster():
     def complete_max_min(self):
         cols = [i for i in self.df_value.columns[:-1]]
         self.max_values = self.df_value[cols].max().tolist()
-        self.min_values = self.df_value[cols].max().tolist()
+        self.min_values = self.df_value[cols].min().tolist()
 
     def g_max_in_var(self, index):
         return self.max_values[index]
