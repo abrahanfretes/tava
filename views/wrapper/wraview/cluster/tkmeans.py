@@ -172,7 +172,7 @@ class Kmeans():
         return index_min
 
     def g_data_by_dr(self, s_clusters, legends_cluster,
-                     legends_summary, crude=True):
+                     legends_summary, d_col, crude=True):
 
         if s_clusters == []:
             return pd.DataFrame()
@@ -198,7 +198,7 @@ class Kmeans():
             _legends.append(_leg)
             _dfr[self.column_name] = [_leg]
             _resumes.append(_dfr)
-            _resu_color.append(c.resu_color)
+            _resu_color.append(c.resu_color if d_col else c.clus_color)
 
         return _clusters, _clus_color, _resumes, _resu_color
 
@@ -251,7 +251,7 @@ class Kmeans():
 
         return _clusters, _colors
 
-    def g_resume_for_fig(self, s_clusters, legends_summary, crude=True):
+    def g_resume_for_fig(self, s_clusters, legends_summary, d_col, crude=True):
         if s_clusters == []:
             return pd.DataFrame()
 
@@ -264,6 +264,6 @@ class Kmeans():
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
-            _colors.append(c.resu_color)
+            _colors.append(c.resu_color if d_col else c.clus_color)
 
         return _clusters, _colors

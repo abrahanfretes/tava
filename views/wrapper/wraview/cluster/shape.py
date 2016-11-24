@@ -333,7 +333,7 @@ class Shape():
 
         return _clusters, _colors
 
-    def g_resume_for_fig(self, s_clusters, legends_summary, crude=True):
+    def g_resume_for_fig(self, s_clusters, legends_summary, d_col, crude=True):
         if s_clusters == []:
             return pd.DataFrame()
 
@@ -346,7 +346,7 @@ class Shape():
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
             _clusters.append(_df)
-            _colors.append(c.resu_color)
+            _colors.append(c.resu_color if d_col else c.clus_color)
 
         return _clusters, _colors
 
@@ -420,7 +420,7 @@ class Shape():
             return _clusters
 
     def g_data_by_dr(self, s_clusters, legends_cluster,
-                     legends_summary, crude=True):
+                     legends_summary, d_col, crude=True):
 
         if s_clusters == []:
             return pd.DataFrame()
@@ -446,7 +446,7 @@ class Shape():
             _legends.append(_leg)
             _dfr[self.column_name] = [_leg]
             _resumes.append(_dfr)
-            _resu_color.append(c.resu_color)
+            _resu_color.append(c.resu_color if d_col else c.clus_color)
 
         return _clusters, _clus_color, _resumes, _resu_color
 
@@ -504,11 +504,11 @@ class Cluster():
 
     def g_percent_format(self, total=None):
         _por = self.g_percent(total)
-        return str(round(_por, 3)) + '%'
+        return str(round(_por, 2)) + '%'
 
     def g_percent_format_str(self, total=None):
         _por = self.g_percent(total)
-        return str(round(_por, 3))
+        return str(round(_por, 2))
 
     def g_count_format(self, count=None):
         return str(self.count)

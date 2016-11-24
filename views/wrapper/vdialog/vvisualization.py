@@ -120,12 +120,16 @@ class ClusterConfig(wx.Dialog):
         # -- Para Resumen
         if self.GetParent().visualization_mode == 1:
             self.GetParent().legends_summary = self.page_resumes.g_values()
+            r1 = self.page_resumes.color_radio1
+            self.GetParent().summ_dif_color = r1.GetValue()
 
         # --- Para Cluster y Resumen
         if self.GetParent().visualization_mode == 2:
             _clus, _sum = self.page_cluster_sumary.g_values()
             self.GetParent().legends_cluster = _clus
             self.GetParent().legends_summary = _sum
+            r1 = self.page_cluster_sumary.color_radio1
+            self.GetParent().data_summ_dif_color = r1.GetValue()
 
     def set_axes_parent_values(self):
         # ---- Para Cluster
@@ -255,9 +259,11 @@ class SummaryPage(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         sboxs_ax = self.get_axes(dialog_ref)
+        sboxs_lc = self.get_legends_colors(dialog_ref)
         sboxs_lg = self.get_legends(dialog_ref)
 
         sizer.Add(sboxs_ax, 0, wx.EXPAND | wx.ALL, 7)
+        sizer.Add(sboxs_lc, 0, wx.EXPAND | wx.ALL, 7)
         sizer.Add(sboxs_lg, 0, wx.EXPAND | wx.ALL, 7)
 
         self.SetSizer(sizer)
@@ -265,7 +271,7 @@ class SummaryPage(wx.Panel):
     def get_axes(self, dialog_ref):
 
         self.sbox_ax = wx.StaticBox(self, -1, L('DISPLAY_SELECTED'))
-        sboxs_ax = wx.StaticBoxSizer(self.sbox_ax, wx.VERTICAL)
+        sboxs_lc = wx.StaticBoxSizer(self.sbox_ax, wx.VERTICAL)
 
         _title = L('IN_A_FIGURE')
         self.radio1 = wx.RadioButton(self, -1, _title, style=wx.RB_GROUP)
@@ -275,8 +281,23 @@ class SummaryPage(wx.Panel):
         self.radio2 = wx.RadioButton(self, -1, L('IN_DIFFERENT_FIGURES'))
         dialog_ref.summ_ax_rd2 = self.radio2
 
-        sboxs_ax.Add(self.radio1, 0, wx.ALL, 5)
-        sboxs_ax.Add(self.radio2, 0, wx.ALL, 5)
+        sboxs_lc.Add(self.radio1, 0, wx.ALL, 5)
+        sboxs_lc.Add(self.radio2, 0, wx.ALL, 5)
+
+        return sboxs_lc
+
+    def get_legends_colors(self, dialog_ref):
+        self.sbox_lc = wx.StaticBox(self, -1, L('COLOR_SUMM'))
+        sboxs_ax = wx.StaticBoxSizer(self.sbox_lc, wx.VERTICAL)
+
+        _title = L('COLOR_SUMM_SUMM')
+        self.color_radio1 = wx.RadioButton(self, -1, _title, style=wx.RB_GROUP)
+        self.color_radio1.SetValue(True)
+
+        self.color_radio2 = wx.RadioButton(self, -1, L('COLOR_SUMM_CLUS'))
+
+        sboxs_ax.Add(self.color_radio1, 0, wx.ALL, 5)
+        sboxs_ax.Add(self.color_radio2, 0, wx.ALL, 5)
 
         return sboxs_ax
 
@@ -373,6 +394,7 @@ class ClusterSummaryPage(wx.Panel):
         # add the pages to the notebook with the label to show on the tab
         nb.AddPage(self.get_cluster_legend(nb, dialog_ref), "Cluster")
         nb.AddPage(self.get_summary_legend(nb, dialog_ref), L('SUMMARY'))
+        nb.AddPage(self.get_color_legend(nb, dialog_ref), L('COLOR_SUMM'))
         self.nb = nb
 
         # finally, put the notebook in a sizer for the panel to manage
@@ -440,6 +462,25 @@ class ClusterSummaryPage(wx.Panel):
         sizer.Add(checkbox2, 0, wx.ALL, 5)
         sizer.Add(checkbox3, 0, wx.ALL, 5)
         sizer.Add(checkbox4, 0, wx.ALL, 5)
+
+        panel.SetSizer(sizer)
+
+        return panel
+
+    def get_color_legend(self, parent, dialog_ref):
+
+        panel = wx.Panel(parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        _titl = L('COLOR_SUMM_SUMM')
+        self.color_radio1 = wx.RadioButton(panel, -1, _titl, style=wx.RB_GROUP)
+        self.color_radio1.SetValue(True)
+
+        self.color_radio2 = wx.RadioButton(panel, -1, L('COLOR_SUMM_CLUS'))
+
+        sizer.Add(self.color_radio1, 0, wx.ALL, 5)
+        sizer.Add(self.color_radio2, 0, wx.ALL, 5)
 
         panel.SetSizer(sizer)
 

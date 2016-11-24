@@ -492,6 +492,15 @@ msgstr "Resúmenes"
 msgid "DISPLAY_SELECTED"
 msgstr "Visualizar Seleccionados"
 
+msgid "COLOR_SUMM"
+msgstr "Color para Resumen"
+
+msgid "COLOR_SUMM_SUMM"
+msgstr "Color Asignado a Resumen"
+
+msgid "COLOR_SUMM_CLUS"
+msgstr "Color Asignado a Cluster"
+
 msgid "IN_A_FIGURE"
 msgstr "En una Figura"
 

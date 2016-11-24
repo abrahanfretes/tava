@@ -107,6 +107,8 @@ class ControlPanel(scrolled.ScrolledPanel):
         self.legends_summary = [True, False, False, False]
         self.clus_one_axe = True
         self.summ_one_axe = True
+        self.summ_dif_color = True
+        self.data_summ_dif_color = True
         self.clus_summ_axs = [True, False, False, False]
 
         # ---- Lista de Datos
@@ -366,7 +368,8 @@ class ControlPanel(scrolled.ScrolledPanel):
 
             if self.visualization_mode == V_M_SUMMARY:
                 _ls = self.legends_summary
-                _vs, _vsc = shape.g_resume_for_fig(s_clusters, _ls, crude)
+                dcl = self.summ_dif_color
+                _vs, _vsc = shape.g_resume_for_fig(s_clusters, _ls, dcl, crude)
 
                 if self.summ_one_axe:
                     _vs = [pd.concat(_vs)]
@@ -378,6 +381,7 @@ class ControlPanel(scrolled.ScrolledPanel):
                 _c, _cc, _r, _rc = shape.g_data_by_dr(s_clusters,
                                                       self.legends_cluster,
                                                       self.legends_summary,
+                                                      self.data_summ_dif_color,
                                                       crude)
                 if self.normalization == 1:
                     # ----  normalizar cada cluster y recalcular resumen
@@ -439,7 +443,9 @@ class ControlPanel(scrolled.ScrolledPanel):
 
             if self.visualization_mode == V_M_SUMMARY:
                 _ls = self.legends_summary
-                _vk, _vkc = tkmeans.g_resume_for_fig(k_clusters, _ls, crude)
+                dcl = self.summ_dif_color
+                _vk, _vkc = tkmeans.g_resume_for_fig(k_clusters, _ls,
+                                                     dcl, crude)
 
                 if self.summ_one_axe:
                     _vk = [pd.concat(_vk)]
@@ -448,10 +454,12 @@ class ControlPanel(scrolled.ScrolledPanel):
             if self.visualization_mode == V_M_CLUSTER_SUMMARY:
 
                 # ---- todo en un axe
+                _aux = self.data_summ_dif_color
                 _c, _cc, _r, _rc = tkmeans.g_data_by_dr(k_clusters,
                                                         self.legends_cluster,
                                                         self.legends_summary,
-                                                        crude)
+                                                        _aux, crude)
+
                 if self.normalization == 1:
                     # ----  normalizar cada cluster y recalcular resumen
                     _c, _r = self._nor_by_cr_one(_c, _r, tkmeans.column_name)
