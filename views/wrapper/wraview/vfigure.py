@@ -25,6 +25,9 @@ from wx import GetTranslation as L
 import wx
 from wx.lib.pubsub import Publisher as pub
 
+from matplotlib.lines import Line2D
+from mpldatacursor.datacursor import HighlightingDataCursor
+
 from imgs.ifigure import settings_fig, play_fig
 from languages import topic as T
 from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig, \
@@ -53,6 +56,11 @@ class FigurePanel(wx.Panel):
         self.control_panel = None
         self.dframes = []
         self.key_figure = 1
+
+        self.current_dataframes = None
+        self.current_datacolors = None
+
+        self.run_explorer = False
 
         self.figure_config_dialog_ref = None
 
@@ -90,6 +98,11 @@ class FigurePanel(wx.Panel):
 
         choice_grafic = self.get_choice_grafic()
         self.sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
+
+        _bitmap = play_fig.GetBitmap()
+        b_higl = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
+        b_higl.Bind(wx.EVT_BUTTON, self.on_higl)
+        self.sizer_tool.Add(b_higl, wx.ALIGN_LEFT)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.sizer_tool, 0, wx.EXPAND)
@@ -136,13 +149,21 @@ class FigurePanel(wx.Panel):
 
     def kdraw(self, dframes, colors):
 
+        self.current_dataframes = dframes
+        self.current_datacolors = colors
+
         self.fig.clear()
         self.start_busy()
         task = DrawThread(self, dframes, colors)
         task.start()
 
     def on_play(self, event):
+        self.run_explorer = False
         # ---- dibujar clusters/datos seleccionados
+        self.control_panel.run_fig()
+
+    def on_higl(self, event):
+        self.run_explorer = True
         self.control_panel.run_fig()
 
     def on_config(self, event):
@@ -193,6 +214,17 @@ class FigurePanel(wx.Panel):
         self.ch_graph.Enable()
 
     def canvas_draw(self):
+
+        if self.run_explorer:
+            for axe in self.fig.get_axes():
+                lines = []
+                for line in axe.get_children():
+                    if isinstance(line, Line2D):
+                        lines.append(line)
+
+                h = HighlightingDataCursor(lines)
+                h.show_highlight(lines[0])
+
         self.canvas.draw()
 
     def set_fig(self, fig):
