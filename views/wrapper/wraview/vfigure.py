@@ -19,16 +19,18 @@
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from matplotlib.figure import Figure
+from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
+from mpldatacursor.datacursor import HighlightingDataCursor
 import threading
 from wx import GetTranslation as L
 import wx
+from wx.lib.itemspicker import ItemsPicker, EVT_IP_SELECTION_CHANGED
+
 from wx.lib.pubsub import Publisher as pub
 
-from matplotlib.lines import Line2D
-from mpldatacursor.datacursor import HighlightingDataCursor
-
-from imgs.ifigure import settings_fig, play_fig
+from imgs.ifigure import settings_fig, play_fig, sort_and_filter, \
+    line_highligh
 from languages import topic as T
 from views.wrapper.vdialog.vfigured import FigureConfigDialog, AxesConfig, \
                                            FigureConfig, RadarChadConfig
@@ -55,7 +57,9 @@ class FigurePanel(wx.Panel):
 
         self.control_panel = None
         self.dframes = []
+        self.order_names = []
         self.key_figure = 1
+        self.mode_run = False
 
         self.current_dataframes = None
         self.current_datacolors = None
@@ -94,15 +98,25 @@ class FigurePanel(wx.Panel):
         self.toolbar = Toolbar(self.canvas)
         self.toolbar.Realize()
         self.toolbar.SetBackgroundColour('#DCE5EE')
+
+        _bitmap = sort_and_filter.GetBitmap()
+        self.b_sorted = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
+        self.b_sorted.Bind(wx.EVT_BUTTON, self.on_sort_and_filter)
+        self.b_sorted.SetToolTipString(L('BUTTON_ORDER_AND_FILTER'))
+        self.b_sorted.Disable()
+        self.sizer_tool.Add(self.b_sorted, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        _bp = line_highligh.GetBitmap()
+        self.b_highligh = wx.BitmapButton(self, -1, _bp, style=wx.NO_BORDER)
+        self.b_highligh.Bind(wx.EVT_BUTTON, self.on_highligh)
+        self.b_highligh.SetToolTipString(L('BUTTON_HIGHLIGHT'))
+        self.b_highligh.Disable()
+        self.sizer_tool.Add(self.b_highligh, 0, wx.ALIGN_CENTER_VERTICAL)
+
         self.sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
 
         choice_grafic = self.get_choice_grafic()
         self.sizer_tool.Add(choice_grafic, wx.ALIGN_LEFT)
-
-        _bitmap = play_fig.GetBitmap()
-        b_higl = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
-        b_higl.Bind(wx.EVT_BUTTON, self.on_higl)
-        self.sizer_tool.Add(b_higl, wx.ALIGN_LEFT)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.sizer_tool, 0, wx.EXPAND)
@@ -151,20 +165,51 @@ class FigurePanel(wx.Panel):
 
         self.current_dataframes = dframes
         self.current_datacolors = colors
+        self._kdraw(dframes, colors)
 
+    def pre_kdraw_order(self, names_ordered):
+        names_ordered.append('Name')
+        _dframes = []
+        for df in self.current_dataframes:
+            _dframes.append(df[names_ordered])
+
+        self._kdraw(_dframes, self.current_datacolors)
+
+    def _kdraw(self, dframes, colors):
         self.fig.clear()
         self.start_busy()
         task = DrawThread(self, dframes, colors)
         task.start()
 
     def on_play(self, event):
-        self.run_explorer = False
+        self.mode_run = True
+        self.run_explorer = True
+        self.new_order = []
         # ---- dibujar clusters/datos seleccionados
         self.control_panel.run_fig()
 
-    def on_higl(self, event):
+    def on_sort_and_filter(self, event):
+
         self.run_explorer = True
-        self.control_panel.run_fig()
+        cdf = self.current_dataframes
+        if cdf is None or cdf == []:
+            return
+
+        self.old_order = cdf[0].columns.tolist()[:-1]
+        ItemsPickerFilterDialog(self, self.old_order)
+
+    def on_highligh(self, event):
+
+        if self.run_explorer:
+            for axe in self.fig.get_axes():
+                lines = []
+                for line in axe.get_children():
+                    if isinstance(line, Line2D):
+                        lines.append(line)
+                h = HighlightingDataCursor(lines, highlight_color='red')
+                h.show_highlight(lines[0])
+            self.run_explorer = False
+            self.canvas_draw()
 
     def on_config(self, event):
         if self.figure_config_dialog_ref is None:
@@ -182,6 +227,7 @@ class FigurePanel(wx.Panel):
 
         self.ch_graph = wx.Choice(self, -1, choices=sampleList)
         self.ch_graph.SetSelection(0)
+        self.ch_graph.Bind(wx.EVT_CHOICE, self.on_graphic)
         self.ch_graph.SetToolTipString(L('SELECT_A_GRAPHIC'))
 
         grid.Add(self.ch_graph, 0, wx.ALIGN_LEFT | wx.ALL, 5)
@@ -190,6 +236,13 @@ class FigurePanel(wx.Panel):
 
     def get_item_list(self):
         return [L('PARALLEL_COORDINATES'), 'Radar Chart', 'Radvis']
+
+    def on_graphic(self, event):
+
+        if event.GetString() != L('PARALLEL_COORDINATES') or not self.mode_run:
+            self.b_highligh.Disable()
+            return
+        self.b_highligh.Enable()
 
     def update_language(self, msg):
         s = self.ch_graph.GetSelection()
@@ -205,6 +258,8 @@ class FigurePanel(wx.Panel):
         self.toolbar.Disable()
         self.b_setting.Disable()
         self.ch_graph.Disable()
+        self.b_highligh.Disable()
+        self.b_sorted.Disable()
 
     def stop_busy(self):
         pub().sendMessage(T.STOP_BUSY)
@@ -212,19 +267,10 @@ class FigurePanel(wx.Panel):
         self.toolbar.Enable()
         self.b_setting.Enable()
         self.ch_graph.Enable()
+        self.b_highligh.Enable()
+        self.b_sorted.Enable()
 
     def canvas_draw(self):
-
-        if self.run_explorer:
-            for axe in self.fig.get_axes():
-                lines = []
-                for line in axe.get_children():
-                    if isinstance(line, Line2D):
-                        lines.append(line)
-
-                h = HighlightingDataCursor(lines)
-                h.show_highlight(lines[0])
-
         self.canvas.draw()
 
     def set_fig(self, fig):
@@ -244,3 +290,52 @@ class DrawThread(threading.Thread):
         wx.CallAfter(self.panel.stop_busy)
         wx.CallAfter(self.panel.set_fig, fig)
         wx.CallAfter(self.panel.canvas_draw)
+
+
+class ItemsPickerFilterDialog(wx.Dialog):
+    def __init__(self, parent, names):
+        wx.Dialog.__init__(self, parent, -1, L('BUTTON_ORDER_AND_FILTER'))
+        self.parent = parent
+        self.names = names
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.ip = ItemsPicker(self, -1, names,
+                              L('PICKER_EXISTING'),
+                              L('PICKER_FILTERED'), ipStyle=0)
+        self.ip.Bind(EVT_IP_SELECTION_CHANGED, self.on_selection_change)
+        self.ip._source.SetMinSize((-1, 150))
+        sizer.Add(self.ip, 1, wx.ALL, 10)
+
+        sizer_button = wx.BoxSizer(wx.HORIZONTAL)
+        cancel = wx.Button(self, label=L('NEW_PROJECT_CANCEL'))
+        cancel.Bind(wx.EVT_BUTTON, self.on_cancel)
+
+        self.create = wx.Button(self, label=L('NOW_SHOW'))
+        self.create.Bind(wx.EVT_BUTTON, self.on_ok)
+        self.create.Disable()
+
+        sizer_button.Add(cancel)
+        sizer_button.Add(self.create)
+
+        sizer.Add(sizer_button, 0, wx.ALL, 10)
+
+        self.SetSizer(sizer)
+        self.itemCount = 3
+        self.Fit()
+        self.ShowModal()
+
+    def on_selection_change(self, e):
+
+        if len(e.GetItems()) < 2:
+            self.create.Disable()
+            return
+        self.item_ordered = e.GetItems()
+        self.create.Enable()
+
+    def on_ok(self, e):
+        self.parent.pre_kdraw_order(self.item_ordered)
+        self.Close()
+
+    def on_cancel(self, e):
+        self.Close()

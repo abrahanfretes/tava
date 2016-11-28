@@ -376,6 +376,21 @@ msgstr "Configuración de Figuras"
 msgid "VISUALIZE_DATE_CLUSTER"
 msgstr "Mostrar Datos/Clusters Selecionados"
 
+msgid "NOW_SHOW"
+msgstr "Ver"
+
+msgid "PICKER_EXISTING"
+msgstr "Existentes"
+
+msgid "PICKER_FILTERED"
+msgstr "Filtrados y Ordenados"
+
+msgid "BUTTON_ORDER_AND_FILTER"
+msgstr "Ordenar y Filtrar"
+
+msgid "BUTTON_HIGHLIGHT"
+msgstr "Explorar una solución"
+
 # ------------------------------- vfigured ----------------------------------
 msgid "GRAPHIC_CONFIG"
 msgstr "Configuración de Gráfico"
