@@ -44,12 +44,13 @@ class Shape():
 
     name_objectives = []
 
-    def __init__(self, df_population, clus=0, nor=0):
+    def __init__(self, df_population, clus=0, is_nor=True):
         self.population = len(df_population.values.tolist())
-        self.clusters = self.generate_clusters(df_population, clus, nor)
+        df_population = self.normalize_date(df_population, is_nor)
+        self.clusters = self.generate_clusters(df_population, clus)
         self.clusters_count = len(self.clusters)
         self.name_objectives = df_population.columns.tolist()[:-1]
-        self.full_normalization()
+        # self.full_normalization()
         self.set_color_clusters()
 
     def full_normalization(self):
@@ -94,7 +95,13 @@ class Shape():
         df[class_column] = class_col
         return df
 
-    def generate_clusters(self, df_population,  clus, nor):
+    def normalize_date(self, df_population, is_nor):
+        if is_nor:
+            return self._nor(df_population)
+
+        return df_population
+
+    def generate_clusters(self, df_population,  clus):
 
         # ---- calculo de shape para cada elemento
         new_columns = df_population.columns.tolist()
@@ -324,7 +331,8 @@ class Shape():
 
         # ---- clsuters seleccionados y creción de legendas
         for c in s_clusters:
-            _df = c.df_value.copy() if crude else c.full_nor.copy()
+            # _df = c.df_value.copy() if crude else c.full_nor.copy()
+            _df = c.df_value.copy()
             _leg = c.g_legend(_legends, legends_cluster)
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
@@ -341,7 +349,8 @@ class Shape():
         _legends = []
         _colors = []
         for c in s_clusters:
-            _df = c.df_resume.copy() if crude else c.df_resume_nor.copy()
+            _df = c.df_resume.copy()
+            # _df = c.df_resume.copy() if crude else c.df_resume_nor.copy()
             _leg = c.g_legend(_legends, legends_summary)
             _legends.append(_leg)
             _df[self.column_name] = [_leg]
@@ -361,6 +370,7 @@ class Shape():
         if clus_summ_axs[2]:
             for c in s_clusters:
                 # data
+                _df_c = c.df_value.copy() if crude else c.full_nor.copy()
                 _df_c = c.df_value.copy() if crude else c.full_nor.copy()
                 _leg = c.g_legend(_legends, legends_cluster)
                 _legends.append(_leg)
@@ -433,7 +443,8 @@ class Shape():
 
         for c in s_clusters:
             # data
-            _df = c.df_value.copy() if crude else c.full_nor.copy()
+            _df = c.df_value.copy()
+            # _df = c.df_value.copy() if crude else c.full_nor.copy()
             _leg = c.g_legend(_legends, legends_cluster)
             _legends.append(_leg)
             _df[self.column_name] = [_leg] * c.count
@@ -441,7 +452,8 @@ class Shape():
             _clus_color.append(c.clus_color)
 
             # resume
-            _dfr = c.df_resume.copy() if crude else c.df_resume_nor.copy()
+            _dfr = c.df_resume.copy()
+            # _dfr = c.df_resume.copy() if crude else c.df_resume_nor.copy()
             _leg = c.g_legend(_legends, legends_summary)
             _legends.append(_leg)
             _dfr[self.column_name] = [_leg]

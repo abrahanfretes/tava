@@ -88,13 +88,13 @@ class ClusterSeccion(wx.Panel):
         if sh:
             self.nb_clus.SetSelection(0)
 
-    def generate_shapes(self, df_population, clus):
+    def generate_shapes(self, df_population, clus, is_nor):
         # ---- generar clusters
-        self.shape = Shape(df_population, clus=clus)
+        self.shape = Shape(df_population, clus=clus, is_nor=is_nor)
 
-    def generate_kmeans(self, df_population, clus):
+    def generate_kmeans(self, df_population, clus, is_nor):
         # ---- generar clusters
-        self.tkmeans = Kmeans(df_population, clus=clus)
+        self.tkmeans = Kmeans(df_population, clus=clus, is_nor=is_nor)
 
     def update_list(self, c_shape, c_kmenas):
 

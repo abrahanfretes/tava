@@ -574,6 +574,7 @@ class ControlPanel(scrolled.ScrolledPanel):
     def on_generate(self, event):
 
         self.data_selected = None
+
         # ---- controlar valores consistentes para clusters
         if not self.data_seccion.contain_elemens():
             KMessage(self.mainpanel, KMSG_EMPTY_DATA_GENERATE_CLUSTER).kshow()
@@ -594,12 +595,18 @@ class ControlPanel(scrolled.ScrolledPanel):
             KMessage(self.mainpanel, KMSG_INVALID_NUM_CLUSTERS).kshow()
             return
 
+        # inicio de generacion de clusters
+        # se crea un hilo para ejecutar la generacion de clusters
+        # el hilo modifica atributos de la variable self.clusters_seccion
+        # al terminar de ejecutarse el hilo llama a la funcion self.stop_busy
         self.start_busy()
-
+        is_nor = False if self.normalization == 3 else True
         clus_sec = self.clusters_seccion
+
         task = GenerateClusterThread(self, dfpopulation, clus, clus_sec,
                                      self.cb_shape.GetValue(),
-                                     self.cb_kmeans.GetValue())
+                                     self.cb_kmeans.GetValue(),
+                                     is_nor)
         task.start()
 
     def on_filter(self, event):
@@ -706,7 +713,8 @@ class ControlPanel(scrolled.ScrolledPanel):
 
 
 class GenerateClusterThread(threading.Thread):
-    def __init__(self, panel, dfpopulation, clus, clus_sec, c_shape, c_kmenas):
+    def __init__(self, panel, dfpopulation, clus, clus_sec, c_shape, c_kmenas,
+                 is_nor):
         super(GenerateClusterThread, self).__init__()
         # ---- Attributes
         self.panel = panel
@@ -715,14 +723,17 @@ class GenerateClusterThread(threading.Thread):
         self.dfpopulation = dfpopulation
         self.c_shape = c_shape
         self.c_kmenas = c_kmenas
+        self.is_nor = is_nor
 
     def run(self):
 
         if self.c_shape:
-            self.c_sec.generate_shapes(self.dfpopulation, self.n_clas)
+            self.c_sec.generate_shapes(self.dfpopulation,
+                                       self.n_clas, self.is_nor)
 
         if self.c_kmenas:
-            self.c_sec.generate_kmeans(self.dfpopulation, self.n_clas)
+            self.c_sec.generate_kmeans(self.dfpopulation,
+                                       self.n_clas, self.is_nor)
 
         wx.CallAfter(self.panel.stop_busy)
 
