@@ -84,7 +84,22 @@ class Shape():
             color_values.append(colors.rgb2hex(rgb))
         return color_values
 
-    def _nor(self, df):
+    def _norFictureScaling(self, df):
+
+        class_column = df.columns[-1]
+        class_col = df[class_column]
+        df = df.drop(class_column, axis=1)
+
+        for name_col in df.columns:
+            x = df[name_col]
+            mi = min(x)
+            ma = max(x)
+            df[name_col] = [(j-mi)/(ma - mi) for j in x]
+
+        df[class_column] = class_col
+        return df
+
+    def _norFrobenius(self, df):
         def normalize(series):
             a = min(series)
             b = max(series)
@@ -97,7 +112,7 @@ class Shape():
 
     def normalize_date(self, df_population, is_nor):
         if is_nor:
-            return self._nor(df_population)
+            return self._norFictureScaling(df_population)
 
         return df_population
 

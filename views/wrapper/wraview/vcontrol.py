@@ -314,7 +314,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         # ---- normalización de datos
         _s = []
         if self.normalization == 0:
-            _s.append(self._nor(df))
+            _s.append(self._norFictureScaling(df))
         else:
             _s.append(df)
 
@@ -560,7 +560,37 @@ class ControlPanel(scrolled.ScrolledPanel):
             df[cols] = _vnor
         return df
 
-    def _nor(self, df):
+    def _nor1(self, df):
+
+        class_column = df.columns[-1]
+        class_col = df[class_column]
+        df = df.drop(class_column, axis=1)
+
+        for i, row in df.iterrows():
+            x = row
+            mi = min(x)
+            ma = max(x)
+            df.iloc[i] = [(j-mi)/(ma - mi) for j in x]
+
+        df[class_column] = class_col
+        return df
+
+    def _norFictureScaling(self, df):
+
+        class_column = df.columns[-1]
+        class_col = df[class_column]
+        df = df.drop(class_column, axis=1)
+
+        for name_col in df.columns:
+            x = df[name_col]
+            mi = min(x)
+            ma = max(x)
+            df[name_col] = [(j-mi)/(ma - mi) for j in x]
+
+        df[class_column] = class_col
+        return df
+
+    def _norFrobenius(self, df):
         def normalize(series):
             a = min(series)
             b = max(series)
