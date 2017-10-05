@@ -122,7 +122,7 @@ class Shape():
         new_columns = df_population.columns.tolist()
         df_shapes = pd.DataFrame(columns=new_columns)
         for i, value in enumerate(df_population.values.tolist()):
-            _shape = '_'.join([str(v) for v in np.argsort(value[:-1])])
+            _shape = '_'.join([str(v+1) for v in np.argsort(value[:-1])])
             value[-1] = _shape
             df_shapes.loc[i] = value
 
