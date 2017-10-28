@@ -236,3 +236,7 @@ class MainFrameP(object):
     def delete_result(self, result):
         ResultModel().delete(result)
         return True
+    
+    def update_result(self, result):
+        ResultModel().update(result)
+        return True

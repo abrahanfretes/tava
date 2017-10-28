@@ -52,6 +52,8 @@ class MainFrame(wx.Frame):
         # ---- results
         pub().subscribe(self.new_results, T.NEW_RESULTS)
         pub().subscribe(self.delete_result, T.DELETE_RESULT)
+        pub().subscribe(self.change_name_objectives, T.CHANGE_RESULT)
+        
 
         # ---- project
         pub().subscribe(self.unhide_project, T.PREUNHIDE_PROJECT)
@@ -88,7 +90,7 @@ class MainFrame(wx.Frame):
 
     def v_setting(self):
         self.SetTitle("FPUNA: Tava")
-        self.SetSize(wx.Size(1030, 700))
+        self.SetSize(wx.Size(960, 540))
         self.SetBackgroundColour("#F5D0A9")
         self.SetMinSize((660, 480))
         self.SetIcon(shortcut.GetIcon())
@@ -265,6 +267,21 @@ class MainFrame(wx.Frame):
             self.ppr.delete_result(message.data)
             pub().sendMessage(T.DELETE_RESULT_TREE)
 
+    def change_name_objectives(self, message):
+
+        dlg = wx.TextEntryDialog(
+                self, L('RESULT_CHANGE_NAME_ST'),
+                L('RESULT_CHANGE_NAME_T'), 'Python')
+        delimitadores = self.contar_coma(message.data.name_objectives)
+        dlg.SetValue(message.data.name_objectives)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            if delimitadores == self.contar_coma(dlg.GetValue()):
+                message.data.name_objectives = dlg.GetValue()
+                self.ppr.update_result(message.data)
+
+        dlg.Destroy()
+
     def new_view(self, message):
         project = message.data
         self.view_name = ''
@@ -282,6 +299,13 @@ class MainFrame(wx.Frame):
 
     def unhide_project(self, message):
         UnhideProject(self)
+        
+    def contar_coma(self, cadena):
+        contador = 0
+        for letra in cadena:
+            if letra == "A":
+                contador += 1
+        return(contador)
 
 
 class SplashFrame(wx.SplashScreen):

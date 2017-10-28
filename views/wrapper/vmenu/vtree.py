@@ -139,8 +139,17 @@ class MenuResultFile(wx.Menu):
         self.AppendItem(self.add)
         self.Bind(wx.EVT_MENU, self.on_delete, self.add)
 
+        # -- change name objectives
+        self.add = wx.MenuItem(self, wx.ID_ANY, L('CHANGE_FILE_NAME_RESOULT'))
+        self.AppendItem(self.add)
+        self.Bind(wx.EVT_MENU, self.on_change_name, self.add)
+
         self.AppendSeparator()
 
     def on_delete(self, event):
         # self.parent.delete_item_selected()
         pub().sendMessage(T.DELETE_RESULT, self.result)
+
+    def on_change_name(self, event):
+        # self.parent.delete_item_selected()
+        pub().sendMessage(T.CHANGE_RESULT, self.result)

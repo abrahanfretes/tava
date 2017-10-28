@@ -35,6 +35,12 @@ msgstr "The file can not be removed, is being used in any view!"
 msgid "RESULT_NOT_DELETE_HEADER"
 msgstr "Delete Files Result!"
 
+msgid "RESULT_CHANGE_NAME_T"
+msgstr "Objective Names"
+
+msgid "RESULT_CHANGE_NAME_ST"
+msgstr "Keep names separated by comma ','"
+
 msgid "EXIT_TAVA"
 msgstr "Exit TAVA?"
 
@@ -283,6 +289,9 @@ msgstr "Add File Result"
 
 msgid "DELETE_FILE_RESOULT"
 msgstr "Delete"
+
+msgid "CHANGE_FILE_NAME_RESOULT"
+msgstr "Rename objectives"
 
 # ------------------------------- vproject -> UnhideProjec ----------------------------------
 

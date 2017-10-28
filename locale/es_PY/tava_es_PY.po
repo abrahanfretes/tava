@@ -35,6 +35,12 @@ msgstr "El archivo no puede ser eliminado, esta siendo usado en alguna vista!"
 msgid "RESULT_NOT_DELETE_HEADER"
 msgstr "Eliminar Archivos Resultado!"
 
+msgid "RESULT_CHANGE_NAME_T"
+msgstr "Nombres de Objetivos"
+
+msgid "RESULT_CHANGE_NAME_ST"
+msgstr "Mantener los nombres separados entre coma ','"
+
 msgid "EXIT_TAVA"
 msgstr "Salir de TAVA?"
 
@@ -284,6 +290,9 @@ msgstr "Agregar"
 
 msgid "DELETE_FILE_RESOULT"
 msgstr "Eliminar"
+
+msgid "CHANGE_FILE_NAME_RESOULT"
+msgstr "Cambiar nombre de objetivos"
 
 # ------------------------------- vproject -> UnhideProject -------------------
 
