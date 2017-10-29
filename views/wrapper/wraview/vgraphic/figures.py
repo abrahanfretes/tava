@@ -27,6 +27,7 @@ from pandas.tools.plotting import radviz
 
 import numpy as np
 from views.wrapper.wraview.vgraphic.figuresutils import square_plot, g_colors
+from matplotlib import rcParams
 
 
 # #######################################################################
@@ -46,16 +47,27 @@ def kparallelcoordinates(dframes, class_column, fig, ax_conf, fg_conf, colors):
 #        Radar Chart (circle - polygon)
 # #######################################################################
 def radarchart(dframes, class_column, fig, ax_conf, rc_config, colors):
+    rcParams.update({'font.size': 19})
 
     s_row, s_col = square_plot(len(dframes), False)
     for i, df in enumerate(dframes):
+        if ax_conf.xticklabels is None:
+            spoke_labels = df.columns[:-1]
+        else:
+            spoke_labels = ax_conf.xticklabels
+            
         # ---- configuración de axe para radar chart
-        spoke_labels = df.columns[:-1]
+        
         theta = radar_factory(len(spoke_labels), rc_config.type)
         ax = fig.add_subplot(s_row, s_col, i + 1, projection='radar')
+
+        # ----- configuración de ytick
+        if not ax_conf.y_axis_show:
+            ax.set_yticklabels([])
+        
         ax.set_varlabels(spoke_labels)
 
-        _radarchart(df, ax, fig, ax_conf, class_column, rc_config, theta,
+        ax = _radarchart(df, ax, fig, ax_conf, class_column, rc_config, theta,
                     colors[i])
     return fig
 
@@ -128,14 +140,28 @@ def _parallelcoordinates(frame, ax, ax_conf, class_column, color_values=None):
         else:
             ax.plot(x, y, color=colors[kls])
 
+    # ancho de ejes paralelos
+    _lwidth = None
     if ax_conf.axvlines:
         for i in x:
+            _lwidth = ax_conf.axv_line_width
+            if i == 0 or i == x[-1]:
+                _lwidth = ax_conf.axv_line_width * 2
             ax.axvline(i, linewidth=ax_conf.axv_line_width,
                        color=ax_conf.axv_line_color)
 
     # ---- configuración de tick - visualización, labels, colors
     ax.set_xticks(x)
-    ax.set_xticklabels(df.columns)
+    if ax_conf.xticklabels is not None:
+        ax.set_xticklabels(ax_conf.xticklabels)
+        ax.tick_params(axis='x', labelsize=ax_conf.xticklabelssize)
+    else:
+        x_t_labels = df.columns
+        if ax_conf.x_label_latex_show:
+            x_t_labels = ['$'+lx+'$' for lx in x_t_labels]
+        ax.set_xticklabels(x_t_labels)
+        ax.tick_params(axis='x', labelsize=ax_conf.xticklabelssize)
+
     ax.set_xlim(x[0], x[-1])
     ax.get_xaxis().set_visible(ax_conf.x_axis_show)
     ax.get_yaxis().set_visible(ax_conf.y_axis_show)
@@ -149,7 +175,16 @@ def _parallelcoordinates(frame, ax, ax_conf, class_column, color_values=None):
     ax.yaxis.label.set_color(ax_conf.y_color_label)
 
     # ---- configuración de spines
+    ax.spines['top'].set_visible(True)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
 
+    ax.spines['top'].set_linewidth(0.1)
+    ax.spines['bottom'].set_linewidth(0.1)
+    ax.spines['left'].set_linewidth(0.1)
+    ax.spines['right'].set_linewidth(0.1)
+    
     ax.spines['top'].set_color(ax_conf.color_top_spine)
     ax.spines['bottom'].set_color(ax_conf.color_bottom_spine)
     ax.spines['left'].set_color(ax_conf.color_left_spine)
@@ -269,7 +304,7 @@ def radar_factory(num_vars, frame):
 
 
 def _radarchart(frame, ax, fig, ax_conf, class_column, rc_config,
-                theta, alpha=0.15, color_values=None):
+                theta, color_values=None, alpha=0.05):
 
     # ---- varaibles globales
     n = len(frame)
@@ -318,6 +353,8 @@ def _radarchart(frame, ax, fig, ax_conf, class_column, rc_config,
                 alpha=ax_conf.grid_color_alpha)
     else:
         ax.grid(False)
+
+    return ax
 
 
 # #######################################################################

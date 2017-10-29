@@ -319,8 +319,10 @@ class ControlPanel(scrolled.ScrolledPanel):
             _s.append(df)
 
         # update figure
-        self.kfigure.kdraw(_s, [None])
-
+        
+        # self.kfigure.kdraw(_s, [['#C7F464']])
+        self.kfigure.kdraw(_s, [['#F3E4A8']])
+        
     def v_clusters(self):
 
         # ---- verificar valores en clusters

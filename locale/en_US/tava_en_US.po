@@ -487,6 +487,12 @@ msgstr "In Y"
 msgid "COLOR_Y"
 msgstr "Color Y"
 
+msgid "LABEL_SIZE_X"
+msgstr "Label size"
+
+msgid "LABEL_STILE_LATEX_X"
+msgstr "Latex style"
+
 msgid "RC_CONF1_HEADER"
 msgstr "Graph Settings"
 

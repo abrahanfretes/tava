@@ -136,11 +136,13 @@ class FigureConfigDialog(wx.Dialog):
         ax_conf.grid_color_alpha = ac
 
         # ---- labels - axes
-        x, y, xc, yc = self.ax_panel.g_axes_labels()
+        x, y, xc, yc, xll, xzll = self.ax_panel.g_axes_labels()
         ax_conf.x_axis_show = x
         ax_conf.y_axis_show = y
         ax_conf.x_axis_color = xc
         ax_conf.y_axis_color = yc
+        ax_conf.x_label_latex_show = xll
+        ax_conf.xticklabelssize = xzll
 
     def set_radarchard_parent_values(self):
         rc_conf = self.GetParent().radar_chard_con
@@ -461,24 +463,36 @@ class AxesConfigPanel(wx.Panel):
         self.y_label_color_cs = csel.ColourSelect(self, colour=_c)
         self.y_label_color_cs.Enable(conf.y_axis_show)
 
+        _label = L('LABEL_STILE_LATEX_X')
+        self.ll_ch = wx.CheckBox(self, -1, _label, style=wx.ALIGN_RIGHT)
+        self.ll_ch.SetValue(conf.x_label_latex_show)
+        
+        self.x_label_des_spin = wx.StaticText(self, -1, L('LABEL_SIZE_X'))
+        self.x_label_zize_spin = wx.SpinCtrl(self, -1, "")
+        self.x_label_zize_spin.SetRange(1, 50)
+        self.x_label_zize_spin.SetValue(conf.xticklabelssize)
+        
         grid = wx.FlexGridSizer(cols=5)
 
         grid.Add(self.x_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
         grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
-
         grid.Add(self.y_ch, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
         grid.Add(self.x_label_color, 0, _style, 5)
         grid.Add(self.x_label_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
         grid.Add(wx.StaticText(self, -1, "                "), wx.ALL)
-
         grid.Add(self.y_label_color, 0, _style, 5)
         grid.Add(self.y_label_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
+
+        grid.Add(self.ll_ch, 0, _style, 5)
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, "         "), wx.ALL)
+        grid.Add(self.x_label_des_spin, 0, _style, 5)
+        grid.Add(self.x_label_zize_spin, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         sboxs_grid.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
@@ -522,7 +536,9 @@ class AxesConfigPanel(wx.Panel):
         xc = c_color(self.x_label_color_cs.GetValue())
         y = self.y_ch.GetValue()
         yc = c_color(self.y_label_color_cs.GetValue())
-        return x, y, xc, yc
+        xll = self.ll_ch.GetValue()
+        xzll = self.x_label_zize_spin.GetValue()
+        return x, y, xc, yc, xll, xzll
 
     def update_language(self, msg):
         self.sbox_spf.SetLabel(L('EDGES'))
@@ -642,13 +658,13 @@ class FigureConfig():
         self.facecolor = c_color(wx.Colour(255, 255, 255))
 
         # the left side of the subplots of the figure
-        self.subplot_left = 0.08
+        self.subplot_left = 0.07
         # the right side of the subplots of the figure
-        self.subplot_right = 0.92
+        self.subplot_right = 0.93
         # the bottom of the subplots of the figure
         self.subplot_bottom = 0.07
         # the top of the subplots of the figure
-        self.subplot_top = 0.98
+        self.subplot_top = 0.93
         # the amount of width reserved for blank space between subplots
         self.subplot_wspace = 0.05
         # the amount of height reserved for white space between subplots
@@ -673,6 +689,7 @@ class AxesConfig():
 
         # ---- axis value and label
         self.x_axis_show = True
+        self.x_label_latex_show = True
         self.y_axis_show = True
         self.x_axis_color = c_color(wx.Colour(0, 0, 0))
         self.y_axis_color = c_color(wx.Colour(0, 0, 0))
@@ -684,18 +701,23 @@ class AxesConfig():
 
         # ---- legends
         self.legend_show = True
-        self.legend_loc = 'upper left'
-        self.legend_size = 9
+        self.legend_loc = 'upper left' #(0.02,1.01)
+        self.legend_size = 13
         self.legend_edge_color = c_color(wx.Colour(221, 221, 221))
 
         # ---- ticks
         self.xticks = None
         self.yticks = None
+        self.xticklabels = None #['$f_1$', '$f_2$', '$f_3$']
+        self.yticklabels = None
+        self.xticklabelssize = 18
+        self.yticklabelssize = 18
 
         # ---- lines
         self.axvlines = True
-        self.axv_line_width = 1
-        self.axv_line_color = c_color(wx.Colour(221, 221, 221))
+        self.axv_line_width = 2
+        # self.axv_line_color = c_color(wx.Colour(221, 221, 221))
+        self.axv_line_color = c_color(wx.Colour(98, 98, 95))
 
         # ---- grilla
         self.grid_lines = False

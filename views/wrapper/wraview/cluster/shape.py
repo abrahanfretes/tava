@@ -242,7 +242,7 @@ class Shape():
         i_name = 1
         for shape, freq in _clusters_frequency:
             _df = df_group.get_group(shape)
-            _c = Cluster(str(i_name) + '-s', shape, freq, _df, self.population)
+            _c = Cluster('G' + str(i_name), shape, freq, _df, self.population)
             current_clusters.append(_c)
             i_name += 1
         return current_clusters
@@ -555,16 +555,6 @@ class Cluster():
     def g_legend(self, legends, legends_condition, repeat=False):
         _legend = ""
 
-        if legends_condition[0]:
-            if _legend != "":
-                _legend = _legend + ' - '
-            _legend = _legend + self.g_percent_format()
-
-        if legends_condition[1]:
-            if _legend != "":
-                _legend = _legend + ' - '
-            _legend = _legend + str(self.count)
-
         if legends_condition[2]:
             if _legend != "":
                 _legend = _legend + ' - '
@@ -574,6 +564,16 @@ class Cluster():
             if _legend != "":
                 _legend = _legend + ' - '
             _legend = _legend + str(self.shape)
+            
+        if legends_condition[0]:
+            if _legend != "":
+                _legend = _legend + ' - '
+            _legend = _legend + self.g_percent_format()
+
+        if legends_condition[1]:
+            if _legend != "":
+                _legend = _legend + ' - '
+            _legend = _legend + str(self.count)
 
         if not repeat:
             while _legend in legends:
