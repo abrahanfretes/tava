@@ -677,6 +677,16 @@ msgstr "Unificar los Colores de Clusters"
 msgid "UNIFY_COLOR_SUMMARY"
 msgstr "Unificar los Colores de Resúmenes"
 
+msgid "CHANGE_GROUP_NAME"
+msgstr "Cambiar nombre"
+
+msgid "CHANGE_GROUP_NAME_T"
+msgstr "Nombre de grupo"
+
+msgid "CHANGE_GROUP_NAME_D"
+msgstr "Debe tener al menos un caracter"
+
+
 msgid "INDI_BY_CLUSTER"
 msgstr "Número de Individuos del Clusters"
 

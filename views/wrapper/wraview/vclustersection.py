@@ -189,6 +189,14 @@ class ClusterSeccion(wx.Panel):
             for c in self.tkmeans.clusters:
                 c.resu_color = _colour
 
+    def change_group_name(self, index, name):
+        if self.nb_clus.GetSelection() == 0:
+            c = self.shape.clusters[index]
+            c.name = name
+        if self.nb_clus.GetSelection() == 1:
+            c = self.tkmeans.clusters[index]
+            c.name = name
+            
     def select_all(self):
 
         if self.pages[0]:
@@ -382,10 +390,12 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
             self.popupID2 = wx.NewId()
             self.popupID3 = wx.NewId()
             self.popupID4 = wx.NewId()
+            self.popupID5 = wx.NewId()
             self.Bind(wx.EVT_MENU, self.on_change_color_clus, id=self.popupID1)
             self.Bind(wx.EVT_MENU, self.on_change_color_summ, id=self.popupID2)
             self.Bind(wx.EVT_MENU, self.on_unify_color_clus, id=self.popupID3)
             self.Bind(wx.EVT_MENU, self.on_unify_color_summ, id=self.popupID4)
+            self.Bind(wx.EVT_MENU, self.on_change_group_name, id=self.popupID5)
 
         # make a menu
         menu = wx.Menu()
@@ -394,6 +404,7 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
         menu.Append(self.popupID2, L('CHANGE_COLOR_SUMMARY'))
         menu.Append(self.popupID3, L('UNIFY_COLOR_CLUSTER'))
         menu.Append(self.popupID4, L('UNIFY_COLOR_SUMMARY'))
+        menu.Append(self.popupID5, L('CHANGE_GROUP_NAME'))
 
         # Popup the menu.  If an item is selected then its handler
         # will be called before PopupMenu returns.
@@ -494,6 +505,23 @@ class CheckListCtrlCluster(ULC.UltimateListCtrl):
 
             self.GetParent().GetParent().unify_color_summary(c_colour)
 
+        dlg.Destroy()
+        
+    def on_change_group_name(self, evt):
+
+        item = self.GetItem(self.currentItem, 0)
+        g_label = item.GetText();
+        dlg = wx.TextEntryDialog(
+                self, L('CHANGE_GROUP_NAME_D'),
+                L('CHANGE_GROUP_NAME_T'), 'Python')
+        dlg.SetValue(g_label)
+ 
+        if dlg.ShowModal() == wx.ID_OK:
+            if len(dlg.GetValue().strip()) != 0:
+                item.SetText(dlg.GetValue())
+                self.SetItem(item)
+                self.GetParent().GetParent().change_group_name(self.currentItem,
+                                                               dlg.GetValue())
         dlg.Destroy()
 
     def on_chech_header(self, see):
