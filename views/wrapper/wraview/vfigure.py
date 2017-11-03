@@ -95,10 +95,6 @@ class FigurePanel(wx.Panel):
         self.b_setting.Bind(wx.EVT_BUTTON, self.on_config)
         self.b_setting.SetToolTipString(L('FIGURE_CONF'))
 
-        self.toolbar = Toolbar(self.canvas)
-        self.toolbar.Realize()
-        self.toolbar.SetBackgroundColour('#DCE5EE')
-
         _bitmap = sort_and_filter.GetBitmap()
         self.b_sorted = wx.BitmapButton(self, -1, _bitmap, style=wx.NO_BORDER)
         self.b_sorted.Bind(wx.EVT_BUTTON, self.on_sort_and_filter)
@@ -112,6 +108,10 @@ class FigurePanel(wx.Panel):
         self.b_highligh.SetToolTipString(L('BUTTON_HIGHLIGHT'))
         self.b_highligh.Disable()
         self.sizer_tool.Add(self.b_highligh, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        self.toolbar = Toolbar(self.canvas)
+        self.toolbar.Realize()
+        self.toolbar.SetBackgroundColour('#DCE5EE')
 
         self.sizer_tool.Add(self.toolbar, 0, wx.ALIGN_CENTER_VERTICAL)
 
@@ -161,10 +161,11 @@ class FigurePanel(wx.Panel):
         elif key_figure == K_RADVIZ:
             return kradviz(dframes, 'Name', self.fig, self.ax_conf, colors)
 
-    def kdraw(self, dframes, colors):
+    def kdraw(self, dframes, colors, ldic):
 
         self.current_dataframes = dframes
         self.current_datacolors = colors
+        self.ldic = ldic
         self._kdraw(dframes, colors)
 
     def pre_kdraw_order(self, names_ordered):
@@ -199,15 +200,22 @@ class FigurePanel(wx.Panel):
         ItemsPickerFilterDialog(self, self.old_order)
 
     def on_highligh(self, event):
-
+        _label_aux = ''
         if self.run_explorer:
             for axe in self.fig.get_axes():
                 lines = []
                 for line in axe.get_children():
                     if isinstance(line, Line2D):
-                        lines.append(line)
-                h = HighlightingDataCursor(lines, highlight_color='red')
-                h.show_highlight(lines[0])
+                        if self.ldic.get(line.get_color()) is not None:
+                            _label_aux = self.ldic.get(line.get_color())
+                            line.set_label('shape = ' + self.ldic.get(line.get_color()))
+                            lines.append(line)
+                        else:
+                            line.set_label('')
+                h = resaltar(lines, highlight_color=self.ax_conf.highlight_color,
+                             formatter='{label}'.format)
+                if lines != []:
+                    h.show_highlight(lines[0])
             self.run_explorer = False
             self.canvas_draw()
 
@@ -339,3 +347,59 @@ class ItemsPickerFilterDialog(wx.Dialog):
 
     def on_cancel(self, e):
         self.Close()
+
+import matplotlib
+from matplotlib.contour import ContourSet
+from matplotlib.image import AxesImage
+from matplotlib.collections import PathCollection, LineCollection
+from matplotlib.collections import PatchCollection, PolyCollection, QuadMesh
+from matplotlib.container import Container
+from matplotlib.lines import Line2D
+from matplotlib.patches import Rectangle
+import matplotlib.dates as mdates
+from matplotlib.ticker import ScalarFormatter
+from matplotlib.backend_bases import PickEvent
+
+
+
+class resaltar(HighlightingDataCursor):
+    def __init__(self, *args, **kwargs):
+        HighlightingDataCursor.__init__(self, *args, **kwargs)
+
+
+    def update(self, event, annotation):
+        """Update the specified annotation."""
+ 
+        for artist in self.highlights.values():
+            if self.display == 'multiple':
+                continue
+            if self.display == 'one-per-axes':
+                if event.mouseevent.inaxes is not artist.axes:
+                    continue
+            artist.set_visible(False)
+        self.show_highlight(event.artist)
+         
+         
+         
+        # Get artist-specific information about the pick event
+        info = self.event_info(event)
+ 
+        if self.props_override is not None:
+            info = self.props_override(**info)
+ 
+        # Update the xy position and text using the formatter function
+        annotation.set_text(self.formatter(**info))
+        annotation.xy = info['x'], info['y']
+ 
+        # Unfortnately, 3D artists are a bit more complex...
+        # Also, 3D artists don't share inheritance. Use naming instead.
+        if '3D' in type(event.artist).__name__:
+            annotation.xy = event.mouseevent.xdata, event.mouseevent.ydata
+ 
+        # In case it's been hidden earlier...
+        annotation.set_visible(True)
+ 
+        if self.keep_inside:
+            self._keep_annotation_inside(annotation)
+ 
+        event.canvas.draw()

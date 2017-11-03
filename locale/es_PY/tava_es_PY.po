@@ -452,6 +452,9 @@ msgstr "Ubicación"
 msgid "SELECT_A_LOCATION"
 msgstr "Seleccione una Ubicación"
 
+msgid "SELECT_COLOR_HIGHLIGHT"
+msgstr "Color de resaltado"
+
 msgid "GRID"
 msgstr "Grilla"
 

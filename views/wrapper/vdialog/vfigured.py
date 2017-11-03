@@ -126,6 +126,7 @@ class FigureConfigDialog(wx.Dialog):
         # ---- Localizacion de la leyenda
         ax_conf.legend_show = self.chk_show_lg.GetValue()
         ax_conf.legend_loc = self.ch_loc_leg.GetStringSelection()
+        ax_conf.highlight_color = c_color(self.highlight_color_cs.GetValue())
 
         # ---- grilla
         v, o, w, c, ac = self.ax_panel.g_grid_conf()
@@ -355,8 +356,8 @@ class AxesConfigPanel(wx.Panel):
 
     def get_legend_location(self, a_conf):
         self.sbox_lglc = wx.StaticBox(self, -1, L('LEGEND'))
-        sboxs_lglc = wx.StaticBoxSizer(self.sbox_lglc, wx.VERTICAL)
-
+        sboxs_lglc = wx.StaticBoxSizer(self.sbox_lglc, wx.VERTICAL)        
+        
         chk_show_lg = wx.CheckBox(self, -1, L('SHOW_LEGEND'),
                                   style=wx.ALIGN_RIGHT)
         chk_show_lg.SetValue(True)
@@ -364,23 +365,32 @@ class AxesConfigPanel(wx.Panel):
         self.chk_show_lg = chk_show_lg
 
         self.loc_label = wx.StaticText(self, -1, L('LOCATION'))
-
         locations = ['upper left', 'center', 'upper center', 'lower left',
                      'lower right', 'center left', 'upper right', 'right',
                      'lower center', 'best', 'center right']
-
         ch_loc_leg = wx.Choice(self, -1, choices=locations)
         ch_loc_leg.SetSelection(0)
         ch_loc_leg.SetToolTipString(L('SELECT_A_LOCATION'))
         self.dialog_ref.ch_loc_leg = ch_loc_leg
 
-        grid = wx.FlexGridSizer(cols=2)
+        self.highlight_label = wx.StaticText(self, -1, L('SELECT_COLOR_HIGHLIGHT'))
+        _c = wx.NamedColour(a_conf.highlight_color)
+        self.highlight_color_cs = csel.ColourSelect(self, colour=_c)
+        self.dialog_ref.highlight_color_cs = self.highlight_color_cs
+        
+        grid = wx.FlexGridSizer(cols=4)
+        
         grid.Add(chk_show_lg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
         _style = wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALL
+        grid.Add(self.highlight_label, 0, _style, 5)
+        grid.Add(self.highlight_color_cs, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        
         grid.Add(self.loc_label, 0, _style, 5)
         grid.Add(ch_loc_leg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        grid.Add(wx.StaticText(self, -1, ""), 0, wx.ALIGN_LEFT | wx.ALL, 5)
+        
         sboxs_lglc.Add(grid, 1, wx.EXPAND | wx.ALL, 10)
 
         return sboxs_lglc
@@ -558,6 +568,7 @@ class AxesConfigPanel(wx.Panel):
         self.sbox_lglc.SetLabel(L('LEGEND'))
         self.chk_show_lg.SetLabel(L('SHOW_LEGEND'))
         self.loc_label.SetLabel(L('LOCATION'))
+        self.highlight_label.SetLabel(L('SELECT_COLOR_HIGHLIGHT'))
 
         self.sbox_grid.SetLabel(L('GRID'))
         self.ch.SetLabel(L('SHOW_GRID'))
@@ -704,6 +715,7 @@ class AxesConfig():
         self.legend_loc = 'upper left' #(0.02,1.01)
         self.legend_size = 13
         self.legend_edge_color = c_color(wx.Colour(221, 221, 221))
+        self.highlight_color = c_color(wx.Colour(64, 94, 191))
 
         # ---- ticks
         self.xticks = None

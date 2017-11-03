@@ -321,7 +321,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         # update figure
         
         # self.kfigure.kdraw(_s, [['#C7F464']])
-        self.kfigure.kdraw(_s, [['#F3E4A8']])
+        self.kfigure.kdraw(_s, [['#F3E4A8']], {})
         
     def v_clusters(self):
 
@@ -348,6 +348,7 @@ class ControlPanel(scrolled.ScrolledPanel):
         _vsc = []
         s_clusters = []
         shape = self.clusters_seccion.shape
+        ldic = {}
         if shape is not None:
             s_clusters = shape.g_checkeds()
 
@@ -420,6 +421,10 @@ class ControlPanel(scrolled.ScrolledPanel):
                     _vsc.append([i[0] for i in _cc])
                     _vsc.append([i[0] for i in _rc])
 
+            
+            for s_i in s_clusters:
+                ldic[s_i.clus_color[0]] = s_i.shape
+                        
         _vk = []
         _vkc = []
         k_clusters = []
@@ -508,7 +513,7 @@ class ControlPanel(scrolled.ScrolledPanel):
             _vu = _vk
             _vuc = _vkc
 
-        self.kfigure.kdraw(_vu, _vuc)
+        self.kfigure.kdraw(_vu, _vuc, ldic)
 
     def _nor_by_cr_one(self, v, r, column_name):
         _r = []

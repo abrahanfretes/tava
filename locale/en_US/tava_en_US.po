@@ -451,6 +451,9 @@ msgstr "Location"
 msgid "SELECT_A_LOCATION"
 msgstr "Select a Location"
 
+msgid "SELECT_COLOR_HIGHLIGHT"
+msgstr "Highlight color"
+
 msgid "GRID"
 msgstr "Grid"
 
