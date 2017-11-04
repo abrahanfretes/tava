@@ -30,7 +30,7 @@ class PropertiesHelper():
         f = open(self.path_propertie, 'r')
         values = {}
         for _line in f.readlines():
-            _key, _value = _line.strip().split(':')
+            _key, _value = _line.strip().split('=')
             values[_key] = _value
         f.close()
 
@@ -39,7 +39,7 @@ class PropertiesHelper():
     def write_values(self, values):
         f = open(self.path_propertie, 'w')
         for _key in values.keys():
-            _line = ':'.join([_key, values[_key]]) + '\n'
+            _line = '='.join([_key, values[_key]]) + '\n'
             f.write(_line)
         f.close()
 
