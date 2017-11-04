@@ -26,6 +26,7 @@ from wx.lib.agw import customtreectrl as CT
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from wx.lib.pubsub import Publisher as pub
 import wx.lib.scrolledpanel as scrolled
+import wx.lib.colourselect as csel
 
 from languages import topic as T
 import numpy as np
@@ -319,9 +320,7 @@ class ControlPanel(scrolled.ScrolledPanel):
             _s.append(df)
 
         # update figure
-        
-        # self.kfigure.kdraw(_s, [['#C7F464']])
-        self.kfigure.kdraw(_s, [['#F3E4A8']], {})
+        self.kfigure.kdraw(_s, [[self.data_seccion.get_color()]], {})
         
     def v_clusters(self):
 
@@ -793,8 +792,17 @@ class DataSeccion(wx.Panel):
 
         self._checked_all = wx.CheckBox(self, -1, L('SELECT_ALL'))
         self._checked_all.Bind(wx.EVT_CHECKBOX, self.on_checked_all)
+        space_text = wx.StaticText(self, -1, '   ')
+        self._color_date_label = wx.StaticText(self, -1, L('SELECT_COLOR_DATA'))
+        self.color_date = csel.ColourSelect(self, -1, colour=wx.Colour(243, 228, 168))
+        
+        sizer_hor = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_hor.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer_hor.Add(space_text, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer_hor.Add(self.color_date, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer_hor.Add(self._color_date_label, flag=wx.ALIGN_CENTER_VERTICAL)
 
-        sizer.Add(self._checked_all, flag=wx.ALIGN_CENTER_VERTICAL)
+        sizer.Add(sizer_hor, flag=wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(self.list_control, 1, wx.EXPAND)
 
         self.SetSizer(sizer)
@@ -859,6 +867,11 @@ class DataSeccion(wx.Panel):
 
     def update_language(self, msg):
         self._checked_all.SetLabel(L('SELECT_ALL'))
+        self._color_date_label.SetLabel(L('SELECT_COLOR_DATA'))
+        
+    def get_color(self):
+#         return self.color_date.GetAsString(wx.C2S_HTML_SYNTAX)
+        return self.color_date.GetValue().GetAsString(wx.C2S_HTML_SYNTAX)
 
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):

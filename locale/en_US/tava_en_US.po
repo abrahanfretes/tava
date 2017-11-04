@@ -335,6 +335,9 @@ msgstr "Name"
 msgid "SELECT_ALL"
 msgstr "Select All"
 
+msgid "SELECT_COLOR_DATA"
+msgstr "Color data"
+
 msgid "CHECK_HEADER_CLUSTER"
 msgstr "Header"
 
