@@ -243,7 +243,7 @@ class FigurePanel(wx.Panel):
         return grid
 
     def get_item_list(self):
-        return [L('PARALLEL_COORDINATES'), 'Radar Chart', 'Radvis']
+        return [L('PARALLEL_COORDINATES'), 'Radar Chart']
 
     def on_graphic(self, event):
 
@@ -347,6 +347,7 @@ class ItemsPickerFilterDialog(wx.Dialog):
 
     def on_cancel(self, e):
         self.Close()
+
 
 import matplotlib
 from matplotlib.contour import ContourSet
